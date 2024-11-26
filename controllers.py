@@ -1,4 +1,4 @@
-from flask import render_template, request, url_for, redirect, flash
+from flask import render_template, request, url_for, redirect, flash, session
 from app import app
 from models import *
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -23,7 +23,9 @@ def home():
             flash("Incorrect password")
             return redirect(url_for("home"))
 
-        return render_template("dashboard.html", x="Shivang")
+        session["user_id"] = user.registration_number
+        flash("Login successfully")
+        return redirect(url_for("dashboard", var=user.name))
 
     else:
         return render_template("index.html")
@@ -31,7 +33,12 @@ def home():
 
 @app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
-    return render_template("dashboard.html")
+    if "user_id" in session:
+        v = request.args.get("var")
+        return render_template("dashboard.html", x=v)
+    else:
+        flash("Please login to continue")
+        return redirect(url_for("home"))
 
 
 @app.route("/register_tutor", methods=["GET", "POST"])
@@ -43,6 +50,8 @@ def register_tutor():
         password = request.form.get("password")
         cnf_password = request.form.get("cnf_password")
         subject = request.form.get("subject")
+        cgpa = request.form.get("grade")
+        description = request.form.get("description")
 
         if not name or not password or not cnf_password:
             flash("Please fill all fields")
@@ -52,15 +61,26 @@ def register_tutor():
             flash("Passwords do not match")
             return redirect(url_for("register_tutor"))
 
-        user = User.query.filter_by(registration_number=reg_number).first()
+        user = User.query.filter_by(
+            registration_number=reg_number, role="tutor"
+        ).first()
         if user:
             flash("User already exists")
             return redirect(url_for("register_tutor"))
 
-        password_hash = generate_password_hash(password)
+        new_tutor = Tutor(
+            registration_number=reg_number + "_tutor",
+            subject=subject,
+            cgpa=cgpa,
+            description=description,
+            grade_history="path",
+        )
+        db.session.add(new_tutor)
+        db.session.commit()
 
+        password_hash = generate_password_hash(password)
         new_user = User(
-            registration_number=reg_number,
+            registration_number=reg_number + "_tutor",
             name=name,
             email=email,
             password_hash=password_hash,
@@ -84,6 +104,7 @@ def register_student():
         reg_number = request.form.get("reg_number")
         password = request.form.get("password")
         cnf_password = request.form.get("cnf_password")
+        year = request.form.get("year")
 
         if not name or not password or not cnf_password:
             flash("Please fill all fields")
@@ -93,13 +114,20 @@ def register_student():
             flash("Passwords do not match")
             return redirect(url_for("register_student"))
 
-        user = User.query.filter_by(registration_number=reg_number).first()
+        user = User.query.filter_by(
+            registration_number=reg_number, role="student"
+        ).first()
         if user:
             flash("User already exists")
             return redirect(url_for("register_student"))
 
-        password_hash = generate_password_hash(password)
+        new_student = Student(
+            registration_number=reg_number, year_of_study=year, id_card_image="path"
+        )
+        db.session.add(new_student)
+        db.session.commit()
 
+        password_hash = generate_password_hash(password)
         new_user = User(
             registration_number=reg_number,
             name=name,

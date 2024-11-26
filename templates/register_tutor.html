@@ -14,6 +14,16 @@
 
 <body>
 
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-danger" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
     <div class="container register">
         <div class="row">
             <div class="col-md-3 register-left">
@@ -46,44 +56,48 @@
                             <div class="row register-form">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <input type="text" name="reg_number" class="form-control" placeholder="Registration Number *"
-                                            value="" />
+                                        <input type="text" name="reg_number" class="form-control"
+                                            placeholder="Registration Number *" value="" required />
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" name="full_name" class="form-control" placeholder="Full Name *" value="" />
+                                        <input type="text" name="full_name" class="form-control"
+                                            placeholder="Full Name *" value="" required />
                                     </div>
                                     <div class="form-group">
-                                        <input type="password" name="password" class="form-control" placeholder="Password *" value="" />
+                                        <input type="password" name="password" class="form-control"
+                                            placeholder="Password *" value="" required />
                                     </div>
                                     <div class="form-group">
-                                        <input type="password" name="cnf_password" class="form-control" placeholder="Confirm Password *"
-                                            value="" />
+                                        <input type="password" name="cnf_password" class="form-control"
+                                            placeholder="Confirm Password *" value="" required />
                                     </div>
                                     <div class="form-group">
                                         <div class="form-group">
                                             <label for="idCard">Attach Grade History</label>
-                                            <input type="file" id="idCard" class="form-control-file" name="idCard"
-                                                accept=".jpg,.jpeg,.png,.pdf" required>
+                                            <input type="file" id="idCard" class="form-control-file"
+                                                name="grade_history" accept=".jpg,.jpeg,.png,.pdf" >
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <input type="email" name="email" class="form-control" placeholder="Your Email *" value="" />
+                                        <input type="email" name="email" class="form-control" placeholder="Your Email *"
+                                            value="" required />
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" name="subject"
-                                            class="form-control" placeholder="Subject *" value="" />
+                                        <input type="text" name="subject" class="form-control" placeholder="Subject *"
+                                            value="" required />
                                     </div>
                                     <div class="form-group">
-                                        <select class="form-control">
+                                        <select class="form-control" name="grade" required>
                                             <option class="hidden" selected disabled>Please select your grade</option>
-                                            <option>S</option>
-                                            <option>A</option>
+                                            <option value="S">S</option>
+                                            <option value="A">A</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" name="description" class="form-control" placeholder="Description *" value="" />
+                                        <input type="text" name="description" class="form-control"
+                                            placeholder="Description *" value="" required />
                                     </div>
                                     <input type="submit" class="btnRegister" value="Register" />
                                 </div>

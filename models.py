@@ -1,15 +1,15 @@
-from time import timezone
 from app import app
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash
-from datetime import datetime
+
+from datetime import datetime, timezone
 
 db = SQLAlchemy(app)
 
 
 # Users Table
 class User(db.Model):
-    tablename = "users"
+    __tablename__ = "users"
     registration_number = db.Column(db.String(20))
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
@@ -19,7 +19,9 @@ class User(db.Model):
     )
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
-    table_args = (db.PrimaryKeyConstraint("registration_number", "role", name="pk"),)
+    __table_args__ = (
+        db.PrimaryKeyConstraint("registration_number", "role", name="pk"),
+    )
 
     # Relationships
     student = db.relationship("Student", back_populates="user", uselist=False)
@@ -28,7 +30,7 @@ class User(db.Model):
 
 # Students Table
 class Student(db.Model):
-    tablename = "students"
+    __tablename__ = "students"
     registration_number = db.Column(
         db.String(20), db.ForeignKey("users.registration_number"), primary_key=True
     )
@@ -43,7 +45,7 @@ class Student(db.Model):
 
 # Tutors Table
 class Tutor(db.Model):
-    tablename = "tutors"
+    __tablename__ = "tutors"
     registration_number = db.Column(
         db.String(20), db.ForeignKey("users.registration_number"), primary_key=True
     )
@@ -59,7 +61,7 @@ class Tutor(db.Model):
 
 # Slots Table
 class Slot(db.Model):
-    tablename = "slots"
+    __tablename__ = "slots"
     id = db.Column(db.Integer, primary_key=True)
     tutor_registration_number = db.Column(
         db.String(20), db.ForeignKey("tutors.registration_number"), nullable=False
@@ -77,7 +79,7 @@ class Slot(db.Model):
 
 # Requests Table
 class Request(db.Model):
-    tablename = "requests"
+    __tablename__ = "requests"
     id = db.Column(db.Integer, primary_key=True)
     slot_id = db.Column(db.Integer, db.ForeignKey("slots.id"), nullable=False)
     student_registration_number = db.Column(
@@ -96,7 +98,7 @@ class Request(db.Model):
 
 # Reviews Table
 class Review(db.Model):
-    tablename = "reviews"
+    __tablename__ = "reviews"
     id = db.Column(db.Integer, primary_key=True)
     slot_id = db.Column(db.Integer, db.ForeignKey("slots.id"), nullable=False)
     student_registration_number = db.Column(
@@ -113,7 +115,7 @@ class Review(db.Model):
 
 # Admin Notices Table
 class Notice(db.Model):
-    tablename = "notices"
+    __tablename__ = "notices"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
