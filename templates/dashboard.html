@@ -1,4 +1,17 @@
-{% with messages = get_flashed_messages() %} {% if messages %} {% for message in
-messages %}
-<div class="alert alert-danger" role="alert">{{ message }}</div>
-{% endfor %} {% endif %} {% endwith %} Welcome, {{x}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+  </head>
+
+  <body>
+    {% with messages = get_flashed_messages() %} {% if messages %} {% for
+    message in messages %}
+    <div class="alert alert-danger" role="alert">{{ message }}</div>
+    {% endfor %} {% endif %} {% endwith %}
+
+    <h1>Welcome, {{user.name}} {{user.registration_number}}</h1>
+  </body>
+</html>

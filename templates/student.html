@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ user.name }} (Student)</h1>
+
+<section>
+    <h2>Your Details</h2>
+    <ul>
+        <li>Registration Number: {{ user.registration_number }}</li>
+        <li>Year of Study: {{ student.year_of_study }}</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Available Tutors</h2>
+    <!-- Example: Iterate over a list of tutors -->
+    <ul>
+        {% for tutor in tutors %}
+        <li>{{ tutor.name }} - {{ tutor.subject }}</li>
+        {% endfor %}
+    </ul>
+</section>
+{% endblock %}

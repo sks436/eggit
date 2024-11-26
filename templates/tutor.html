@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Tutor Dashboard{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ user.name }} (Tutor)</h1>
+
+<section>
+    <h2>Your Details</h2>
+    <ul>
+        <li>Registration Number: {{ user.registration_number }}</li>
+        <li>Subject Expertise: {{ tutor.subject }}</li>
+        <li>CGPA: {{ tutor.cgpa }}</li>
+        <li>Description: {{ tutor.description }}</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Student Requests</h2>
+    <!-- Example: Iterate over a list of student requests -->
+    <ul>
+        {% for request in student_requests %}
+        <li>{{ request.student_name }} - {{ request.message }}</li>
+        {% endfor %}
+    </ul>
+</section>
+{% endblock %}
