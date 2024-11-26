@@ -1,110 +1,136 @@
+from time import timezone
 from app import app
 from flask_sqlalchemy import SQLAlchemy
-
+from werkzeug.security import generate_password_hash
 from datetime import datetime
 
-db=SQLAlchemy(app)
+db = SQLAlchemy(app)
+
 
 # Users Table
 class User(db.Model):
-    __tablename__ = 'users'
-    registration_number = db.Column(db.String(20), primary_key=True)
+    tablename = "users"
+    registration_number = db.Column(db.String(20))
     name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
+    email = db.Column(db.String(100), nullable=False)
     password_hash = db.Column(db.Text, nullable=False)
-    role = db.Column(db.Enum('student', 'tutor', 'admin', name='user_roles'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    role = db.Column(
+        db.Enum("student", "tutor", "admin", name="user_roles"), nullable=False
+    )
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+
+    table_args = (db.PrimaryKeyConstraint("registration_number", "role", name="pk"),)
 
     # Relationships
-    student = db.relationship('Student', back_populates='user', uselist=False)
-    tutor = db.relationship('Tutor', back_populates='user', uselist=False)
+    student = db.relationship("Student", back_populates="user", uselist=False)
+    tutor = db.relationship("Tutor", back_populates="user", uselist=False)
+
 
 # Students Table
 class Student(db.Model):
-    __tablename__ = 'students'
+    tablename = "students"
     registration_number = db.Column(
-        db.String(20), db.ForeignKey('users.registration_number'), primary_key=True
+        db.String(20), db.ForeignKey("users.registration_number"), primary_key=True
     )
     year_of_study = db.Column(db.Integer, nullable=False)
     id_card_image = db.Column(db.Text, nullable=False)
 
     # Relationships
-    user = db.relationship('User', back_populates='student')
-    requests = db.relationship('Request', back_populates='student')
-    reviews = db.relationship('Review', back_populates='student')
+    user = db.relationship("User", back_populates="student")
+    requests = db.relationship("Request", back_populates="student")
+    reviews = db.relationship("Review", back_populates="student")
+
 
 # Tutors Table
 class Tutor(db.Model):
-    __tablename__ = 'tutors'
+    tablename = "tutors"
     registration_number = db.Column(
-        db.String(20), db.ForeignKey('users.registration_number'), primary_key=True
+        db.String(20), db.ForeignKey("users.registration_number"), primary_key=True
     )
     subject = db.Column(db.String(100), nullable=False)
-    cgpa = db.Column(db.Enum('A', 'S', name='cgpa_levels'), nullable=False)
+    cgpa = db.Column(db.Enum("A", "S", name="cgpa_levels"), nullable=False)
     grade_history = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text)
 
     # Relationships
-    user = db.relationship('User', back_populates='tutor')
-    slots = db.relationship('Slot', back_populates='tutor')
+    user = db.relationship("User", back_populates="tutor")
+    slots = db.relationship("Slot", back_populates="tutor")
+
 
 # Slots Table
 class Slot(db.Model):
-    __tablename__ = 'slots'
+    tablename = "slots"
     id = db.Column(db.Integer, primary_key=True)
     tutor_registration_number = db.Column(
-        db.String(20), db.ForeignKey('tutors.registration_number'), nullable=False
+        db.String(20), db.ForeignKey("tutors.registration_number"), nullable=False
     )
     subject = db.Column(db.String(100), nullable=False)
     date = db.Column(db.Date, nullable=False)
     time = db.Column(db.Time, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     # Relationships
-    tutor = db.relationship('Tutor', back_populates='slots')
-    requests = db.relationship('Request', back_populates='slot')
-    reviews = db.relationship('Review', back_populates='slot')
+    tutor = db.relationship("Tutor", back_populates="slots")
+    requests = db.relationship("Request", back_populates="slot")
+    reviews = db.relationship("Review", back_populates="slot")
+
 
 # Requests Table
 class Request(db.Model):
-    __tablename__ = 'requests'
+    tablename = "requests"
     id = db.Column(db.Integer, primary_key=True)
-    slot_id = db.Column(db.Integer, db.ForeignKey('slots.id'), nullable=False)
+    slot_id = db.Column(db.Integer, db.ForeignKey("slots.id"), nullable=False)
     student_registration_number = db.Column(
-        db.String(20), db.ForeignKey('students.registration_number'), nullable=False
+        db.String(20), db.ForeignKey("students.registration_number"), nullable=False
     )
     status = db.Column(
-        db.Enum('pending', 'accepted', 'rejected', name='request_status'), default='pending'
+        db.Enum("pending", "accepted", "rejected", name="request_status"),
+        default="pending",
     )
-    request_date = db.Column(db.DateTime, default=datetime.utcnow)
+    request_date = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     # Relationships
-    slot = db.relationship('Slot', back_populates='requests')
-    student = db.relationship('Student', back_populates='requests')
+    slot = db.relationship("Slot", back_populates="requests")
+    student = db.relationship("Student", back_populates="requests")
+
 
 # Reviews Table
 class Review(db.Model):
-    __tablename__ = 'reviews'
+    tablename = "reviews"
     id = db.Column(db.Integer, primary_key=True)
-    slot_id = db.Column(db.Integer, db.ForeignKey('slots.id'), nullable=False)
+    slot_id = db.Column(db.Integer, db.ForeignKey("slots.id"), nullable=False)
     student_registration_number = db.Column(
-        db.String(20), db.ForeignKey('students.registration_number'), nullable=False
+        db.String(20), db.ForeignKey("students.registration_number"), nullable=False
     )
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     # Relationships
-    slot = db.relationship('Slot', back_populates='reviews')
-    student = db.relationship('Student', back_populates='reviews')
+    slot = db.relationship("Slot", back_populates="reviews")
+    student = db.relationship("Student", back_populates="reviews")
+
 
 # Admin Notices Table
 class Notice(db.Model):
-    __tablename__ = 'notices'
+    tablename = "notices"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+
 
 with app.app_context():
     db.create_all()
+    admin = User.query.filter_by(role="admin").first()
+    if not admin:
+        password_hash = generate_password_hash("admin123")
+        admin = User(
+            registration_number="admin123",
+            name="admin",
+            email="admin@gmail.com",
+            password_hash=password_hash,
+            role="admin",
+        )
+        db.session.add(admin)
+        db.session.commit()
