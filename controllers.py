@@ -43,7 +43,10 @@ def dashboard():
             tutor = Tutor.query.filter_by(
                 registration_number=user.registration_number
             ).first()
-            return render_template("tutor.html", user=user, tutor=tutor)
+            slots = Slot.query.filter_by(
+                tutor_registration_number=user.registration_number
+            ).all()
+            return render_template("tutor.html", user=user, tutor=tutor, slots=slots)
         elif user.role == "student":
             student = Student.query.filter_by(
                 registration_number=user.registration_number
@@ -178,3 +181,40 @@ def register_student():
 
     else:
         return render_template("register_student.html")
+
+# Create Slot
+@app.route("/create_slot", methods=["POST"])
+def create_slot():
+    if "user_id" in session:
+        user = User.query.get(session["user_id"])
+        if user.role != "tutor":
+            flash("Only tutors can create slots.")
+            return redirect(url_for("home"))
+
+        subject = request.form.get("subject")
+        date = request.form.get("date")
+        time = request.form.get("time")
+        gmeet_link = request.form.get("gmeet_link")
+
+        if not subject or not date or not time:
+            flash("Please fill in all required fields.")
+            return redirect(url_for("dashboard"))
+
+        date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+        time_obj = datetime.strptime(time, "%H:%M").time()
+
+        new_slot = Slot(
+            tutor_registration_number=user.registration_number,
+            subject=subject,
+            date=date_obj,
+            time=time_obj,
+            gmeet_link=gmeet_link,
+        )
+
+        db.session.add(new_slot)
+        db.session.commit()
+        flash("Slot created successfully!")
+        return redirect(url_for("dashboard"))
+    else:
+        flash("Please log in to create a slot.")
+        return redirect(url_for("home"))

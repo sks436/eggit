@@ -66,6 +66,7 @@ class Slot(db.Model):
     date = db.Column(db.Date, nullable=False)
     time = db.Column(db.Time, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    gmeet_link = db.Column(db.String(255), nullable=True)
 
     # Relationships
     tutor = db.relationship("Tutor", back_populates="slots")

@@ -1,27 +1,121 @@
-{% extends "base.html" %}
-
-{% block title %}Tutor Dashboard{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Tutor Dashboard{% endblock %} {%
+block content %}
 <h1>Welcome, {{ user.name }} (Tutor)</h1>
 
 <section>
-    <h2>Your Details</h2>
-    <ul>
-        <li>Registration Number: {{ user.registration_number }}</li>
-        <li>Subject Expertise: {{ tutor.subject }}</li>
-        <li>CGPA: {{ tutor.cgpa }}</li>
-        <li>Description: {{ tutor.description }}</li>
-    </ul>
+  <h2>Your Details</h2>
+  <ul>
+    <li>Registration Number: {{ user.registration_number }}</li>
+    <li>Subject Expertise: {{ tutor.subject }}</li>
+    <li>CGPA: {{ tutor.cgpa }}</li>
+    <li>Description: {{ tutor.description }}</li>
+  </ul>
 </section>
 
+<!-- Section for Student Requests -->
 <section>
-    <h2>Student Requests</h2>
-    <!-- Example: Iterate over a list of student requests -->
-    <ul>
-        {% for request in student_requests %}
-        <li>{{ request.student_name }} - {{ request.message }}</li>
-        {% endfor %}
-    </ul>
+  <h2>Student Requests</h2>
+  <!-- Example: Iterate over a list of student requests -->
+  <ul>
+    {% for request in student_requests %}
+    <li>{{ request.student_name }} - {{ request.message }}</li>
+    {% endfor %}
+  </ul>
 </section>
+
+<!-- Modal for Slot Creation -->
+<div
+  class="modal fade"
+  id="createSlotModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="createSlotModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createSlotModalLabel">Create a New Slot</h5>
+      </div>
+      <form method="POST" action="{{ url_for('create_slot') }}">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <input
+              type="text"
+              class="form-control"
+              id="subject"
+              name="subject"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date"
+              name="date"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="time">Time</label>
+            <input
+              type="time"
+              class="form-control"
+              id="time"
+              name="time"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="gmeet_link">Google Meet Link</label>
+            <input
+              type="url"
+              class="form-control"
+              id="gmeet_link"
+              name="gmeet_link"
+              placeholder="https://meet.google.com/..."
+              pattern="https://meet\.google\.com/.+"
+              title="Enter a valid Google Meet link"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Create Slot</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Displaying the Slots -->
+<section>
+  <h2>Your Slots</h2>
+  <div class="row">
+    {% for slot in slots %}
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">{{ slot.subject }}</h5>
+          <p class="card-text">Date: {{ slot.date }}</p>
+          <p class="card-text">Time: {{ slot.time }}</p>
+          {% if slot.gmeet_link %}
+          <p class="card-text">
+            Google Meet Link:
+            <a href="{{ slot.gmeet_link }}" target="_blank"
+              >{{ slot.gmeet_link }}</a
+            >
+          </p>
+          {% else %}
+          <p class="card-text">No Google Meet link provided.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
 {% endblock %}
