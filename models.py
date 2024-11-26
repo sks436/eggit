@@ -1,3 +1,4 @@
+from sqlalchemy import true
 from app import app
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash
@@ -10,7 +11,7 @@ db = SQLAlchemy(app)
 # Users Table
 class User(db.Model):
     __tablename__ = "users"
-    registration_number = db.Column(db.String(20))
+    registration_number = db.Column(db.String(20), primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     password_hash = db.Column(db.Text, nullable=False)
@@ -18,10 +19,6 @@ class User(db.Model):
         db.Enum("student", "tutor", "admin", name="user_roles"), nullable=False
     )
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
-
-    __table_args__ = (
-        db.PrimaryKeyConstraint("registration_number", "role", name="pk"),
-    )
 
     # Relationships
     student = db.relationship("Student", back_populates="user", uselist=False)

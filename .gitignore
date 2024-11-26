@@ -15,3 +15,5 @@ __pycache__/
 instance/
 *.db
 
+# Image folder
+static/images

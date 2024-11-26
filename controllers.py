@@ -1,3 +1,5 @@
+import os
+from werkzeug.utils import secure_filename
 from flask import render_template, request, url_for, redirect, flash, session
 from app import app
 from models import *
@@ -52,6 +54,7 @@ def register_tutor():
         subject = request.form.get("subject")
         cgpa = request.form.get("grade")
         description = request.form.get("description")
+        file = request.files.get('idCard')
 
         if not name or not password or not cnf_password:
             flash("Please fill all fields")
@@ -68,15 +71,25 @@ def register_tutor():
             flash("User already exists")
             return redirect(url_for("register_tutor"))
 
+        if not os.path.exists(app.config['UPLOAD_FOLDER']):
+            os.makedirs(app.config['UPLOAD_FOLDER'])
+
+        if file:
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+        else:
+            flash("Please upload your ID card")
+            return redirect(url_for("register_tutor"))
+
         new_tutor = Tutor(
             registration_number=reg_number + "_tutor",
             subject=subject,
             cgpa=cgpa,
             description=description,
-            grade_history="path",
+            grade_history=file_path,
         )
         db.session.add(new_tutor)
-        db.session.commit()
 
         password_hash = generate_password_hash(password)
         new_user = User(
@@ -88,10 +101,11 @@ def register_tutor():
         )
         db.session.add(new_user)
         db.session.commit()
+
+        flash("Registration successful! You can now log in.")
         return redirect(url_for("home"))
 
-    else:
-        return render_template("register_tutor.html")
+    return render_template("register_tutor.html")
 
 
 @app.route("/register_student", methods=["GET", "POST"])
@@ -105,12 +119,13 @@ def register_student():
         password = request.form.get("password")
         cnf_password = request.form.get("cnf_password")
         year = request.form.get("year")
+        file = request.files.get('idCard')
 
         if not name or not password or not cnf_password:
             flash("Please fill all fields")
             return redirect(url_for("register_student"))
 
-        elif password != cnf_password:
+        if password != cnf_password:
             flash("Passwords do not match")
             return redirect(url_for("register_student"))
 
@@ -121,11 +136,18 @@ def register_student():
             flash("User already exists")
             return redirect(url_for("register_student"))
 
+        if file:
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+        else:
+            flash("Please upload your ID card")
+            return redirect(url_for("register_student"))
+
         new_student = Student(
-            registration_number=reg_number, year_of_study=year, id_card_image="path"
+            registration_number=reg_number, year_of_study=year, id_card_image=file_path
         )
         db.session.add(new_student)
-        db.session.commit()
 
         password_hash = generate_password_hash(password)
         new_user = User(
@@ -137,7 +159,8 @@ def register_student():
         )
         db.session.add(new_user)
         db.session.commit()
+
         return redirect(url_for("home"))
 
-    else:
-        return render_template("register_student.html")
+    return render_template("register_student.html")
+
