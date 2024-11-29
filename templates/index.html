@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <title>Login</title>
+</head>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-danger" role="alert">
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div style="text-align: right; padding-top: 20px; padding-right: 20px; z-index: 1000; position: relative;">
+  <a href="{{ url_for('register_tutor') }}">Register as a Tutor</a>
+</div>
+
+<div class="wrapper fadeInDown">
+  <div id="formContent">
+    <!-- Tabs Titles -->
+
+    <!-- Icon -->
+    <!-- <div class="fadeIn first">
+      <img src="http://danielzawadzki.com/codepen/01/icon.svg" id="icon" alt="User Icon" />
+    </div> -->
+    <!-- Link to Google Fonts for Montserrat and Lobster -->
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Montserrat:wght@400;500&display=swap"
+      rel="stylesheet">
+
+    <div class="container">
+      <!-- App name/title with custom styles -->
+      <div class="text-center mt-5">
+        <h1 style="color: navy; font-family: 'Montserrat', sans-serif;">Eggit</h1>
+        <h4 style="color: #4d4d4d; font-family: 'Lobster', cursive;">Hatch the Habit of Learning</h4>
+      </div>
+    </div>
+    <br>
+
+    <!-- Login Form -->
+    <form action="" method="post">
+      <input type="text" id="login" class="fadeIn second" name="login" placeholder="Login Id">
+      <input type="password" id="password" class="fadeIn third" name="password" placeholder="Password">
+      <input type="submit" class="fadeIn fourth" value="Log In">
+    </form>
+
+    <!-- Remind Passowrd -->
+    <div id="formFooter">
+      <a class="underlineHover" href="{{ url_for('register_student') }}">Create Account?</a>
+    </div>
+
+  </div>
+</div>
+</body>
+
+</html>
