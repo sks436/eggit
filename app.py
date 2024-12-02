@@ -6,8 +6,10 @@ app = Flask(__name__)
 
 import config
 import models
-import controllers
+import controllers 
 
 
-if __name__ == "__main__":
+
+
+if __name__=='__main__':
     app.run(debug=True)
