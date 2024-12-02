@@ -1,5 +1,44 @@
 {% extends "base.html" %} {% block title %}Student Dashboard{% endblock %} {%
 block content %}
 <h1>Welcome, {{ user.name }} (Admin)</h1>
-
+<section>
+  <h2>Tutors</h2>
+  {% if tutors and tutors|length > 0 %}
+  <ul>
+    {% for tutor in tutors %}
+    <li>
+      <strong>Name:</strong> {{ tutor.user.name }} <br />
+      <strong>Registration Number:</strong> {{ tutor.registration_number }}
+      <br />
+      <strong>Subject:</strong> {{ tutor.subject }} <br />
+      <strong>Grade:</strong> {{ tutor.grade }} <br />
+      <strong>Grade History:</strong> {{ tutor.grade_history }} <br />
+      <strong>Description:</strong> {{ tutor.description }} <br />
+    </li>
+    <hr />
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No Tutors.</p>
+  {% endif %}
+</section>
+<section>
+  <h2>Students</h2>
+  {% if students and students|length > 0 %}
+  <ul>
+    {% for student in students %}
+    <li>
+      <strong>Name:</strong> {{ student.user.name }} <br />
+      <strong>Registration Number:</strong> {{ student.registration_number }}
+      <br />
+      <strong>Current Year:</strong> {{ student.current_year }} <br />
+      <strong>Id card:</strong> {{ student.id_card }} <br />
+    </li>
+    <hr />
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No Tutors.</p>
+  {% endif %}
+</section>
 {% endblock %}

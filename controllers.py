@@ -85,8 +85,9 @@ def dashboard():
         )
 
     elif user.role == "admin":
-        return render_template("admin.html", user=user)
-
+        tutors = Tutor.query.all() 
+        students = Student.query.all() 
+        return render_template("admin.html", user=user, tutors=tutors, students=students)
 
 # Create slot
 @app.route("/create_slot", methods=["GET", "POST"])
