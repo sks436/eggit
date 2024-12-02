@@ -1,4 +1,4 @@
-from flask import render_template, request, url_for, redirect, flash, session
+from flask import render_template, request, url_for, redirect, flash, session, Response
 from app import app
 from models import *
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,6 +6,8 @@ from werkzeug.utils import secure_filename
 import os
 from functools import wraps
 from controllers_login import *
+import io
+import csv
 
 
 def auth_required(func):
@@ -241,7 +243,20 @@ def slot_request(slot_id):
         )
         .all()
     )
-    list = []
+    email_list = []
     for mails in emails:
-        list.append(mails.student.user.email)
-    return render_template("slot_request.html", user=user, requests=requests, l=list)
+        email_list.append(mails.student.user.email)
+
+    if "download" in request.args:
+        # Generate CSV file
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerows([[email] for email in email_list]) 
+        output.seek(0)
+
+        return Response(
+            output.getvalue(),
+            mimetype="text/csv",
+            headers={"Content-Disposition": "attachment; filename=emails.csv"}
+        )
+    return render_template("slot_request.html", user=user, requests=requests)
