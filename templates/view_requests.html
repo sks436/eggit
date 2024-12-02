@@ -1,40 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Requests for {{ slot.subject }}</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Requests for {{ slot.subject }}</h1>
     <p><strong>Date:</strong> {{ slot.date }}</p>
     <p><strong>Time:</strong> {{ slot.time }}</p>
 
     {% if requests and requests|length > 0 %}
-        <ul>
-            {% for request in requests %}
-                <li>
-                    <strong>Student:</strong> {{ request.student.user.name }} <br>
-                    <strong>Request Date:</strong> {{ request.request_date.strftime('%Y-%m-%d %H:%M:%S') }} <br>
-                    <form action="{{ url_for('update_request') }}" method="POST">
-                        <input type="hidden" name="request_id" value="{{ request.id }}">
-                        {% if request.status == 'pending' %}
-                            <button type="submit" name="action" value="accept">Accept</button>
-                            <button type="submit" name="action" value="reject">Reject</button>
-                        {% elif request.status == 'accepted' %}
-                            <p>Status: <strong>Accepted</strong></p>
-                        {% elif request.status == 'rejected' %}
-                            <p>Status: <strong>Rejected</strong></p>
-                        {% endif %}
-                    </form>
-                </li>
-                <hr>
-            {% endfor %}
-        </ul>
+    <ul>
+      {% for request in requests %}
+      <li>
+        <strong>Student:</strong> {{ request.student.user.name }} <br />
+        <strong>Request Date:</strong> {{
+        request.request_date.strftime('%Y-%m-%d %H:%M:%S') }} <br />
+        <form action="{{ url_for('update_request') }}" method="POST">
+          <input type="hidden" name="request_id" value="{{ request.id }}" />
+          {% if request.status == 'pending' %}
+          <button type="submit" name="action" value="accept">Accept</button>
+          <button type="submit" name="action" value="reject">Reject</button>
+          {% elif request.status == 'accepted' %}
+          <p>Status: <strong>Accepted</strong></p>
+          {% elif request.status == 'rejected' %}
+          <p>Status: <strong>Rejected</strong></p>
+          {% endif %}
+        </form>
+      </li>
+      <hr />
+      {% endfor %}
+    </ul>
     {% else %}
-        <p>No requests for this slot yet.</p>
+    <p>No requests for this slot yet.</p>
     {% endif %}
 
     <a href="{{ url_for('tutor_dashboard') }}">Back to Dashboard</a>
-</body>
+  </body>
 </html>

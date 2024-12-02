@@ -1,13 +1,8 @@
 <section>
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-{% for message in messages %}
-<div class="alert alert-danger" role="alert">
-  {{ message }}
-</div>
-{% endfor %}
-{% endif %}
-{% endwith %}
+  {% with messages = get_flashed_messages() %} {% if messages %} {% for message
+  in messages %}
+  <div class="alert alert-danger" role="alert">{{ message }}</div>
+  {% endfor %} {% endif %} {% endwith %}
 </section>
 
 <div>
@@ -15,15 +10,17 @@
 </div>
 
 <div>
-  <h1 style="color: navy; font-family: 'Montserrat', sans-serif;">Eggit</h1>
-  <h4 style="color: #4d4d4d; font-family: 'Lobster', cursive;">Hatch the Habit of Learning</h4>
+  <h1 style="color: navy; font-family: 'Montserrat', sans-serif">Eggit</h1>
+  <h4 style="color: #4d4d4d; font-family: 'Lobster', cursive">
+    Hatch the Habit of Learning
+  </h4>
 </div>
 
 <!-- Login Form -->
 <form action="" method="post">
-  <input type="text" name="login_id" placeholder="Login Id">
-  <input type="password" name="password" placeholder="Password">
-  <input type="submit" value="Log In">
+  <input type="text" name="login_id" placeholder="Login Id" />
+  <input type="password" name="password" placeholder="Password" />
+  <input type="submit" value="Log In" />
 </form>
 
 <div id="formFooter">

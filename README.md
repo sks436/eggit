@@ -46,23 +46,13 @@ python3 -m venv venv
   pip install -r requirements.txt
 ```
 
-### 5. Configure your environment variables:
-
-- Copy the `.env.example` to `.env`:
+### 5. Run the app:
 
 ```bash
-cp .env.example .env
+flask run
 ```
 
-- Open `.env` and update the values for `SECRET_KEY`, `SQLALCHEMY_DATABASE_URI`, and other environment variables as needed.
-
-### 6. Run the app:
-
-```bash
-python app.py
-```
-
-### 7. Deactivate the virtual environment (when done):
+### 6. Deactivate the virtual environment (when done):
 
 Once you’re done, simply deactivate the virtual environment:
 

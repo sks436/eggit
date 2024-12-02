@@ -1,46 +1,77 @@
 <section>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-danger" role="alert">
-        {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+  {% with messages = get_flashed_messages() %} {% if messages %} {% for message
+  in messages %}
+  <div class="alert alert-danger" role="alert">{{ message }}</div>
+  {% endfor %} {% endif %} {% endwith %}
 </section>
 
 <div>
-    <h1 style="color: rgb(255, 255, 255); font-family: 'Montserrat', sans-serif;">Eggit</h1>
-    <h3>Welcome</h3>
-    <p>A peer-to-peer learning web-platform</p>
-    <a href="{{ url_for('home') }}">
-    <button>Login</button></a>
+  <h1 style="color: rgb(255, 255, 255); font-family: 'Montserrat', sans-serif">
+    Eggit
+  </h1>
+  <h3>Welcome</h3>
+  <p>A peer-to-peer learning web-platform</p>
+  <a href="{{ url_for('home') }}"> <button>Login</button></a>
 </div>
 
 <a href="#home">Tutor</a>
 <a href="{{ url_for('register_student') }}">Student</a>
-                 
+
 <h3>Register as a Tutor</h3>
 
 <form action="" method="post" enctype="multipart/form-data">
-    <input type="text" name="registration_number" placeholder="Registration Number *" value="" required />
-    <input type="text" name="name" placeholder="Full Name *" value="" required />
-    <input type="email" name="email" placeholder="Your Email *" value="" required />
-    <input type="password" name="password" placeholder="Password *" value="" required />
-    <input type="password" name="confirm_password" placeholder="Confirm Password *" value="" required />
-    <input type="text" name="subject" placeholder="Subject *" value="" required />
-    <div>
-        <select name="grade" required>
-            <option selected disabled>Please select your grade</option>
-            <option value="S">S</option>
-            <option value="A">A</option>
-        </select>
-    </div>
-    <input type="text" name="description" placeholder="Description *" value="" required />
-    <div>
-        <label>Attach Grade History</label>
-        <input type="file" name="grade_history" accept=".jpg,.jpeg,.png,.pdf" required>
-    </div>
-    <input type="submit" value="Register" />
+  <input
+    type="text"
+    name="registration_number"
+    placeholder="Registration Number *"
+    value=""
+    required
+  />
+  <input type="text" name="name" placeholder="Full Name *" value="" required />
+  <input
+    type="email"
+    name="email"
+    placeholder="Your Email *"
+    value=""
+    required
+  />
+  <input
+    type="password"
+    name="password"
+    placeholder="Password *"
+    value=""
+    required
+  />
+  <input
+    type="password"
+    name="confirm_password"
+    placeholder="Confirm Password *"
+    value=""
+    required
+  />
+  <input type="text" name="subject" placeholder="Subject *" value="" required />
+  <div>
+    <select name="grade" required>
+      <option selected disabled>Please select your grade</option>
+      <option value="S">S</option>
+      <option value="A">A</option>
+    </select>
+  </div>
+  <input
+    type="text"
+    name="description"
+    placeholder="Description *"
+    value=""
+    required
+  />
+  <div>
+    <label>Attach Grade History</label>
+    <input
+      type="file"
+      name="grade_history"
+      accept=".jpg,.jpeg,.png,.pdf"
+      required
+    />
+  </div>
+  <input type="submit" value="Register" />
 </form>
