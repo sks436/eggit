@@ -27,8 +27,8 @@ class Student(db.Model):
     registration_number = db.Column(
         db.String(20), db.ForeignKey('users.registration_number'), primary_key=True
     )
-    year_of_study = db.Column(db.Integer, nullable=False)
-    id_card_image = db.Column(db.Text, nullable=False)
+    current_year = db.Column(db.Integer, nullable=False)
+    id_card = db.Column(db.Text, nullable=False)
 
     # Relationships
     user = db.relationship('User', back_populates='student')
@@ -42,7 +42,7 @@ class Tutor(db.Model):
         db.String(20), db.ForeignKey('users.registration_number'), primary_key=True
     )
     subject = db.Column(db.String(100), nullable=False)
-    cgpa = db.Column(db.Enum('A', 'S', name='cgpa_levels'), nullable=False)
+    grade = db.Column(db.Enum('A', 'S', name='cgpa_levels'), nullable=False)
     grade_history = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text)
 

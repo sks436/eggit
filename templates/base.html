@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Dashboard{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    {% with messages = get_flashed_messages() %}
+<section>
+{% with messages = get_flashed_messages() %}
 {% if messages %}
 {% for message in messages %}
 <div class="alert alert-danger" role="alert">
@@ -16,6 +16,8 @@
 {% endfor %}
 {% endif %}
 {% endwith %}
+</section>
+
     <header>
         <nav>
             <ul>
@@ -27,7 +29,7 @@
 
     <main>
         {% block content %}
-        <!-- Role-specific content will be inserted here -->
+        Role-specific content will be inserted here
         {% endblock %}
     </main>
 
