@@ -45,6 +45,10 @@
                     <td>{{ slot.time.strftime('%H:%M') }}</td>
                     <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                     <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td></tr>
+                    <td><a href="?delete=true&slot_id={{ slot.id }}">
+                        <button>Delete slot</button>
+                      </a>
+                      </td>
                 </tr>
             {% endfor %}
         </tbody>

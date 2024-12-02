@@ -40,6 +40,15 @@ def dashboard():
             .filter(Slot.tutor_registration_number == tutor.registration_number)
             .all()
         )
+        if "delete" in request.args:
+            slot_id=request.args.get("slot_id")
+            slot=Slot.query.filter_by(id=slot_id).first()
+            requests=Request.query.filter_by(slot_id=slot_id).all()
+            for r in requests:
+                db.session.delete(r)
+            db.session.delete(slot)
+            db.session.commit()
+            return redirect(url_for("dashboard"))
         return render_template(
             "tutor.html", user=user, tutor=tutor, slots=slots, requests=requests
         )
