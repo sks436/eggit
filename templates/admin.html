@@ -1,116 +1,11 @@
 {% extends "base.html" %}
 
+{% block title %}Student Dashboard{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3">
-            <div class="list-group">
-                <a href="#tutors" class="list-group-item list-group-item-action active">Tutors</a>
-                <a href="#students" class="list-group-item list-group-item-action">Students</a>
-                <a href="#slots" class="list-group-item list-group-item-action">Slots</a>
-                <a href="#notices" class="list-group-item list-group-item-action">Notices</a>
-            </div>
-        </div>
+<h1>Welcome, {{ user.name }} (Admin)</h1>
 
-        <!-- Main Content -->
-        <div class="col-md-9">
-            <!-- Tutors Section -->
-            <div id="tutors" class="mb-5">
-                <h3>Tutors</h3>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for tutor in tutors %}
-                        <tr>
-                            <td>{{ tutor.id }}</td>
-                            <td>{{ tutor.name }}</td>
-                            <td>{{ tutor.email }}</td>
-                            <td>
-                                <a href="{{ url_for('edit_tutor', tutor_id=tutor.id) }}" class="btn btn-sm btn-primary">Edit</a>
-                                <a href="{{ url_for('delete_tutor', tutor_id=tutor.id) }}" class="btn btn-sm btn-danger">Delete</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
 
-            <!-- Students Section -->
-            <div id="students" class="mb-5">
-                <h3>Students</h3>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for student in students %}
-                        <tr>
-                            <td>{{ student.id }}</td>
-                            <td>{{ student.name }}</td>
-                            <td>{{ student.email }}</td>
-                            <td>
-                                <a href="{{ url_for('edit_student', student_id=student.id) }}" class="btn btn-sm btn-primary">Edit</a>
-                                <a href="{{ url_for('delete_student', student_id=student.id) }}" class="btn btn-sm btn-danger">Delete</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
 
-            <!-- Slots Section -->
-            <div id="slots" class="mb-5">
-                <h3>Slots</h3>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tutor</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for slot in slots %}
-                        <tr>
-                            <td>{{ slot.id }}</td>
-                            <td>{{ slot.tutor_name }}</td>
-                            <td>{{ slot.date }}</td>
-                            <td>{{ slot.time }}</td>
-                            <td>
-                                <a href="{{ url_for('delete_slot', slot_id=slot.id) }}" class="btn btn-sm btn-danger">Delete</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
 
-            <!-- Notices Section -->
-            <div id="notices" class="mb-5">
-                <h3>Notices</h3>
-                <form action="{{ url_for('post_notice') }}" method="POST">
-                    <div class="mb-3">
-                        <textarea name="notice_content" class="form-control" placeholder="Write your notice here..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-success">Push Notice</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}

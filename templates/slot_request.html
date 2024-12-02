@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Tutor Dashboard{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ user.name }} (Tutor)</h1>
+
+
+<section>
+    <h2>Slot Requests</h2>
+    {% if requests and requests|length > 0 %}
+        <ul>
+            {% for request in requests %}
+            <li>
+                <strong>Student:</strong> {{ request.student.user.name }} <br>
+                <strong>Email:</strong> {{ request.student.user.email }} <br>
+                <strong>Subject:</strong> {{ request.slot.subject }} <br>
+                <strong>Date:</strong> {{ request.slot.date }} <br>
+                <strong>Time:</strong> {{ request.slot.time }} <br>
+                <form action="/update_request/{{ request.id }}" method="post">
+                    <button type="submit" name="action" value="accept">Accept</button>
+                    <button type="submit" name="action" value="reject">Reject</button>
+                </form>
+                <strong>Status:</strong> {{ request.status }} <br>
+            </li>
+            <hr>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No requests at the moment.</p>
+    {% endif %}
+</section>
+
+{{l}}
+{% endblock %}

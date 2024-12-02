@@ -31,6 +31,23 @@
     {% endif %}
 </section>
 
+<section>
+    <h2>Pending request</h2>
+    {% if pending and pending|length > 0 %}
+        <ul>
+            {% for request in pending %}
+            <li>
+                <strong>Subject:</strong> {{ request.slot.subject }} <br>
+                <strong>Date:</strong> {{ request.slot.date }} <br>
+                <strong>Time:</strong> {{ request.slot.time }} <br>
+            </li>
+            <hr>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No pending request.</p>
+    {% endif %}
+</section>
 
 <section>
     <h2>Available Tutors and Slots</h2>
@@ -42,9 +59,19 @@
                 <strong>Subject:</strong> {{ slot.subject }} <br>
                 <strong>Date:</strong> {{ slot.date }} <br>
                 <strong>Time:</strong> {{ slot.time }} <br>
-                <form action="/request_slot/{{ slot.id }}" method="POST">
-                    <button type="submit">Request</button>
-                </form>
+                {% set is_requested = False %}
+                {% for request in pending %}
+                    {% if request.slot_id == slot.id %}
+                        {% set is_requested = True %}
+                    {% endif %}
+                {% endfor %}
+                {% if is_requested %}
+                    <p><em>Request Pending</em></p>
+                {% else %}
+                    <form action="/request_slot/{{ slot.id }}" method="POST">
+                        <button type="submit">Request</button>
+                    </form>
+                {% endif %}
             </li>
             <hr>
             {% endfor %}

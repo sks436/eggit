@@ -46,10 +46,14 @@ def dashboard():
             Request.student_registration_number == user.registration_number,
             Request.status == 'accepted'
         ).all()
-        return render_template("student.html",user=user,student=student,slots=slots,upcoming=upcoming)
+        pending = Request.query.join(Slot).filter(
+            Request.student_registration_number == user.registration_number,
+            Request.status == 'pending'
+        ).all()
+        return render_template("student.html",user=user,student=student,slots=slots,upcoming=upcoming,pending=pending)
     
     elif user.role=='admin':
-        return render_template("admin.html")
+        return render_template("admin.html",user=user)
     
 
     
@@ -132,18 +136,20 @@ def request_slot(slot_id):
     ).first()
     if existing_request:
         flash("You have already requested this slot.", "danger")
-        redirect(url_for("dashboard"))
-    
-    # Create a new request
-    new_request = Request(
+        return redirect(url_for("dashboard"))
+    else:
+        # Create a new request
+        new_request = Request(
         slot_id=slot_id,
         student_registration_number=user.registration_number,
         status='pending'
-    )
-    db.session.add(new_request)
-    db.session.commit()
+        )
+        db.session.add(new_request)
+        db.session.commit()
     
-    return redirect("/dashboard")
+        return redirect("/dashboard")
+
+    
 
 #Update request
 @app.route("/update_request/<int:request_id>", methods=["POST"])
@@ -174,7 +180,22 @@ def update_request(request_id):
             return "Invalid action", 400
     
         db.session.commit()
-        return redirect("/dashboard")
+        return redirect(url_for('slot_request',slot_id=slot.id))
     else:
         return "This endpoint only handles POST requests", 405
+
+@app.route("/slot_request/<int:slot_id>", methods=["GET","POST"])
+@auth_required
+def slot_request(slot_id):
+    user = User.query.get(session['user_id'])
+    tutor=Tutor.query.filter_by(registration_number=user.registration_number).first()
+    requests = Request.query.join(Slot).filter(Slot.tutor_registration_number == tutor.registration_number, Request.slot_id==slot_id).all()
+    emails = Request.query.join(Slot).filter(Slot.tutor_registration_number == tutor.registration_number, Request.slot_id==slot_id, Request.status == 'accepted').all()
+    list=[]
+    for mails in emails:
+        list.append(mails.student.user.email)
+    return render_template("slot_request.html",user=user,requests=requests,l=list)
+
+
+
 
