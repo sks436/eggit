@@ -50,11 +50,12 @@ def dashboard():
                 Slot.date,
                 Slot.time,
                 Slot.tutor_registration_number,
+                Slot.slot_status,
                 Tutor.registration_number,
                 User.name.label("tutor_name"),
             )
             .join(Tutor, Slot.tutor_registration_number == Tutor.registration_number)
-            .join(User, User.registration_number == Tutor.registration_number)
+            .join(User, User.registration_number == Tutor.registration_number).filter_by(Slot)
             .all()
         )
         upcoming = (

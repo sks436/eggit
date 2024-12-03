@@ -67,6 +67,10 @@ class Slot(db.Model):
     time = db.Column(db.Time, nullable=False)
     gmeet_link = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    slot_status = db.Column(
+        db.Enum("upcoming", "ongoing", "completed", name="slot_status"), 
+        default="upcoming"
+    )
 
     # Relationships
     tutor = db.relationship("Tutor", back_populates="slots")
