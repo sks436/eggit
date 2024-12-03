@@ -14,6 +14,11 @@ block content %}
       <strong>Grade:</strong> {{ tutor.grade }} <br />
       <strong>Grade History:</strong> {{ tutor.grade_history }} <br />
       <strong>Description:</strong> {{ tutor.description }} <br />
+      <a
+        href="?delete=true&registration_number={{ tutor.registration_number }}"
+      >
+        <button>Delete slot</button>
+      </a>
     </li>
     <hr />
     {% endfor %}

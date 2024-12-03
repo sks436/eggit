@@ -1,9 +1,6 @@
 from flask import render_template, request, url_for, redirect, flash, session, Response
 from app import app
 from models import *
-from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
-import os
 from functools import wraps
 from controllers_login import *
 import io
@@ -98,6 +95,20 @@ def dashboard():
     elif user.role == "admin":
         tutors = Tutor.query.all() 
         students = Student.query.all() 
+        if "delete" in request.args:
+            registration_number=request.args.get("registration_number")
+            user = User.query.filter_by(registration_number=registration_number).first()
+            tutor = Tutor.query.filter_by(registration_number=registration_number).first()
+            slots = Slot.query.filter_by(tutor_registration_number=registration_number).all()
+            for slot in slots:
+                requests = Request.query.filter_by(slot_id=slot.id).all()
+                for r in requests:
+                        db.session.delete(r)
+                db.session.delete(slot)
+            db.session.delete(tutor)
+            db.session.delete(user)
+            db.session.commit()
+            return redirect(url_for("dashboard"))
         return render_template("admin.html", user=user, tutors=tutors, students=students)
 
 # Create slot
