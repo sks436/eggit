@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Tutor Dashboard{% endblock %}
+
+{% block content %}
+<h1> {{ tutor.user.name }} (Tutor)</h1>
+
+<section>
+    <h2>Your Details</h2>
+    <ul>
+        <li>Registration Number: {{ tutor.registration_number }}</li>
+        <li>Subject Expertise: {{ tutor.subject }}</li>
+        <li>Grade: {{ tutor.grade }}</li>
+        <li>Description: {{ tutor.description }}</li>
+    </ul>
+</section>
+
+{% endblock %}

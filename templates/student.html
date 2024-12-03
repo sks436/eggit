@@ -53,7 +53,11 @@ block content %}
   <ul>
     {% for slot in slots %}
     <li>
-      <strong>Tutor:</strong> {{ slot.tutor_name }} <br />
+
+      <strong>Tutor:</strong>
+      <form action="/tutor_profile/{{ slot.tutor_registration_number }}" method="POST">
+        <a href="#" onclick="this.closest('form').submit()">{{ slot.tutor_name }}</a>
+      </form> <br />
       <strong>Subject:</strong> {{ slot.subject }} <br />
       <strong>Date:</strong> {{ slot.date }} <br />
       <strong>Time:</strong> {{ slot.time }} <br />
