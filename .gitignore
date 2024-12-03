@@ -6,3 +6,12 @@ __pycache__/
 
 # venv
 venv/
+
+# Static files
+static/IMAGES/
+
+# Instance folder 
+instance/
+
+# SQLite databases
+*.sqlite3
