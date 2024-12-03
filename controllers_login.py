@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 import os
 from functools import wraps
 from controllers import *
-
+from controllers_admin import *
 
 def auth_required(func):
     @wraps(func)

@@ -1,11 +1,9 @@
 from flask import render_template, request, url_for, redirect, flash, session, Response
 from app import app
 from models import *
-from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
-import os
 from functools import wraps
 from controllers_login import *
+from controllers_admin import *
 import io
 import csv
 
@@ -41,9 +39,9 @@ def dashboard():
             .all()
         )
         if "delete" in request.args:
-            slot_id=request.args.get("slot_id")
-            slot=Slot.query.filter_by(id=slot_id).first()
-            requests=Request.query.filter_by(slot_id=slot_id).all()
+            slot_id = request.args.get("slot_id")
+            slot = Slot.query.filter_by(id=slot_id).first()
+            requests = Request.query.filter_by(slot_id=slot_id).all()
             for r in requests:
                 db.session.delete(r)
             db.session.delete(slot)
@@ -97,9 +95,16 @@ def dashboard():
         )
 
     elif user.role == "admin":
-        tutors = Tutor.query.all() 
-        students = Student.query.all() 
-        return render_template("admin.html", user=user, tutors=tutors, students=students)
+        tutors = Tutor.query.all()
+        students = Student.query.all()
+
+        return render_template(
+            "admin.html", user=user, tutors=tutors, students=students
+        )
+
+    else:
+        return redirect(url_for("dashboard"))
+
 
 # Create slot
 @app.route("/create_slot", methods=["GET", "POST"])
@@ -261,13 +266,13 @@ def slot_request(slot_id):
         # Generate CSV file
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerows([[email] for email in email_list]) 
+        writer.writerows([[email] for email in email_list])
         output.seek(0)
 
         return Response(
             output.getvalue(),
             mimetype="text/csv",
-            headers={"Content-Disposition": "attachment; filename=emails.csv"}
+            headers={"Content-Disposition": "attachment; filename=emails.csv"},
         )
     return render_template("slot_request.html", user=user, requests=requests)
 
@@ -275,6 +280,11 @@ def slot_request(slot_id):
 @app.route("/tutor_profile/<string:tutor_registration_number>", methods=["POST"])
 @auth_required
 def tutor_profile(tutor_registration_number):
-    tutor = db.session.query(Tutor).join(User).filter(Tutor.registration_number == tutor_registration_number).first()
+    tutor = (
+        db.session.query(Tutor)
+        .join(User)
+        .filter(Tutor.registration_number == tutor_registration_number)
+        .first()
+    )
 
-    return render_template("tutor_profile.html",tutor=tutor)
+    return render_template("tutor_profile.html", tutor=tutor)
