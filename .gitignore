@@ -1,19 +1,8 @@
-# Virtualenv
-venv/
-.env/
-*.env
-
-# Python bytecode
-__pycache__/
+# Python-specific files
 *.pyc
 *.pyo
+*.pyd
+__pycache__/
 
-# Environment variables
-.env
-
-# Database
-instance/
-*.db
-
-# Image folder
-static/images
+# venv
+venv/

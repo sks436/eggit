@@ -1,0 +1,86 @@
+{% extends "base.html" %} {% block title %}Create Slot{% endblock %} {% block
+content %}
+<div class="container">
+  <h1 class="text-center my-4">Create a Slot</h1>
+
+  <!-- Form for Slot Creation -->
+  <form
+    action="{{ url_for('create_slot') }}"
+    method="POST"
+    class="needs-validation"
+    novalidate
+  >
+    <!-- Subject -->
+    <div class="mb-3">
+      <label for="subject" class="form-label">Subject</label>
+      <input
+        type="text"
+        class="form-control"
+        id="subject"
+        name="subject"
+        placeholder="Enter subject"
+        required
+      />
+      <div class="invalid-feedback">Please provide a subject.</div>
+    </div>
+
+    <!-- Date -->
+    <div class="mb-3">
+      <label for="date" class="form-label">Date</label>
+      <input type="date" class="form-control" id="date" name="date" required />
+      <div class="invalid-feedback">Please select a valid date.</div>
+    </div>
+
+    <!-- Time -->
+    <div class="mb-3">
+      <label for="time" class="form-label">Time</label>
+      <input type="time" class="form-control" id="time" name="time" required />
+      <div class="invalid-feedback">Please select a valid time.</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="gmeet_link" class="form-label">Gmeet_link</label>
+      <input
+        type="text"
+        class="form-control"
+        id="subject"
+        name="gmeet_link"
+        placeholder="link"
+        required
+      />
+      <div class="invalid-feedback">Please provide a link.</div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="text-center">
+      <button type="submit" class="btn btn-primary">Create Slot</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Bootstrap validation script
+  (function () {
+    'use strict';
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.querySelectorAll('.needs-validation');
+
+    // Loop over them and prevent submission
+    Array.prototype.slice.call(forms).forEach(function (form) {
+      form.addEventListener(
+        'submit',
+        function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+
+          form.classList.add('was-validated');
+        },
+        false
+      );
+    });
+  })();
+</script>
+{% endblock %}
