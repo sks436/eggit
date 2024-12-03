@@ -10,42 +10,15 @@
     <ul>
         <li>Registration Number: {{ user.registration_number }}</li>
         <li>Subject Expertise: {{ tutor.subject }}</li>
-        <li>CGPA: {{ tutor.cgpa }}</li>
+        <li>Grade: {{ tutor.grade }}</li>
         <li>Description: {{ tutor.description }}</li>
     </ul>
 </section>
-
-
     <div class="text-center my-4">
         <a href="{{ url_for('create_slot') }}" class="btn btn-primary">
             Create Slot
         </a>
     </div>
-
-<section>
-    <h2>Slot Requests</h2>
-    {% if requests and requests|length > 0 %}
-        <ul>
-            {% for request in requests %}
-            <li>
-                <strong>Student:</strong> {{ request.student.user.name }} <br>
-                <strong>Subject:</strong> {{ request.slot.subject }} <br>
-                <strong>Date:</strong> {{ request.slot.date }} <br>
-                <strong>Time:</strong> {{ request.slot.time }} <br>
-                <form action="/update_request/{{ request.id }}" method="post">
-                    <button type="submit" name="action" value="accept">Accept</button>
-                    <button type="submit" name="action" value="reject">Reject</button>
-                </form>
-            </li>
-            <hr>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No requests at the moment.</p>
-    {% endif %}
-</section>
-
-
 <section>
     <h2>Your Created Slots</h2>
 
@@ -63,11 +36,19 @@
         <tbody>
             {% for slot in slots %}
                 <tr>
-                    <td>{{ slot.subject }}</td>
+                    <td>
+                    <form action="/slot_request/{{ slot.id }}" method="POST">
+                        <a href="#" onclick="this.closest('form').submit()" >{{ slot.subject }}</a>
+                    </form>
+                    </td>
                     <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
                     <td>{{ slot.time.strftime('%H:%M') }}</td>
                     <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                    <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td>
+                    <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td></tr>
+                    <td><a href="?delete=true&slot_id={{ slot.id }}">
+                        <button>Delete slot</button>
+                      </a>
+                      </td>
                 </tr>
             {% endfor %}
         </tbody>
