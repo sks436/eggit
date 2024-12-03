@@ -66,7 +66,7 @@ class Slot(db.Model):
     date = db.Column(db.Date, nullable=False)
     time = db.Column(db.Time, nullable=False)
     gmeet_link = db.Column(db.String(255), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     slot_status = db.Column(
         db.Enum("upcoming", "ongoing", "completed", name="slot_status"), 
         default="upcoming"
