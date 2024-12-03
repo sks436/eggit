@@ -60,6 +60,7 @@ def dashboard():
                 Slot.subject,
                 Slot.date,
                 Slot.time,
+                Slot.tutor_registration_number,
                 Tutor.registration_number,
                 User.name.label("tutor_name"),
             )
@@ -280,3 +281,11 @@ def slot_request(slot_id):
             headers={"Content-Disposition": "attachment; filename=emails.csv"}
         )
     return render_template("slot_request.html", user=user, requests=requests)
+
+
+@app.route("/tutor_profile/<string:tutor_registration_number>", methods=["POST"])
+@auth_required
+def tutor_profile(tutor_registration_number):
+    tutor = db.session.query(Tutor).join(User).filter(Tutor.registration_number == tutor_registration_number).first()
+
+    return render_template("tutor_profile.html",tutor=tutor)
