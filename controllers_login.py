@@ -5,8 +5,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 from functools import wraps
-from controllers import *
+from utils import auth_required
 from controllers_admin import *
+
 
 def auth_required(func):
     @wraps(func)

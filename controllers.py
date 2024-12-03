@@ -1,23 +1,11 @@
 from flask import render_template, request, url_for, redirect, flash, session, Response
 from app import app
 from models import *
-from functools import wraps
 from controllers_login import *
 from controllers_admin import *
 import io
 import csv
-
-
-def auth_required(func):
-    @wraps(func)
-    def inner(*args, **kwargs):
-        if "user_id" in session:
-            return func(*args, **kwargs)
-        else:
-            flash("Please login to continue")
-            return redirect(url_for("home"))
-
-    return inner
+from utils import auth_required
 
 
 # Dashboard
