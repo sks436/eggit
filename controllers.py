@@ -3,6 +3,7 @@ from app import app
 from models import *
 from functools import wraps
 from controllers_login import *
+from controllers_admin import *
 import io
 import csv
 
@@ -38,9 +39,9 @@ def dashboard():
             .all()
         )
         if "delete" in request.args:
-            slot_id=request.args.get("slot_id")
-            slot=Slot.query.filter_by(id=slot_id).first()
-            requests=Request.query.filter_by(slot_id=slot_id).all()
+            slot_id = request.args.get("slot_id")
+            slot = Slot.query.filter_by(id=slot_id).first()
+            requests = Request.query.filter_by(slot_id=slot_id).all()
             for r in requests:
                 db.session.delete(r)
             db.session.delete(slot)
@@ -94,23 +95,16 @@ def dashboard():
         )
 
     elif user.role == "admin":
-        tutors = Tutor.query.all() 
-        students = Student.query.all() 
-        if "delete" in request.args:
-            registration_number=request.args.get("registration_number")
-            user = User.query.filter_by(registration_number=registration_number).first()
-            tutor = Tutor.query.filter_by(registration_number=registration_number).first()
-            slots = Slot.query.filter_by(tutor_registration_number=registration_number).all()
-            for slot in slots:
-                requests = Request.query.filter_by(slot_id=slot.id).all()
-                for r in requests:
-                        db.session.delete(r)
-                db.session.delete(slot)
-            db.session.delete(tutor)
-            db.session.delete(user)
-            db.session.commit()
-            return redirect(url_for("dashboard"))
-        return render_template("admin.html", user=user, tutors=tutors, students=students)
+        tutors = Tutor.query.all()
+        students = Student.query.all()
+
+        return render_template(
+            "admin.html", user=user, tutors=tutors, students=students
+        )
+
+    else:
+        return redirect(url_for("dashboard"))
+
 
 # Create slot
 @app.route("/create_slot", methods=["GET", "POST"])
@@ -272,13 +266,13 @@ def slot_request(slot_id):
         # Generate CSV file
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerows([[email] for email in email_list]) 
+        writer.writerows([[email] for email in email_list])
         output.seek(0)
 
         return Response(
             output.getvalue(),
             mimetype="text/csv",
-            headers={"Content-Disposition": "attachment; filename=emails.csv"}
+            headers={"Content-Disposition": "attachment; filename=emails.csv"},
         )
     return render_template("slot_request.html", user=user, requests=requests)
 
@@ -286,6 +280,11 @@ def slot_request(slot_id):
 @app.route("/tutor_profile/<string:tutor_registration_number>", methods=["POST"])
 @auth_required
 def tutor_profile(tutor_registration_number):
-    tutor = db.session.query(Tutor).join(User).filter(Tutor.registration_number == tutor_registration_number).first()
+    tutor = (
+        db.session.query(Tutor)
+        .join(User)
+        .filter(Tutor.registration_number == tutor_registration_number)
+        .first()
+    )
 
-    return render_template("tutor_profile.html",tutor=tutor)
+    return render_template("tutor_profile.html", tutor=tutor)

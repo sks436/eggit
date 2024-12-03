@@ -1,6 +1,7 @@
-{% extends "base.html" %} {% block title %}Student Dashboard{% endblock %} {%
+{% extends "base.html" %} {% block title %}Admin Dashboard{% endblock %} {%
 block content %}
 <h1>Welcome, {{ user.name }} (Admin)</h1>
+
 <section>
   <h2>Tutors</h2>
   {% if tutors and tutors|length > 0 %}
@@ -14,11 +15,9 @@ block content %}
       <strong>Grade:</strong> {{ tutor.grade }} <br />
       <strong>Grade History:</strong> {{ tutor.grade_history }} <br />
       <strong>Description:</strong> {{ tutor.description }} <br />
-      <a
-        href="?delete=true&registration_number={{ tutor.registration_number }}"
-      >
-        <button>Delete slot</button>
-      </a>
+      <form action="/admin/delete_tutor/{{ tutor.registration_number }}" method="POST">
+        <button type="submit" value"" >Delete</button>
+      </form>
     </li>
     <hr />
     {% endfor %}
@@ -27,6 +26,7 @@ block content %}
   <p>No Tutors.</p>
   {% endif %}
 </section>
+
 <section>
   <h2>Students</h2>
   {% if students and students|length > 0 %}
@@ -43,7 +43,8 @@ block content %}
     {% endfor %}
   </ul>
   {% else %}
-  <p>No Tutors.</p>
+  <p>No Students.</p>
   {% endif %}
 </section>
+
 {% endblock %}
