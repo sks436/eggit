@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Tutor Dashboard{% endblock %}
+
+{% block content %}
+
+<h2>Created Slots</h2>
+
+{% if slots %}
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Subject</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Created At</th>
+            <th>Gmeet_link</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for slot in slots %}
+        <tr>
+            <td>{{ slot.tutor.user.name }}</td>
+            <td>{{ slot.subject }}</td>
+            <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
+            <td>{{ slot.time.strftime('%H:%M') }}</td>
+            <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td>
+        </tr>
+        <td>
+            <form action="/admin/delete_slot/{{slot.id}}" method="post">
+                <button type="submit" value="">Delete</button>
+            </form>
+        </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No slots created yet.</p>
+{% endif %}
+</section>
+{% endblock %}

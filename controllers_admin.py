@@ -1,5 +1,5 @@
 import os
-from flask import url_for, redirect, flash
+from flask import render_template, url_for, redirect, flash
 from app import app
 from models import *
 from controllers_login import *
@@ -66,6 +66,23 @@ def delete_student(registration_number):
     return redirect(url_for("show_students"))
 
 
+# Delete Slot
+@app.route("/admin/delete_slot/<int:slot_id>", methods=["POST"])
+@auth_required
+def delete_slot(slot_id):
+    slot = Slot.query.filter_by(id=slot_id).first()
+
+    if slot:
+        for request in slot.requests:
+            db.session.delete(request)
+
+        db.session.delete(slot)
+        db.session.commit()
+    flash("Slot deleted successfully")
+
+    return redirect(url_for("show_slots"))
+
+
 # Show Tutors
 @app.route("/admin/show_tutors", methods=["POST"])
 @auth_required
@@ -82,3 +99,12 @@ def show_students():
     students = db.session.query(Student).join(User).all()
 
     return render_template("show_students.html", students=students)
+
+
+# Show Slots
+@app.route("/admin/show_slots", methods=["GET","POST"])
+@auth_required
+def show_slots():
+    slots = Slot.query.join(Tutor).all()
+
+    return render_template("show_slots.html", slots=slots)
