@@ -12,7 +12,7 @@ block content %}
       <strong>Registration Number:</strong> {{ student.registration_number }}
       <br />
       <a
-        href="{{ url_for('uploaded_file', filename=student.id_card.split('/')[-1]) }}"
+        href="{{ url_for('uploaded_file', filename=student.id_card.split('\\')[-1]) }}"
         target="_blank"
       >
         <button class="btn btn-info">ID Card</button>

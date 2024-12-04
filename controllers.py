@@ -27,9 +27,16 @@ def dashboard():
         slots = Slot.query.filter_by(
             tutor_registration_number=tutor.registration_number, slot_status="upcoming"
         ).all()
-        slots_completed = Slot.query.filter_by(
-            tutor_registration_number=tutor.registration_number, slot_status="completed"
-        ).all()
+        slots_completed = (
+            db.session.query(
+                Slot,
+                func.avg(Review.rating).label("average_rating")
+            )
+            .outerjoin(Review, Review.slot_id == Slot.id)
+            .filter(Slot.tutor_registration_number == tutor.registration_number, Slot.slot_status == "completed")
+            .group_by(Slot.id)
+            .all()
+        )
         ongoing = Slot.query.filter_by(
             tutor_registration_number=tutor.registration_number, slot_status="ongoing"
         ).all()
