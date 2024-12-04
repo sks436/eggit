@@ -7,10 +7,9 @@ import io
 import csv
 from utils import auth_required
 from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 from sqlalchemy.sql import func
-from sqlalchemy import func, and_
-from sqlalchemy.orm import joinedload
+from sqlalchemy import func
 
 # Dashboard
 @app.route("/dashboard", methods=["GET", "POST"])
