@@ -111,7 +111,7 @@ def dashboard():
             slots=slots,
             upcoming=upcoming,
             pending=pending,
-            ongoing=ongoing
+            ongoing=ongoing,
             notices=notices
         )
 
