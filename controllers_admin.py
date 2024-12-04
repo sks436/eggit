@@ -105,7 +105,7 @@ def create_notice():
 
 
 # Show Tutors
-@app.route("/admin/show_tutors", methods=["POST"])
+@app.route("/admin/show_tutors", methods=["GET", "POST"])
 @auth_required
 def show_tutors():
     tutors = db.session.query(Tutor).join(User).all()
@@ -115,7 +115,7 @@ def show_tutors():
 
 
 # Show Student
-@app.route("/admin/show_students", methods=["POST"])
+@app.route("/admin/show_students", methods=["GET", "POST"])
 @auth_required
 def show_students():
     students = db.session.query(Student).join(User).all()
