@@ -20,31 +20,38 @@ def dashboard():
     # Get the 3 most recent notices
     notices = Notice.query.order_by(Notice.created_at.desc()).limit(3).all()
 
+    # Tutor
     if user.role == "tutor":
         tutor = Tutor.query.filter_by(
             registration_number=user.registration_number
         ).first()
+
         slots = Slot.query.filter_by(
             tutor_registration_number=tutor.registration_number, slot_status="upcoming"
         ).all()
+
+        # Fetch completed slots with average ratings
         slots_completed = (
-            db.session.query(
-                Slot,
-                func.avg(Review.rating).label("average_rating")
-            )
+            db.session.query(Slot, func.avg(Review.rating).label("average_rating"))
             .outerjoin(Review, Review.slot_id == Slot.id)
-            .filter(Slot.tutor_registration_number == tutor.registration_number, Slot.slot_status == "completed")
+            .filter(
+                Slot.tutor_registration_number == tutor.registration_number,
+                Slot.slot_status == "completed",
+            )
             .group_by(Slot.id)
             .all()
         )
+
         ongoing = Slot.query.filter_by(
             tutor_registration_number=tutor.registration_number, slot_status="ongoing"
         ).all()
+
         requests = (
             Request.query.join(Slot)
             .filter(Slot.tutor_registration_number == tutor.registration_number)
             .all()
         )
+
         if "delete" in request.args:
             slot_id = request.args.get("slot_id")
             slot = Slot.query.filter_by(id=slot_id).first()
@@ -54,6 +61,7 @@ def dashboard():
             db.session.delete(slot)
             db.session.commit()
             return redirect(url_for("dashboard"))
+        
         return render_template(
             "tutor.html",
             user=user,
@@ -65,10 +73,12 @@ def dashboard():
             notices=notices,
         )
 
+    # Student
     elif user.role == "student":
         student = Student.query.filter_by(
             registration_number=user.registration_number
         ).first()
+        
         slots = (
             db.session.query(
                 Slot.id,
@@ -105,7 +115,7 @@ def dashboard():
                 Request.status == "accepted",
                 Slot.slot_status == "ongoing",
             )
-            .with_entities(Request, Slot, User.name)  # Select specific columns/entities
+            .with_entities(Request, Slot, User.name)
             .all()
         )
         pending = (
@@ -127,6 +137,7 @@ def dashboard():
             notices=notices,
         )
 
+    # Admin
     elif user.role == "admin":
         tutors = Tutor.query.all()
         students = Student.query.all()
@@ -144,9 +155,6 @@ def dashboard():
         return redirect(url_for("dashboard"))
 
 
-from datetime import datetime, timedelta
-
-
 # Create slot
 @app.route("/create_slot", methods=["GET", "POST"])
 @auth_required
@@ -158,7 +166,7 @@ def create_slot():
         subject = request.form.get("subject")
         date = request.form.get("date")
         time = request.form.get("time")
-        duration = request.form.get("duration")  # New field for duration
+        duration = request.form.get("duration")
         link = request.form.get("gmeet_link")
 
         # Validate the form data
@@ -227,7 +235,7 @@ def create_slot():
             subject=subject,
             date=slot_date,
             time=slot_time,
-            duration=duration,  # Store duration in the slot
+            duration=duration,
             gmeet_link=link,
         )
 
@@ -238,6 +246,7 @@ def create_slot():
         return redirect(url_for("dashboard"))
 
 
+# Request slot
 @app.route("/request_slot/<int:slot_id>", methods=["GET", "POST"])
 @auth_required
 def request_slot(slot_id):
@@ -407,6 +416,7 @@ def completed_slots():
     return render_template("completed_slots.html", slots_completed=slots_completed)
 
 
+# Submit review on completed slot
 @app.route("/submit_review/<int:slot_id>", methods=["POST"])
 def submit_review(slot_id):
     # Ensure the student is logged in and has attended the class
@@ -472,6 +482,7 @@ def submit_review(slot_id):
     return redirect(url_for("completed_slots"))  # Redirect to slot details page
 
 
+# Update slot status automatically
 def update_slot_status():
     with app.app_context():
         now = datetime.now()
@@ -491,6 +502,7 @@ def update_slot_status():
         db.session.commit()
 
 
+# Scheduler to schedle the slot status automatically
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=update_slot_status, trigger="interval", seconds=30)
 scheduler.start()

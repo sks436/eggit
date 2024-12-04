@@ -8,6 +8,7 @@ from flask import (
     send_from_directory,
     session,
 )
+from sqlalchemy import func
 from app import app
 from models import *
 from controllers_login import *
@@ -144,13 +145,37 @@ def show_students():
     return render_template("show_students.html", students=students)
 
 
-# Show Slots
+# Show slots
 @app.route("/admin/show_slots", methods=["GET", "POST"])
 @auth_required
 def show_slots():
-    slots = Slot.query.join(Tutor).all()
+    # Fetch upcoming, ongoing, and completed slots
+    upcoming_slots = (
+        Slot.query.join(Tutor).join(User).filter(Slot.slot_status == "upcoming").all()
+    )
+    ongoing_slots = (
+        Slot.query.join(Tutor).join(User).filter(Slot.slot_status == "ongoing").all()
+    )
+    completed_slots = (
+        Slot.query.join(Tutor).join(User).filter(Slot.slot_status == "completed").all()
+    )
 
-    return render_template("show_slots.html", slots=slots)
+    # Fetch completed slots with average ratings
+    slots_completed = (
+        db.session.query(Slot, func.avg(Review.rating).label("average_rating"))
+        .outerjoin(Review, Review.slot_id == Slot.id)
+        .filter(Slot.slot_status == "completed")
+        .group_by(Slot.id)
+        .all()
+    )
+
+    return render_template(
+        "show_slots.html",
+        upcoming_slots=upcoming_slots,
+        ongoing_slots=ongoing_slots,
+        completed_slots=completed_slots,
+        slots_completed=slots_completed,
+    )
 
 
 # Show Uploaded files
