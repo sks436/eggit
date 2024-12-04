@@ -5,6 +5,25 @@ from models import *
 from controllers_login import *
 from utils import auth_required
 
+# Create Notices
+@app.route("/admin/create_notice", methods=["POST"])
+@auth_required
+def create_notice():
+    if request.method == "POST":
+        notice_title = request.form.get("title")
+        notice_content = request.form.get("notice")
+
+        if not notice_title or not notice_content:
+            flash("Title and content are required!")
+            return redirect(url_for("dashboard"))
+        
+        new_notice = Notice(title=notice_title, content=notice_content)
+
+        db.session.add(new_notice)
+        db.session.commit()
+
+        flash("Notice created successfully!")
+        return redirect(url_for("dashboard"))
 
 # Delete Tutor
 @app.route("/admin/delete_tutor/<string:registration_number>", methods=["POST"])
@@ -82,25 +101,18 @@ def delete_slot(slot_id):
 
     return redirect(url_for("show_slots"))
 
-# Create Notices
-@app.route("/admin/create_notice", methods=["POST"])
+# Delete notice
+@app.route("/admin/delete_notice/<int:notice_id>", methods=["POST"])
 @auth_required
-def create_notice():
-    if request.method == "POST":
-        notice_title = request.form.get("title")
-        notice_content = request.form.get("notice")
-
-        if not notice_title or not notice_content:
-            flash("Title and content are required!")
-            return redirect(url_for("dashboard"))
-        
-        new_notice = Notice(title=notice_title, content=notice_content)
-
-        db.session.add(new_notice)
+def delete_notice(notice_id):
+    notice = Notice.query.get(notice_id)
+    
+    if notice:
+        db.session.delete(notice)
         db.session.commit()
-
-        flash("Notice created successfully!")
-        return redirect(url_for("dashboard"))
+        flash("Notice deleted successfully!")
+    
+    return redirect(url_for('dashboard'))
         
 
 
