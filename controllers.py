@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.sql import func
 from sqlalchemy import func
 
+
 # Dashboard
 @app.route("/dashboard", methods=["GET", "POST"])
 @auth_required
@@ -18,7 +19,6 @@ def dashboard():
     user = User.query.get(session["user_id"])
     # Get the 3 most recent notices
     notices = Notice.query.order_by(Notice.created_at.desc()).limit(3).all()
-
 
     if user.role == "tutor":
         tutor = Tutor.query.filter_by(
@@ -48,7 +48,14 @@ def dashboard():
             db.session.commit()
             return redirect(url_for("dashboard"))
         return render_template(
-            "tutor.html", user=user, tutor=tutor, slots=slots, requests=requests, slots_completed=slots_completed, ongoing=ongoing, notices=notices
+            "tutor.html",
+            user=user,
+            tutor=tutor,
+            slots=slots,
+            requests=requests,
+            slots_completed=slots_completed,
+            ongoing=ongoing,
+            notices=notices,
         )
 
     elif user.role == "student":
@@ -67,34 +74,33 @@ def dashboard():
                 User.name.label("tutor_name"),
             )
             .join(Tutor, Slot.tutor_registration_number == Tutor.registration_number)
-            .join(User, User.registration_number == Tutor.registration_number).filter(Slot.slot_status=="upcoming")
+            .join(User, User.registration_number == Tutor.registration_number)
+            .filter(Slot.slot_status == "upcoming")
             .all()
         )
-        
+
         upcoming = (
-    Request.query
-    .join(Slot)
-    .join(User, User.registration_number == Slot.tutor_registration_number)
-    .filter(
-        Request.student_registration_number == user.registration_number,
-        Request.status == "accepted",
-        Slot.slot_status=="upcoming"
-    )
-    .with_entities(Request, Slot, User.name)  # Select specific columns/entities
-    .all()
-)
+            Request.query.join(Slot)
+            .join(User, User.registration_number == Slot.tutor_registration_number)
+            .filter(
+                Request.student_registration_number == user.registration_number,
+                Request.status == "accepted",
+                Slot.slot_status == "upcoming",
+            )
+            .with_entities(Request, Slot, User.name)  # Select specific columns/entities
+            .all()
+        )
         ongoing = (
-    Request.query
-    .join(Slot)
-    .join(User, User.registration_number == Slot.tutor_registration_number)
-    .filter(
-        Request.student_registration_number == user.registration_number,
-        Request.status == "accepted",
-        Slot.slot_status=="ongoing"
-    )
-    .with_entities(Request, Slot, User.name)  # Select specific columns/entities
-    .all()
-)
+            Request.query.join(Slot)
+            .join(User, User.registration_number == Slot.tutor_registration_number)
+            .filter(
+                Request.student_registration_number == user.registration_number,
+                Request.status == "accepted",
+                Slot.slot_status == "ongoing",
+            )
+            .with_entities(Request, Slot, User.name)  # Select specific columns/entities
+            .all()
+        )
         pending = (
             Request.query.join(Slot)
             .filter(
@@ -111,7 +117,7 @@ def dashboard():
             upcoming=upcoming,
             pending=pending,
             ongoing=ongoing,
-            notices=notices
+            notices=notices,
         )
 
     elif user.role == "admin":
@@ -120,7 +126,11 @@ def dashboard():
         notices_all = Notice.query.order_by(Notice.created_at.desc()).all()
 
         return render_template(
-            "admin.html", user=user, tutors=tutors, students=students, notices=notices_all
+            "admin.html",
+            user=user,
+            tutors=tutors,
+            students=students,
+            notices=notices_all,
         )
 
     else:
@@ -128,6 +138,7 @@ def dashboard():
 
 
 from datetime import datetime, timedelta
+
 
 # Create slot
 @app.route("/create_slot", methods=["GET", "POST"])
@@ -153,7 +164,10 @@ def create_slot():
             if duration <= 0:
                 raise ValueError("Duration must be positive.")
         except ValueError:
-            flash("Invalid duration. Please enter a valid number greater than zero.", "danger")
+            flash(
+                "Invalid duration. Please enter a valid number greater than zero.",
+                "danger",
+            )
             return redirect(url_for("create_slot"))
 
         # Ensure the logged-in user is a tutor
@@ -181,17 +195,23 @@ def create_slot():
         # Fetch existing slots to check for overlap
         overlapping_slot = Slot.query.filter(
             Slot.tutor_registration_number == tutor.registration_number,
-            Slot.date == slot_date
+            Slot.date == slot_date,
         ).all()  # Fetch all existing slots for the tutor on that date
 
         # Check for overlap with existing slots in Python
         for existing_slot in overlapping_slot:
-            existing_slot_start = datetime.combine(existing_slot.date, existing_slot.time)
-            existing_slot_end = existing_slot_start + timedelta(minutes=existing_slot.duration)
+            existing_slot_start = datetime.combine(
+                existing_slot.date, existing_slot.time
+            )
+            existing_slot_end = existing_slot_start + timedelta(
+                minutes=existing_slot.duration
+            )
 
             # If there's an overlap, return error
             if (existing_slot_start < slot_end) and (slot_start < existing_slot_end):
-                flash("A slot clash exists for the specified time and duration.", "danger")
+                flash(
+                    "A slot clash exists for the specified time and duration.", "danger"
+                )
                 return redirect(url_for("create_slot"))
 
         # Create the slot and save it to the database
@@ -209,7 +229,6 @@ def create_slot():
 
         flash("Slot created successfully!", "success")
         return redirect(url_for("dashboard"))
-
 
 
 @app.route("/request_slot/<int:slot_id>", methods=["GET", "POST"])
@@ -263,7 +282,6 @@ def request_slot(slot_id):
     return redirect("/dashboard")
 
 
-
 # Update request
 @app.route("/update_request/<int:request_id>", methods=["POST"])
 @auth_required
@@ -312,10 +330,10 @@ def slot_request(slot_id):
         .all()
     )
     requests_count = (
-    db.session.query(func.count(Request.id))
-    .filter(Request.slot_id == slot_id, Request.status == "accepted")
-    .scalar()
-)
+        db.session.query(func.count(Request.id))
+        .filter(Request.slot_id == slot_id, Request.status == "accepted")
+        .scalar()
+    )
     emails = (
         Request.query.join(Slot)
         .filter(
@@ -341,7 +359,9 @@ def slot_request(slot_id):
             mimetype="text/csv",
             headers={"Content-Disposition": "attachment; filename=emails.csv"},
         )
-    return render_template("slot_request.html", user=user, requests=requests,requests_count=requests_count)
+    return render_template(
+        "slot_request.html", user=user, requests=requests, requests_count=requests_count
+    )
 
 
 @app.route("/tutor_profile/<string:tutor_registration_number>", methods=["POST"])
@@ -357,20 +377,28 @@ def tutor_profile(tutor_registration_number):
     return render_template("tutor_profile.html", tutor=tutor)
 
 
-@app.route("/student/completed_slots", methods=["GET","POST"])
+@app.route("/student/completed_slots", methods=["GET", "POST"])
 @auth_required
 def completed_slots():
     user = User.query.get(session["user_id"])
     slots_completed = (
-    db.session.query(Request, Slot, User.name, Review)
-    .join(Slot, Request.slot_id == Slot.id)
-    .join(User, Slot.tutor_registration_number == User.registration_number)
-    .outerjoin(Review, (Review.slot_id == Slot.id) & (Review.student_registration_number == user.registration_number))
-    .filter(Request.student_registration_number == user.registration_number, Slot.slot_status == "completed")
-    .all()
-)
+        db.session.query(Request, Slot, User.name, Review)
+        .join(Slot, Request.slot_id == Slot.id)
+        .join(User, Slot.tutor_registration_number == User.registration_number)
+        .outerjoin(
+            Review,
+            (Review.slot_id == Slot.id)
+            & (Review.student_registration_number == user.registration_number),
+        )
+        .filter(
+            Request.student_registration_number == user.registration_number,
+            Slot.slot_status == "completed",
+        )
+        .all()
+    )
 
-    return render_template("completed_slots.html",slots_completed=slots_completed)
+    return render_template("completed_slots.html", slots_completed=slots_completed)
+
 
 @app.route("/submit_review/<int:slot_id>", methods=["POST"])
 def submit_review(slot_id):
@@ -385,7 +413,7 @@ def submit_review(slot_id):
     #     return "You are not authorized to review this slot", 403
 
     # Ensure the class status is 'completed'
-    if slot.slot_status != 'completed':
+    if slot.slot_status != "completed":
         return "This class is not completed yet", 400
 
     # Get the rating and comment from the form
@@ -408,37 +436,40 @@ def submit_review(slot_id):
         slot_id=slot_id,
         student_registration_number=student.registration_number,
         rating=int(rating),
-        comment=comment
+        comment=comment,
     )
 
     # Save the review to the database
     db.session.add(review)
     db.session.commit()
 
-    tutor = Tutor.query.filter_by(registration_number=slot.tutor_registration_number).first()
+    tutor = Tutor.query.filter_by(
+        registration_number=slot.tutor_registration_number
+    ).first()
 
     if tutor:
-    # Calculate the average rating from all reviews for this tutor
+        # Calculate the average rating from all reviews for this tutor
         average_rating = (
-        db.session.query(func.avg(Review.rating))
-        .join(Slot, Review.slot_id == Slot.id)
-        .filter(Slot.tutor_registration_number == tutor.registration_number)
-        .scalar()
-    )
+            db.session.query(func.avg(Review.rating))
+            .join(Slot, Review.slot_id == Slot.id)
+            .filter(Slot.tutor_registration_number == tutor.registration_number)
+            .scalar()
+        )
 
         if average_rating is not None:
-            tutor.rating = round(average_rating, 2)  # Update tutor's rating (rounded to 2 decimals)
+            tutor.rating = round(
+                average_rating, 2
+            )  # Update tutor's rating (rounded to 2 decimals)
             db.session.commit()
 
-    return redirect(url_for('completed_slots'))  # Redirect to slot details page
-
+    return redirect(url_for("completed_slots"))  # Redirect to slot details page
 
 
 def update_slot_status():
     with app.app_context():
         now = datetime.now()
         slots = Slot.query.all()
-        
+
         for slot in slots:
             slot_start_datetime = datetime.combine(slot.date, slot.time)
             slot_end_datetime = slot_start_datetime + timedelta(minutes=slot.duration)
@@ -451,7 +482,6 @@ def update_slot_status():
                 slot.slot_status = "upcoming"
 
         db.session.commit()
-
 
 
 scheduler = BackgroundScheduler()
