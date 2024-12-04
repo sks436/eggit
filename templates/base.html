@@ -22,22 +22,7 @@
       </nav>
     </header>
 
-    <!-- Display Notices, but only if user is NOT an admin -->
-    {% if user.role != 'admin' %}
-    <div>
-      <h2>Notices</h2>
-      {% if notices %} {% for notice in notices %}
-      <h3>{{ notice.title }}</h3>
-      <p>{{ notice.content }}</p>
-      <small
-        >Posted on: {{ notice.created_at.strftime('%Y-%m-%d %H:%M') }}</small
-      >
-      <hr />
-      {% endfor %} {% else %}
-      <p>No notice available.</p>
-      {% endif %}
-    </div>
-    {% endif %}
+
 
     <main>
       {% block content %} Role-specific content will be inserted here {%
