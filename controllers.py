@@ -12,25 +12,34 @@ from sqlalchemy.sql import func
 from sqlalchemy import func
 
 
-# Dashboard
+# ===========================
+# Dashboard Route (User Role Based)
+# ===========================
+
+
 @app.route("/dashboard", methods=["GET", "POST"])
 @auth_required
 def dashboard():
     user = User.query.get(session["user_id"])
+
     # Get the 3 most recent notices
     notices = Notice.query.order_by(Notice.created_at.desc()).limit(3).all()
 
-    # Tutor
+    # ===========================
+    # Student Dashboard
+    # ===========================
+
     if user.role == "tutor":
         tutor = Tutor.query.filter_by(
             registration_number=user.registration_number
         ).first()
 
+        # Get upcoming slots for the tutor
         slots = Slot.query.filter_by(
             tutor_registration_number=tutor.registration_number, slot_status="upcoming"
         ).all()
 
-        # Fetch completed slots with average ratings
+        # Fetch completed slots with average ratings for the tutor
         slots_completed = (
             db.session.query(Slot, func.avg(Review.rating).label("average_rating"))
             .outerjoin(Review, Review.slot_id == Slot.id)
@@ -42,16 +51,19 @@ def dashboard():
             .all()
         )
 
+        # Get ongoing slots for the tutor
         ongoing = Slot.query.filter_by(
             tutor_registration_number=tutor.registration_number, slot_status="ongoing"
         ).all()
 
+        # Get slot requests for the tutor
         requests = (
             Request.query.join(Slot)
             .filter(Slot.tutor_registration_number == tutor.registration_number)
             .all()
         )
 
+        # Handle delete request for slot
         if "delete" in request.args:
             slot_id = request.args.get("slot_id")
             slot = Slot.query.filter_by(id=slot_id).first()
@@ -61,7 +73,7 @@ def dashboard():
             db.session.delete(slot)
             db.session.commit()
             return redirect(url_for("dashboard"))
-        
+
         return render_template(
             "tutor.html",
             user=user,
@@ -73,12 +85,16 @@ def dashboard():
             notices=notices,
         )
 
-    # Student
+    # ===========================
+    # Student Dashboard
+    # ===========================
+
     elif user.role == "student":
         student = Student.query.filter_by(
             registration_number=user.registration_number
         ).first()
-        
+
+        # Get all upcoming slots for the student
         slots = (
             db.session.query(
                 Slot.id,
@@ -96,6 +112,7 @@ def dashboard():
             .all()
         )
 
+        # Get upcoming, ongoing, and pending requests for the student
         upcoming = (
             Request.query.join(Slot)
             .join(User, User.registration_number == Slot.tutor_registration_number)
@@ -104,9 +121,11 @@ def dashboard():
                 Request.status == "accepted",
                 Slot.slot_status == "upcoming",
             )
-            .with_entities(Request, Slot, User.name)  # Select specific columns/entities
+            # Select specific columns/entities
+            .with_entities(Request, Slot, User.name)
             .all()
         )
+
         ongoing = (
             Request.query.join(Slot)
             .join(User, User.registration_number == Slot.tutor_registration_number)
@@ -118,6 +137,7 @@ def dashboard():
             .with_entities(Request, Slot, User.name)
             .all()
         )
+
         pending = (
             Request.query.join(Slot)
             .filter(
@@ -126,6 +146,7 @@ def dashboard():
             )
             .all()
         )
+
         return render_template(
             "student.html",
             user=user,
@@ -137,7 +158,10 @@ def dashboard():
             notices=notices,
         )
 
-    # Admin
+    # ===========================
+    # Admin Dashboard
+    # ===========================
+
     elif user.role == "admin":
         tutors = Tutor.query.all()
         students = Student.query.all()
@@ -155,7 +179,11 @@ def dashboard():
         return redirect(url_for("dashboard"))
 
 
-# Create slot
+# ===========================
+# Create Slot Route
+# ===========================
+
+
 @app.route("/create_slot", methods=["GET", "POST"])
 @auth_required
 def create_slot():
@@ -174,6 +202,7 @@ def create_slot():
             flash("All fields are required to create a slot.", "danger")
             return redirect(url_for("create_slot"))
 
+        # Validate duration input
         try:
             duration = int(duration)
             if duration <= 0:
@@ -246,7 +275,11 @@ def create_slot():
         return redirect(url_for("dashboard"))
 
 
-# Request slot
+# ===========================
+# Request Slot Route
+# ===========================
+
+
 @app.route("/request_slot/<int:slot_id>", methods=["GET", "POST"])
 @auth_required
 def request_slot(slot_id):
@@ -298,7 +331,11 @@ def request_slot(slot_id):
     return redirect("/dashboard")
 
 
-# Update request
+# ===========================
+# Update Request Route
+# ===========================
+
+
 @app.route("/update_request/<int:request_id>", methods=["POST"])
 @auth_required
 def update_request(request_id):
@@ -332,13 +369,26 @@ def update_request(request_id):
         return "This endpoint only handles POST requests", 405
 
 
+# ===========================
+# Slot Request Details Route
+# ===========================
+
+
 @app.route("/slot_request/<int:slot_id>", methods=["GET", "POST"])
 @auth_required
 def slot_request(slot_id):
     user = User.query.get(session["user_id"])
-    slot=Slot.query.filter_by(id=slot_id).first()
-    if slot.slot_status=="upcoming" and slot.tutor_registration_number==user.registration_number:
-        tutor = Tutor.query.filter_by(registration_number=user.registration_number).first()
+    slot = Slot.query.filter_by(id=slot_id).first()
+
+    if (
+        slot.slot_status == "upcoming"
+        and slot.tutor_registration_number == user.registration_number
+    ):
+        tutor = Tutor.query.filter_by(
+            registration_number=user.registration_number
+        ).first()
+
+        # Get all requests for the specific slot
         requests = (
             Request.query.join(Slot)
             .filter(
@@ -347,11 +397,15 @@ def slot_request(slot_id):
             )
             .all()
         )
+
+        # Count the number of accepted requests for this slot
         requests_count = (
             db.session.query(func.count(Request.id))
             .filter(Request.slot_id == slot_id, Request.status == "accepted")
             .scalar()
         )
+
+        # Get emails of accepted students
         emails = (
             Request.query.join(Slot)
             .filter(
@@ -366,7 +420,7 @@ def slot_request(slot_id):
             email_list.append(mails.student.user.email)
 
         if "download" in request.args:
-            # Generate CSV file
+            # Generate CSV file of accepted student emails
             output = io.StringIO()
             writer = csv.writer(output)
             writer.writerows([[email] for email in email_list])
@@ -377,12 +431,21 @@ def slot_request(slot_id):
                 mimetype="text/csv",
                 headers={"Content-Disposition": "attachment; filename=emails.csv"},
             )
+
         return render_template(
-            "slot_request.html", user=user, requests=requests, requests_count=requests_count
+            "slot_request.html",
+            user=user,
+            requests=requests,
+            requests_count=requests_count,
         )
     else:
         flash("Not allowed")
-        return redirect(url_for('dashboard'))
+        return redirect(url_for("dashboard"))
+
+
+# ===========================
+# Tutor Profile Route
+# ===========================
 
 
 @app.route("/tutor_profile/<string:tutor_registration_number>", methods=["POST"])
@@ -398,10 +461,17 @@ def tutor_profile(tutor_registration_number):
     return render_template("tutor_profile.html", tutor=tutor)
 
 
+# ===========================
+# Completed Slots for Student
+# ===========================
+
+
 @app.route("/student/completed_slots", methods=["GET", "POST"])
 @auth_required
 def completed_slots():
     user = User.query.get(session["user_id"])
+
+    # Get completed slots for the logged-in student
     slots_completed = (
         db.session.query(Request, Slot, User.name, Review)
         .join(Slot, Request.slot_id == Slot.id)
@@ -421,7 +491,11 @@ def completed_slots():
     return render_template("completed_slots.html", slots_completed=slots_completed)
 
 
-# Submit review on completed slot
+# ===========================
+# Submit Review for Completed Slot
+# ===========================
+
+
 @app.route("/submit_review/<int:slot_id>", methods=["POST"])
 def submit_review(slot_id):
     # Ensure the student is logged in and has attended the class
@@ -484,10 +558,15 @@ def submit_review(slot_id):
             )  # Update tutor's rating (rounded to 2 decimals)
             db.session.commit()
 
-    return redirect(url_for("completed_slots"))  # Redirect to slot details page
+    # Redirect to slot details page
+    return redirect(url_for("completed_slots"))
 
 
-# Update slot status automatically
+# ===========================
+# Update Slot Status Automatically
+# ===========================
+
+
 def update_slot_status():
     with app.app_context():
         now = datetime.now()
@@ -507,7 +586,10 @@ def update_slot_status():
         db.session.commit()
 
 
-# Scheduler to schedle the slot status automatically
+# ===========================
+# Scheduler to Update Slot Status Automatically
+# ===========================
+
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=update_slot_status, trigger="interval", seconds=30)
 scheduler.start()
