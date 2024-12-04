@@ -14,4 +14,45 @@ block content %}
   <a href="#" onclick="this.closest('form').submit()">Show Slots</a>
 </form>
 
+<h2>Create a Notice</h2>
+
+<form action="{{ url_for('create_notice') }}" method="POST">
+  <div>
+    <label for="title">Notice Title:</label>
+    <input type="text" id="title" name="title" required />
+  </div>
+  <div>
+    <label for="notice">Notice Content:</label>
+    <textarea
+      class="form-control"
+      id="notice"
+      name="notice"
+      rows="5"
+      required
+    ></textarea>
+  </div>
+  <button type="submit">Submit Notice</button>
+</form>
+
+<h1>Previous Notices</h1>
+
+<div>
+  <h2>Notices</h2>
+  {% if notices %}
+  <ul>
+    {% for notice in notices %}
+    <li>
+      <h3>{{ notice.title }}</h3>
+      <p><strong>Notice:</strong></p>
+      <p>{{ notice.content }}</p>
+      <small
+        >Posted on: {{ notice.created_at.strftime('%Y-%m-%d %H:%M') }}</small
+      >
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No notices available.</p>
+  {% endif %}
+</div>
 {% endblock %}

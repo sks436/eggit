@@ -1,5 +1,5 @@
 import os
-from flask import render_template, url_for, redirect, flash
+from flask import render_template, request, url_for, redirect, flash, send_from_directory, session
 from app import app
 from models import *
 from controllers_login import *
@@ -82,14 +82,36 @@ def delete_slot(slot_id):
 
     return redirect(url_for("show_slots"))
 
+# Create Notices
+@app.route("/admin/create_notice", methods=["POST"])
+@auth_required
+def create_notice():
+    if request.method == "POST":
+        notice_title = request.form.get("title")
+        notice_content = request.form.get("notice")
+
+        if not notice_title or not notice_content:
+            flash("Title and content are required!")
+            return redirect(url_for("dashboard"))
+        
+        new_notice = Notice(title=notice_title, content=notice_content)
+
+        db.session.add(new_notice)
+        db.session.commit()
+
+        flash("Notice created successfully!")
+        return redirect(url_for("dashboard"))
+        
+
 
 # Show Tutors
 @app.route("/admin/show_tutors", methods=["POST"])
 @auth_required
 def show_tutors():
     tutors = db.session.query(Tutor).join(User).all()
+    user = User.query.get(session["user_id"])
 
-    return render_template("show_tutors.html", tutors=tutors)
+    return render_template("show_tutors.html", tutors=tutors, user=user)
 
 
 # Show Student
@@ -97,14 +119,23 @@ def show_tutors():
 @auth_required
 def show_students():
     students = db.session.query(Student).join(User).all()
+    user = User.query.get(session["user_id"])
 
-    return render_template("show_students.html", students=students)
+    return render_template("show_students.html", students=students, user=user)
 
 
 # Show Slots
-@app.route("/admin/show_slots", methods=["GET","POST"])
+@app.route("/admin/show_slots", methods=["GET", "POST"])
 @auth_required
 def show_slots():
     slots = Slot.query.join(Tutor).all()
+    user = User.query.get(session["user_id"])
 
-    return render_template("show_slots.html", slots=slots)
+    return render_template("show_slots.html", slots=slots, user=user)
+
+
+# Show Uploaded files
+@app.route("/admin/uploads/<string:filename>")
+def uploaded_file(filename):
+    return send_from_directory(app.config["IMAGES"], filename)
+

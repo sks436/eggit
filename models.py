@@ -68,8 +68,8 @@ class Slot(db.Model):
     gmeet_link = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     slot_status = db.Column(
-        db.Enum("upcoming", "ongoing", "completed", name="slot_status"), 
-        default="upcoming"
+        db.Enum("upcoming", "ongoing", "completed", name="slot_status"),
+        default="upcoming",
     )
 
     # Relationships

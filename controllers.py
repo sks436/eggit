@@ -13,6 +13,9 @@ from utils import auth_required
 @auth_required
 def dashboard():
     user = User.query.get(session["user_id"])
+    # Get the 3 most recent notices
+    notices = Notice.query.order_by(Notice.created_at.desc()).limit(3).all()
+
 
     if user.role == "tutor":
         tutor = Tutor.query.filter_by(
@@ -36,7 +39,7 @@ def dashboard():
             db.session.commit()
             return redirect(url_for("dashboard"))
         return render_template(
-            "tutor.html", user=user, tutor=tutor, slots=slots, requests=requests
+            "tutor.html", user=user, tutor=tutor, slots=slots, requests=requests, notices=notices
         )
 
     elif user.role == "student":
@@ -55,7 +58,7 @@ def dashboard():
                 User.name.label("tutor_name"),
             )
             .join(Tutor, Slot.tutor_registration_number == Tutor.registration_number)
-            .join(User, User.registration_number == Tutor.registration_number).filter_by(Slot)
+            .join(User, User.registration_number == Tutor.registration_number)
             .all()
         )
         upcoming = (
@@ -81,14 +84,16 @@ def dashboard():
             slots=slots,
             upcoming=upcoming,
             pending=pending,
+            notices=notices
         )
 
     elif user.role == "admin":
         tutors = Tutor.query.all()
         students = Student.query.all()
+        notices_all = Notice.query.order_by(Notice.created_at.desc()).all()
 
         return render_template(
-            "admin.html", user=user, tutors=tutors, students=students
+            "admin.html", user=user, tutors=tutors, students=students, notices=notices_all
         )
 
     else:

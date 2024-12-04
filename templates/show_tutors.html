@@ -19,6 +19,12 @@ block content %}
       <br />
       <strong>Registration Number:</strong> {{ tutor.registration_number }}
       <br />
+      <a
+        href="{{ url_for('uploaded_file', filename=tutor.grade_history.split('/')[-1]) }}"
+        target="_blank"
+      >
+        <button class="btn btn-info">Grade History</button>
+      </a>
       <form
         action="/admin/delete_tutor/{{tutor.registration_number}}"
         method="post"
