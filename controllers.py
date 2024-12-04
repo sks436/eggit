@@ -327,48 +327,53 @@ def update_request(request_id):
 @auth_required
 def slot_request(slot_id):
     user = User.query.get(session["user_id"])
-    tutor = Tutor.query.filter_by(registration_number=user.registration_number).first()
-    requests = (
-        Request.query.join(Slot)
-        .filter(
-            Slot.tutor_registration_number == tutor.registration_number,
-            Request.slot_id == slot_id,
+    slot=Slot.query.filter_by(id=slot_id).first()
+    if slot.slot_status=="upcoming" and slot.tutor_registration_number==user.registration_number:
+        tutor = Tutor.query.filter_by(registration_number=user.registration_number).first()
+        requests = (
+            Request.query.join(Slot)
+            .filter(
+                Slot.tutor_registration_number == tutor.registration_number,
+                Request.slot_id == slot_id,
+            )
+            .all()
         )
-        .all()
-    )
-    requests_count = (
-        db.session.query(func.count(Request.id))
-        .filter(Request.slot_id == slot_id, Request.status == "accepted")
-        .scalar()
-    )
-    emails = (
-        Request.query.join(Slot)
-        .filter(
-            Slot.tutor_registration_number == tutor.registration_number,
-            Request.slot_id == slot_id,
-            Request.status == "accepted",
+        requests_count = (
+            db.session.query(func.count(Request.id))
+            .filter(Request.slot_id == slot_id, Request.status == "accepted")
+            .scalar()
         )
-        .all()
-    )
-    email_list = []
-    for mails in emails:
-        email_list.append(mails.student.user.email)
+        emails = (
+            Request.query.join(Slot)
+            .filter(
+                Slot.tutor_registration_number == tutor.registration_number,
+                Request.slot_id == slot_id,
+                Request.status == "accepted",
+            )
+            .all()
+        )
+        email_list = []
+        for mails in emails:
+            email_list.append(mails.student.user.email)
 
-    if "download" in request.args:
-        # Generate CSV file
-        output = io.StringIO()
-        writer = csv.writer(output)
-        writer.writerows([[email] for email in email_list])
-        output.seek(0)
+        if "download" in request.args:
+            # Generate CSV file
+            output = io.StringIO()
+            writer = csv.writer(output)
+            writer.writerows([[email] for email in email_list])
+            output.seek(0)
 
-        return Response(
-            output.getvalue(),
-            mimetype="text/csv",
-            headers={"Content-Disposition": "attachment; filename=emails.csv"},
+            return Response(
+                output.getvalue(),
+                mimetype="text/csv",
+                headers={"Content-Disposition": "attachment; filename=emails.csv"},
+            )
+        return render_template(
+            "slot_request.html", user=user, requests=requests, requests_count=requests_count
         )
-    return render_template(
-        "slot_request.html", user=user, requests=requests, requests_count=requests_count
-    )
+    else:
+        flash("Not allowed")
+        return redirect(url_for('dashboard'))
 
 
 @app.route("/tutor_profile/<string:tutor_registration_number>", methods=["POST"])
