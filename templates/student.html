@@ -10,16 +10,38 @@ block content %}
 </section>
 
 <section>
+  <h2>Ongoing Classes</h2>
+  {% if ongoing and ongoing|length > 0 %}
+  <ul>
+    {% for request, slot, name in ongoing %}
+    <li>
+      <strong>Name:</strong> {{ name }} <br />
+      <strong>Subject:</strong> {{ slot.subject }} <br />
+      <strong>Date:</strong> {{ slot.date }} <br />
+      <strong>Time:</strong> {{ slot.time }} <br />
+      <strong>Google Meet:</strong>
+      <a href="{{ slot.gmeet_link }}" target="_blank">Join</a>
+    </li>
+    <hr />
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No oning classes.</p>
+  {% endif %}
+</section>
+
+<section>
   <h2>Upcoming Classes</h2>
   {% if upcoming and upcoming|length > 0 %}
   <ul>
-    {% for request in upcoming %}
+    {% for request, slot, name in upcoming %}
     <li>
-      <strong>Subject:</strong> {{ request.slot.subject }} <br />
-      <strong>Date:</strong> {{ request.slot.date }} <br />
-      <strong>Time:</strong> {{ request.slot.time }} <br />
+      <strong>Name:</strong> {{ name }} <br />
+      <strong>Subject:</strong> {{ slot.subject }} <br />
+      <strong>Date:</strong> {{ slot.date }} <br />
+      <strong>Time:</strong> {{ slot.time }} <br />
       <strong>Google Meet:</strong>
-      <a href="{{ request.slot.gmeet_link }}" target="_blank">Join</a>
+      <a href="{{ slot.gmeet_link }}" target="_blank">Join</a>
     </li>
     <hr />
     {% endfor %}
@@ -29,12 +51,14 @@ block content %}
   {% endif %}
 </section>
 
+
 <section>
   <h2>Pending request</h2>
   {% if pending and pending|length > 0 %}
   <ul>
     {% for request in pending %}
     <li>
+      
       <strong>Subject:</strong> {{ request.slot.subject }} <br />
       <strong>Date:</strong> {{ request.slot.date }} <br />
       <strong>Time:</strong> {{ request.slot.time }} <br />
@@ -54,13 +78,8 @@ block content %}
     {% for slot in slots %}
     <li>
       <strong>Tutor:</strong>
-      <form
-        action="/tutor_profile/{{ slot.tutor_registration_number }}"
-        method="POST"
-      >
-        <a href="#" onclick="this.closest('form').submit()"
-          >{{ slot.tutor_name }}</a
-        >
+      <form action="/tutor_profile/{{ slot.tutor_registration_number }}" method="POST">
+        <a href="#" onclick="this.closest('form').submit()">{{ slot.tutor_name }}</a>
       </form>
       <br />
       <strong>Subject:</strong> {{ slot.subject }} <br />
@@ -83,5 +102,9 @@ block content %}
   <p>No tutors or slots available at the moment. Please check back later!</p>
   {% endif %}
 </section>
+
+<form action="/student/completed_slots" method="POST">
+  <a href="#" onclick="this.closest('form').submit()">Show completed slots</a>
+</form>
 
 {% endblock %}

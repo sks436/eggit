@@ -1,15 +1,12 @@
-{% extends "base.html" %} {% block title %}Create Slot{% endblock %} {% block
-content %}
+{% extends "base.html" %}
+{% block title %}Create Slot{% endblock %}
+{% block content %}
 <div class="container">
   <h1 class="text-center my-4">Create a Slot</h1>
 
   <!-- Form for Slot Creation -->
-  <form
-    action="{{ url_for('create_slot') }}"
-    method="POST"
-    class="needs-validation"
-    novalidate
-  >
+  <form action="{{ url_for('create_slot') }}" method="POST" class="needs-validation" novalidate>
+    
     <!-- Subject -->
     <div class="mb-3">
       <label for="subject" class="form-label">Subject</label>
@@ -38,17 +35,33 @@ content %}
       <div class="invalid-feedback">Please select a valid time.</div>
     </div>
 
+    <!-- Duration -->
     <div class="mb-3">
-      <label for="gmeet_link" class="form-label">Gmeet_link</label>
+      <label for="duration" class="form-label">Duration (in minutes)</label>
       <input
-        type="text"
+        type="number"
         class="form-control"
-        id="subject"
-        name="gmeet_link"
-        placeholder="link"
+        id="duration"
+        name="duration"
+        placeholder="Enter duration"
+        min="1"
         required
       />
-      <div class="invalid-feedback">Please provide a link.</div>
+      <div class="invalid-feedback">Please provide a valid duration.</div>
+    </div>
+
+    <!-- Google Meet Link -->
+    <div class="mb-3">
+      <label for="gmeet_link" class="form-label">Google Meet Link</label>
+      <input
+        type="url"
+        class="form-control"
+        id="gmeet_link"
+        name="gmeet_link"
+        placeholder="Enter Google Meet link"
+        required
+      />
+      <div class="invalid-feedback">Please provide a valid link.</div>
     </div>
 
     <!-- Submit Button -->
@@ -58,29 +71,4 @@ content %}
   </form>
 </div>
 
-<script>
-  // Bootstrap validation script
-  (function () {
-    'use strict';
-
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    var forms = document.querySelectorAll('.needs-validation');
-
-    // Loop over them and prevent submission
-    Array.prototype.slice.call(forms).forEach(function (form) {
-      form.addEventListener(
-        'submit',
-        function (event) {
-          if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-
-          form.classList.add('was-validated');
-        },
-        false
-      );
-    });
-  })();
-</script>
 {% endblock %}

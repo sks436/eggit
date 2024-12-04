@@ -1,5 +1,5 @@
 import os
-from flask import url_for, redirect, flash
+from flask import url_for, redirect, flash, render_template
 from app import app
 from models import *
 from controllers_login import *

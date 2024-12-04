@@ -49,6 +49,7 @@ class Tutor(db.Model):
     grade = db.Column(db.Enum("A", "S", name="cgpa_levels"), nullable=False)
     grade_history = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text)
+    rating = db.Column(db.Float, default=0.0)
 
     # Relationships
     user = db.relationship("User", back_populates="tutor")
@@ -65,6 +66,7 @@ class Slot(db.Model):
     subject = db.Column(db.String(100), nullable=False)
     date = db.Column(db.Date, nullable=False)
     time = db.Column(db.Time, nullable=False)
+    duration = db.Column(db.Integer, nullable=False)
     gmeet_link = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     slot_status = db.Column(

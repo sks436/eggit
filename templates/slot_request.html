@@ -5,7 +5,7 @@ block content %}
 <a href="?delete=true">
   <button>Download Emails as CSV</button>
 </a>
-
+<div><strong>Students enrolled:</strong> {{ requests_count }} <br /></div>
 <section>
   <h2>Slot Requests</h2>
   {% if requests and requests|length > 0 %}
