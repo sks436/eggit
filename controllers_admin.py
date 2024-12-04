@@ -131,9 +131,8 @@ def delete_notice(notice_id):
 @auth_required
 def show_tutors():
     tutors = db.session.query(Tutor).join(User).all()
-    user = User.query.get(session["user_id"])
 
-    return render_template("show_tutors.html", tutors=tutors, user=user)
+    return render_template("show_tutors.html", tutors=tutors)
 
 
 # Show Student
@@ -141,9 +140,8 @@ def show_tutors():
 @auth_required
 def show_students():
     students = db.session.query(Student).join(User).all()
-    user = User.query.get(session["user_id"])
 
-    return render_template("show_students.html", students=students, user=user)
+    return render_template("show_students.html", students=students)
 
 
 # Show Slots
@@ -151,9 +149,8 @@ def show_students():
 @auth_required
 def show_slots():
     slots = Slot.query.join(Tutor).all()
-    user = User.query.get(session["user_id"])
 
-    return render_template("show_slots.html", slots=slots, user=user)
+    return render_template("show_slots.html", slots=slots)
 
 
 # Show Uploaded files
