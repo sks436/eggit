@@ -2,7 +2,7 @@ from app import app
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 db = SQLAlchemy(app)
 
@@ -17,7 +17,7 @@ class User(db.Model):
     role = db.Column(
         db.Enum("student", "tutor", "admin", name="user_roles"), nullable=False
     )
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     # Relationships
     student = db.relationship("Student", back_populates="user", uselist=False)
@@ -49,6 +49,7 @@ class Tutor(db.Model):
     grade = db.Column(db.Enum("A", "S", name="cgpa_levels"), nullable=False)
     grade_history = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text)
+    rating = db.Column(db.Float, default=0.0)
 
     # Relationships
     user = db.relationship("User", back_populates="tutor")
@@ -65,8 +66,13 @@ class Slot(db.Model):
     subject = db.Column(db.String(100), nullable=False)
     date = db.Column(db.Date, nullable=False)
     time = db.Column(db.Time, nullable=False)
+    duration = db.Column(db.Integer, nullable=False)
     gmeet_link = db.Column(db.String(255), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    slot_status = db.Column(
+        db.Enum("upcoming", "ongoing", "completed", name="slot_status"),
+        default="upcoming",
+    )
 
     # Relationships
     tutor = db.relationship("Tutor", back_populates="slots")
@@ -86,7 +92,7 @@ class Request(db.Model):
         db.Enum("pending", "accepted", "rejected", name="request_status"),
         default="pending",
     )
-    request_date = db.Column(db.DateTime, default=datetime.utcnow)
+    request_date = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     # Relationships
     slot = db.relationship("Slot", back_populates="requests")
@@ -103,7 +109,7 @@ class Review(db.Model):
     )
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     # Relationships
     slot = db.relationship("Slot", back_populates="reviews")
@@ -116,7 +122,7 @@ class Notice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
 
 with app.app_context():

@@ -8,6 +8,7 @@ import config
 import models
 import controllers
 import controllers_login
+import controllers_admin
 
 
 if __name__ == "__main__":

@@ -1,6 +1,23 @@
 {% extends "base.html" %} {% block title %}Student Dashboard{% endblock %} {%
 block content %}
 <h1>Welcome, {{ user.name }} (Student)</h1>
+
+{% if user.role != 'admin' %}
+<div>
+  <h2>Notices</h2>
+  {% if notices %} {% for notice in notices %}
+  <h3>{{ notice.title }}</h3>
+  <p>{{ notice.content }}</p>
+  <small
+    >Posted on: {{ notice.created_at.strftime('%Y-%m-%d %H:%M') }}</small
+  >
+  <hr />
+  {% endfor %} {% else %}
+  <p>No notice available.</p>
+  {% endif %}
+</div>
+{% endif %}
+
 <section>
   <h2>Your Details</h2>
   <ul>
@@ -10,16 +27,40 @@ block content %}
 </section>
 
 <section>
+  <h2>Ongoing Classes</h2>
+  {% if ongoing and ongoing|length > 0 %}
+  <ul>
+    {% for request, slot, name in ongoing %}
+    <li>
+      <strong>Name:</strong> {{ name }} <br />
+      <strong>Subject:</strong> {{ slot.subject }} <br />
+      <strong>Date:</strong> {{ slot.date }} <br />
+      <strong>Time:</strong> {{ slot.time }} <br />
+      <strong>Duration:</strong> {{ slot.duration }} minutes <br />
+      <strong>Google Meet:</strong>
+      <a href="{{ slot.gmeet_link }}" target="_blank">Join</a>
+    </li>
+    <hr />
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No oning classes.</p>
+  {% endif %}
+</section>
+
+<section>
   <h2>Upcoming Classes</h2>
   {% if upcoming and upcoming|length > 0 %}
   <ul>
-    {% for request in upcoming %}
+    {% for request, slot, name in upcoming %}
     <li>
-      <strong>Subject:</strong> {{ request.slot.subject }} <br />
-      <strong>Date:</strong> {{ request.slot.date }} <br />
-      <strong>Time:</strong> {{ request.slot.time }} <br />
+      <strong>Name:</strong> {{ name }} <br />
+      <strong>Subject:</strong> {{ slot.subject }} <br />
+      <strong>Date:</strong> {{ slot.date }} <br />
+      <strong>Time:</strong> {{ slot.time }} <br />
+      <strong>Duration:</strong> {{ slot.duration }} minutes <br />
       <strong>Google Meet:</strong>
-      <a href="{{ request.slot.gmeet_link }}" target="_blank">Join</a>
+      <a href="{{ slot.gmeet_link }}" target="_blank">Join</a>
     </li>
     <hr />
     {% endfor %}
@@ -29,23 +70,31 @@ block content %}
   {% endif %}
 </section>
 
+
 <section>
-  <h2>Pending request</h2>
+  <h2>Pending Requests</h2>
   {% if pending and pending|length > 0 %}
   <ul>
-    {% for request in pending %}
+    {% for request, slot, tutor_name in pending %}
     <li>
-      <strong>Subject:</strong> {{ request.slot.subject }} <br />
-      <strong>Date:</strong> {{ request.slot.date }} <br />
-      <strong>Time:</strong> {{ request.slot.time }} <br />
+      <strong>Request ID:</strong> {{ request.id }} <br />
+      <strong>Tutor Name:</strong> {{ tutor_name }} <br />
+      <strong>Subject:</strong> {{ slot.subject }} <br />
+      <strong>Date:</strong> {{ slot.date.strftime("%Y-%m-%d") }} <br />
+      <strong>Time:</strong> {{ slot.time }} <br />
+      <strong>Duration:</strong> {{ slot.duration }} minutes <br />
+      <a href="?delete=true&request_id={{ request.id }}">
+        <button>Delete request</button>
+    </a>
     </li>
     <hr />
     {% endfor %}
   </ul>
   {% else %}
-  <p>No pending request.</p>
+  <p>No pending requests.</p>
   {% endif %}
 </section>
+
 
 <section>
   <h2>Available Tutors and Slots</h2>
@@ -53,14 +102,15 @@ block content %}
   <ul>
     {% for slot in slots %}
     <li>
-
       <strong>Tutor:</strong>
       <form action="/tutor_profile/{{ slot.tutor_registration_number }}" method="POST">
         <a href="#" onclick="this.closest('form').submit()">{{ slot.tutor_name }}</a>
-      </form> <br />
+      </form>
+      <br />
       <strong>Subject:</strong> {{ slot.subject }} <br />
       <strong>Date:</strong> {{ slot.date }} <br />
       <strong>Time:</strong> {{ slot.time }} <br />
+      <strong>Duration:</strong> {{ slot.duration }} minutes <br />
       {% set is_requested = False %} {% for request in pending %} {% if
       request.slot_id == slot.id %} {% set is_requested = True %} {% endif %} {%
       endfor %} {% if is_requested %}
@@ -78,5 +128,9 @@ block content %}
   <p>No tutors or slots available at the moment. Please check back later!</p>
   {% endif %}
 </section>
+
+<form action="/student/completed_slots" method="POST">
+  <a href="#" onclick="this.closest('form').submit()">Show completed slots</a>
+</form>
 
 {% endblock %}

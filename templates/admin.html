@@ -1,44 +1,69 @@
-{% extends "base.html" %} {% block title %}Student Dashboard{% endblock %} {%
+{% extends "base.html" %} {% block title %}Admin Dashboard{% endblock %} {%
 block content %}
 <h1>Welcome, {{ user.name }} (Admin)</h1>
-<section>
-  <h2>Tutors</h2>
-  {% if tutors and tutors|length > 0 %}
+
+<form action="/admin/show_tutors" method="POST">
+  <a href="#" onclick="this.closest('form').submit()">Show Tutors</a>
+</form>
+
+<form action="/admin/show_students" method="POST">
+  <a href="#" onclick="this.closest('form').submit()">Show Students</a>
+</form>
+
+<form action="/admin/show_slots" method="POST">
+  <a href="#" onclick="this.closest('form').submit()">Show Slots</a>
+</form>
+
+<h2>Create a Notice</h2>
+
+<form action="{{ url_for('create_notice') }}" method="POST">
+  <div>
+    <label for="title">Notice Title:</label>
+    <input type="text" id="title" name="title" required />
+  </div>
+  <div>
+    <label for="notice">Notice Content:</label>
+    <textarea
+      class="form-control"
+      id="notice"
+      name="notice"
+      rows="5"
+      required
+    ></textarea>
+  </div>
+  <button type="submit">Submit Notice</button>
+</form>
+
+<h1>Previous Notices</h1>
+
+<div>
+  {% if notices %}
   <ul>
-    {% for tutor in tutors %}
+    {% for notice in notices %}
     <li>
-      <strong>Name:</strong> {{ tutor.user.name }} <br />
-      <strong>Registration Number:</strong> {{ tutor.registration_number }}
-      <br />
-      <strong>Subject:</strong> {{ tutor.subject }} <br />
-      <strong>Grade:</strong> {{ tutor.grade }} <br />
-      <strong>Grade History:</strong> {{ tutor.grade_history }} <br />
-      <strong>Description:</strong> {{ tutor.description }} <br />
+      <h3>{{ notice.title }}</h3>
+      <p><strong>Notice:</strong></p>
+      <p>{{ notice.content }}</p>
+      <small
+        >Posted on: {{ notice.created_at.strftime('%Y-%m-%d %H:%M') }}</small
+      >
     </li>
-    <hr />
+    <form
+      action="{{ url_for('delete_notice', notice_id=notice.id) }}"
+      method="POST"
+      style="display: inline"
+    >
+      <button
+        type="submit"
+        onclick="return confirm('Are you sure you want to delete this notice?')"
+      >
+        Delete
+      </button>
+    </form>
     {% endfor %}
   </ul>
   {% else %}
-  <p>No Tutors.</p>
+  <p>No notices available.</p>
   {% endif %}
-</section>
-<section>
-  <h2>Students</h2>
-  {% if students and students|length > 0 %}
-  <ul>
-    {% for student in students %}
-    <li>
-      <strong>Name:</strong> {{ student.user.name }} <br />
-      <strong>Registration Number:</strong> {{ student.registration_number }}
-      <br />
-      <strong>Current Year:</strong> {{ student.current_year }} <br />
-      <strong>Id card:</strong> {{ student.id_card }} <br />
-    </li>
-    <hr />
-    {% endfor %}
-  </ul>
-  {% else %}
-  <p>No Tutors.</p>
-  {% endif %}
-</section>
+</div>
 {% endblock %}

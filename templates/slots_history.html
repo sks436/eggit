@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+
+<section>
+    <h2>Completed Slots</h2>
+
+    {% if slots_completed %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Duration</th>
+                    <th>Created At</th>
+                    <th>Gmeet Link</th>
+                    <th>Average Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for slot, average_rating in slots_completed %}
+                <tr>
+                    <td>{{ slot.subject }}</td>
+                    <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ slot.time.strftime('%H:%M') }}</td>
+                    <td>{{ slot.duration }} minutes </td>
+                    <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td>
+                    <td>{{ average_rating if average_rating else "No ratings yet" }}</td>
+                    <!-- <td><a href="?delete=true&slot_id={{ slot.id }}">
+                        <button>Delete slot</button>
+                    </a>
+                </td> -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No completed slots yet.</p>
+    {% endif %}
+</section>
+
+{% endblock %}

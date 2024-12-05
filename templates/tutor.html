@@ -5,6 +5,24 @@
 {% block content %}
 <h1>Welcome, {{ user.name }} (Tutor)</h1>
 
+
+{% if user.role != 'admin' %}
+<div>
+  <h2>Notices</h2>
+  {% if notices %} {% for notice in notices %}
+  <h3>{{ notice.title }}</h3>
+  <p>{{ notice.content }}</p>
+  <small
+    >Posted on: {{ notice.created_at.strftime('%Y-%m-%d %H:%M') }}</small
+  >
+  <hr />
+  {% endfor %} {% else %}
+  <p>No notice available.</p>
+  {% endif %}
+</div>
+{% endif %}
+
+
 <section>
     <h2>Your Details</h2>
     <ul>
@@ -12,49 +30,97 @@
         <li>Subject Expertise: {{ tutor.subject }}</li>
         <li>Grade: {{ tutor.grade }}</li>
         <li>Description: {{ tutor.description }}</li>
+        <li>Rating: {{ tutor.rating }}</li>
     </ul>
 </section>
-    <div class="text-center my-4">
-        <a href="{{ url_for('create_slot') }}" class="btn btn-primary">
-            Create Slot
-        </a>
-    </div>
-<section>
-    <h2>Your Created Slots</h2>
+<div class="text-center my-4">
+    <a href="{{ url_for('create_slot') }}" class="btn btn-primary">
+        Create Slot
+    </a>
+</div>
 
-{% if slots %}
+<section>
+    <h2>Ongoing Slots</h2>
+
+    {% if ongoing %}
     <table>
         <thead>
             <tr>
                 <th>Subject</th>
                 <th>Date</th>
                 <th>Time</th>
+                <th>Duration</th>
+                <th>Created At</th>
+                <th>Gmeet_link</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for slot in ongoing %}
+            <tr>
+                <td>{{ slot.subject }}
+                </td>
+                <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ slot.time.strftime('%H:%M') }}</td>
+                <td>{{ slot.duration }} minutes</td>
+                <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td>
+            </tr>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No ongoing class.</p>
+    {% endif %}
+</section>
+
+
+<section>
+    <h2>Your Created Slots</h2>
+
+    {% if slots %}
+    <table>
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Duration</th>
                 <th>Created At</th>
                 <th>Gmeet_link</th>
             </tr>
         </thead>
         <tbody>
             {% for slot in slots %}
-                <tr>
-                    <td>
+            <tr>
+                <td>
                     <form action="/slot_request/{{ slot.id }}" method="POST">
-                        <a href="#" onclick="this.closest('form').submit()" >{{ slot.subject }}</a>
+                        <a href="#" onclick="this.closest('form').submit()">{{ slot.subject }}</a>
                     </form>
-                    </td>
-                    <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
-                    <td>{{ slot.time.strftime('%H:%M') }}</td>
-                    <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                    <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td></tr>
-                    <td><a href="?delete=true&slot_id={{ slot.id }}">
-                        <button>Delete slot</button>
-                      </a>
-                      </td>
-                </tr>
+                </td>
+                <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ slot.time.strftime('%H:%M') }}</td>
+                <td>{{ slot.duration }} minutes </td>
+                <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td>
+            </tr>
+            <td><a href="?delete=true&slot_id={{ slot.id }}">
+                    <button>Delete slot</button>
+                </a>
+            </td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
-{% else %}
+    {% else %}
     <p>No slots created yet.</p>
-{% endif %}
+    {% endif %}
 </section>
+
+
+
+<form action="/tutor/slots_history" method="POST">
+    <a href="#" onclick="this.closest('form').submit()">Show completed slots</a>
+  </form>
+
 {% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %} {% block title %}Admin Dashboard{% endblock %} {%
+block content %}
+
+<section>
+  <h2>Students</h2>
+  {% if students and students|length > 0 %}
+  <ul>
+    {% for student in students %}
+    <li>
+      <strong>Name:</strong> {{student.user.name}}
+      <br />
+      <strong>Registration Number:</strong> {{ student.registration_number }}
+      <br />
+      <a
+        href="{{ url_for('uploaded_file', filename=student.id_card.split('\\')[-1]) }}"
+        target="_blank"
+      >
+        <button class="btn btn-info">ID Card</button>
+      </a>
+      <form
+        action="/admin/delete_student/{{student.registration_number}}"
+        method="post"
+      >
+        <button type="submit" value="">Delete</button>
+      </form>
+    </li>
+    <hr />
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No Students.</p>
+  {% endif %}
+</section>
+
+{% endblock %}
