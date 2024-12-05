@@ -112,7 +112,9 @@ def delete_student(registration_number):
 def delete_slot(slot_id):
     """Deletes a slot and its associated requests."""
     slot = Slot.query.filter_by(id=slot_id).first()
-
+    tutor = Tutor.query.filter_by(
+            registration_number=slot.tutor_registration_number
+        ).first()
     if slot:
         # Delete associated requests
         for req in slot.requests:
@@ -122,6 +124,19 @@ def delete_slot(slot_id):
             db.session.delete(review)
         db.session.delete(slot)
         db.session.commit()
+
+        average_rating = (
+            db.session.query(func.avg(Review.rating))
+            .join(Slot, Review.slot_id == Slot.id)
+            .filter(Slot.tutor_registration_number == tutor.registration_number)
+            .scalar()
+        )
+
+        if average_rating is not None:
+            tutor.rating = round(
+                average_rating, 2
+            )  # Update tutor's rating (rounded to 2 decimals)
+            db.session.commit()
 
         flash("Slot deleted successfully")
     else:
