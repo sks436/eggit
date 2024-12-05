@@ -51,10 +51,15 @@ def delete_tutor(registration_number):
     # Delete associated slots and requests
     slots = Slot.query.filter_by(tutor_registration_number=registration_number).all()
     for slot in slots:
+        reviews = Review.query.filter_by(slot_id=slot.id).all()
+        for review in reviews:
+            db.session.delete(review)
         requests = Request.query.filter_by(slot_id=slot.id).all()
         for req in requests:
             db.session.delete(req)
         db.session.delete(slot)
+
+
 
     # Delete grade history file if exists
     if tutor.grade_history:
@@ -112,7 +117,9 @@ def delete_slot(slot_id):
         # Delete associated requests
         for req in slot.requests:
             db.session.delete(req)
-
+        reviews = Review.query.filter_by(slot_id=slot.id).all()
+        for review in reviews:
+            db.session.delete(review)
         db.session.delete(slot)
         db.session.commit()
 
