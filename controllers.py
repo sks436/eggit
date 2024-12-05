@@ -26,7 +26,7 @@ def dashboard():
     notices = Notice.query.order_by(Notice.created_at.desc()).limit(3).all()
 
     # ===========================
-    # Student Dashboard
+    # Tutor Dashboard
     # ===========================
 
     if user.role == "tutor":
@@ -179,9 +179,9 @@ def dashboard():
         return redirect(url_for("dashboard"))
 
 
-# ===========================
-# Create Slot Route
-# ===========================
+# ================================
+# Create Slot Route (By tutor)
+# ================================
 
 
 @app.route("/create_slot", methods=["GET", "POST"])
