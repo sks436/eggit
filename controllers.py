@@ -39,17 +39,7 @@ def dashboard():
             tutor_registration_number=tutor.registration_number, slot_status="upcoming"
         ).all()
 
-        # Fetch completed slots with average ratings for the tutor
-        slots_completed = (
-            db.session.query(Slot, func.avg(Review.rating).label("average_rating"))
-            .outerjoin(Review, Review.slot_id == Slot.id)
-            .filter(
-                Slot.tutor_registration_number == tutor.registration_number,
-                Slot.slot_status == "completed",
-            )
-            .group_by(Slot.id)
-            .all()
-        )
+        
 
         # Get ongoing slots for the tutor
         ongoing = Slot.query.filter_by(
@@ -68,8 +58,11 @@ def dashboard():
             slot_id = request.args.get("slot_id")
             slot = Slot.query.filter_by(id=slot_id).first()
             requests = Request.query.filter_by(slot_id=slot_id).all()
+            reviews = Review.query.filter_by(slot_id=slot_id).all()
             for r in requests:
                 db.session.delete(r)
+            for review in reviews:
+                db.session.delete(review)
             db.session.delete(slot)
             db.session.commit()
             return redirect(url_for("dashboard"))
@@ -80,7 +73,6 @@ def dashboard():
             tutor=tutor,
             slots=slots,
             requests=requests,
-            slots_completed=slots_completed,
             ongoing=ongoing,
             notices=notices,
         )
@@ -103,6 +95,7 @@ def dashboard():
                 Slot.time,
                 Slot.tutor_registration_number,
                 Slot.slot_status,
+                Slot.duration,
                 Tutor.registration_number,
                 User.name.label("tutor_name"),
             )
@@ -139,13 +132,23 @@ def dashboard():
         )
 
         pending = (
-            Request.query.join(Slot)
-            .filter(
-                Request.student_registration_number == user.registration_number,
-                Request.status == "pending",
-            )
-            .all()
-        )
+    Request.query.join(Slot)
+    .join(User, Slot.tutor_registration_number == User.registration_number)  # Join Slot with Tutor
+    .filter(
+        Request.student_registration_number == user.registration_number,
+        Request.status == "pending",
+    )
+    .with_entities(
+        Request, Slot, User.name.label("tutor_name")  # Include tutor name
+    )
+    .all()
+)
+        if "delete" in request.args:
+            request_id = request.args.get("request_id")
+            requests = Request.query.filter_by(id=request_id).first()
+            db.session.delete(requests)
+            db.session.commit()
+            return redirect(url_for("dashboard"))
 
         return render_template(
             "student.html",
@@ -177,6 +180,58 @@ def dashboard():
 
     else:
         return redirect(url_for("dashboard"))
+
+
+@app.route("/tutor/slots_history", methods=["GET", "POST"])
+@auth_required
+def slots_history():
+    user = User.query.get(session["user_id"])
+    tutor = Tutor.query.filter_by(
+            registration_number=user.registration_number
+        ).first()
+    # Fetch completed slots with average ratings for the tutor
+    slots_completed = (
+            db.session.query(Slot, func.avg(Review.rating).label("average_rating"))
+            .outerjoin(Review, Review.slot_id == Slot.id)
+            .filter(
+                Slot.tutor_registration_number == tutor.registration_number,
+                Slot.slot_status == "completed",
+            )
+            .group_by(Slot.id)
+            .all()
+        )
+    
+    # Handle delete request for slot
+    if "delete" in request.args:
+        slot_id = request.args.get("slot_id")
+        slot = Slot.query.filter_by(id=slot_id).first()
+        requests = Request.query.filter_by(slot_id=slot_id).all()
+        reviews = Review.query.filter_by(slot_id=slot_id).all()
+        for r in requests:
+            db.session.delete(r)
+        for review in reviews:
+            db.session.delete(review)
+        db.session.delete(slot)
+        db.session.commit()
+
+        
+        # Calculate the average rating from all reviews for this tutor
+        average_rating = (
+            db.session.query(func.avg(Review.rating))
+            .join(Slot, Review.slot_id == Slot.id)
+            .filter(Slot.tutor_registration_number == tutor.registration_number)
+            .scalar()
+        )
+
+        if average_rating is not None:
+            tutor.rating = round(
+                average_rating, 2
+            )  # Update tutor's rating (rounded to 2 decimals)
+            db.session.commit()
+
+        return redirect(url_for("slots_history"))
+
+    return render_template("slots_history.html", slots_completed=slots_completed)
 
 
 # ================================

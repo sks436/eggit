@@ -36,6 +36,7 @@ block content %}
       <strong>Subject:</strong> {{ slot.subject }} <br />
       <strong>Date:</strong> {{ slot.date }} <br />
       <strong>Time:</strong> {{ slot.time }} <br />
+      <strong>Duration:</strong> {{ slot.duration }} minutes <br />
       <strong>Google Meet:</strong>
       <a href="{{ slot.gmeet_link }}" target="_blank">Join</a>
     </li>
@@ -57,6 +58,7 @@ block content %}
       <strong>Subject:</strong> {{ slot.subject }} <br />
       <strong>Date:</strong> {{ slot.date }} <br />
       <strong>Time:</strong> {{ slot.time }} <br />
+      <strong>Duration:</strong> {{ slot.duration }} minutes <br />
       <strong>Google Meet:</strong>
       <a href="{{ slot.gmeet_link }}" target="_blank">Join</a>
     </li>
@@ -70,23 +72,29 @@ block content %}
 
 
 <section>
-  <h2>Pending request</h2>
+  <h2>Pending Requests</h2>
   {% if pending and pending|length > 0 %}
   <ul>
-    {% for request in pending %}
+    {% for request, slot, tutor_name in pending %}
     <li>
-      
-      <strong>Subject:</strong> {{ request.slot.subject }} <br />
-      <strong>Date:</strong> {{ request.slot.date }} <br />
-      <strong>Time:</strong> {{ request.slot.time }} <br />
+      <strong>Request ID:</strong> {{ request.id }} <br />
+      <strong>Tutor Name:</strong> {{ tutor_name }} <br />
+      <strong>Subject:</strong> {{ slot.subject }} <br />
+      <strong>Date:</strong> {{ slot.date.strftime("%Y-%m-%d") }} <br />
+      <strong>Time:</strong> {{ slot.time }} <br />
+      <strong>Duration:</strong> {{ slot.duration }} minutes <br />
+      <a href="?delete=true&request_id={{ request.id }}">
+        <button>Delete request</button>
+    </a>
     </li>
     <hr />
     {% endfor %}
   </ul>
   {% else %}
-  <p>No pending request.</p>
+  <p>No pending requests.</p>
   {% endif %}
 </section>
+
 
 <section>
   <h2>Available Tutors and Slots</h2>
@@ -102,6 +110,7 @@ block content %}
       <strong>Subject:</strong> {{ slot.subject }} <br />
       <strong>Date:</strong> {{ slot.date }} <br />
       <strong>Time:</strong> {{ slot.time }} <br />
+      <strong>Duration:</strong> {{ slot.duration }} minutes <br />
       {% set is_requested = False %} {% for request in pending %} {% if
       request.slot_id == slot.id %} {% set is_requested = True %} {% endif %} {%
       endfor %} {% if is_requested %}

@@ -6,11 +6,14 @@ from flask import (
     flash,
     render_template,
     send_from_directory,
+    session,
 )
-from sqlalchemy import func
 from app import app
-from models import Notice, Tutor, User, Slot, Student, Request, Review, db
-from controllers_login import auth_required
+from models import *
+from controllers_login import *
+from controllers import *
+from utils import auth_required
+from sqlalchemy import func
 
 
 @app.route("/admin/create_notice", methods=["POST"])
