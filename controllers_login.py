@@ -4,22 +4,8 @@ from models import *
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
-from functools import wraps
 from utils import auth_required
 from controllers_admin import *
-
-
-def auth_required(func):
-    @wraps(func)
-    def inner(*args, **kwargs):
-        if "user_id" in session:
-            return func(*args, **kwargs)
-        else:
-            flash("Please login to continue")
-            return redirect(url_for("home"))
-
-    return inner
-
 
 # Login page
 @app.route("/", methods=["GET", "POST"])
@@ -33,6 +19,7 @@ def home():
             return redirect(url_for("home"))
 
         user = User.query.filter_by(registration_number=login_id).first()
+
         if not user:
             flash("User does not exist")
             return redirect(url_for("home"))
@@ -46,6 +33,10 @@ def home():
         return redirect(url_for("dashboard"))
 
     else:
+        if "user_id" in session:
+            session.pop("user_id")
+            flash("Logged out successfully")
+
         return render_template("login.html")
 
 
@@ -111,6 +102,9 @@ def register_tutor():
         return redirect(url_for("home"))
 
     else:
+        if "user_id" in session:
+            session.pop("user_id")
+            flash("Logged out successfully")
         return render_template("register_tutor.html")
 
 
@@ -137,6 +131,7 @@ def register_student():
         user = User.query.filter_by(
             registration_number=registration_number, role="student"
         ).first()
+
         if user:
             flash("User already exists")
             return redirect(url_for("register_student"))
@@ -153,6 +148,7 @@ def register_student():
             current_year=current_year,
             id_card=file_path,
         )
+
         db.session.add(new_student)
         db.session.commit()
 
@@ -172,6 +168,9 @@ def register_student():
         return redirect(url_for("home"))
 
     else:
+        if "user_id" in session:
+            session.pop("user_id")
+            flash("Logged out successfully")
         return render_template("register_student.html")
 
 
@@ -182,3 +181,39 @@ def logout():
     session.pop("user_id")
     flash("Logged out successfully")
     return redirect(url_for("home"))
+
+
+# Profile
+@app.route("/profile", methods=["GET", "POST"])
+@auth_required
+def profile():
+    user = User.query.get(session["user_id"])
+    if request.method == "POST":
+        name = request.form.get('name')
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        email = request.form.get('email')
+
+        if not current_password or not new_password or not confirm_password:
+            flash('Please fill out all the required fields')
+            return redirect(url_for('profile'))
+        
+        if not check_password_hash(user.password_hash, current_password):
+            flash('Incorrect password')
+            return redirect(url_for('profile'))
+        
+        if new_password != confirm_password:
+                flash("Passwords do not match")
+                return redirect(url_for("profile"))
+
+        
+        new_password_hash = generate_password_hash(new_password)
+        user.name = name
+        user.password_hash = new_password_hash
+        user.email = email
+        db.session.commit()
+        flash('Profile updated successfully')
+        return redirect(url_for('profile'))
+
+    return render_template('profile.html', user=user)

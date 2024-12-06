@@ -1,9 +1,5 @@
-<section>
-  {% with messages = get_flashed_messages() %} {% if messages %} {% for message
-  in messages %}
-  <div class="alert alert-danger" role="alert">{{ message }}</div>
-  {% endfor %} {% endif %} {% endwith %}
-</section>
+{% extends "base.html" %} {% block title %}Admin Dashboard{% endblock %} {%
+block content %}
 
 <div>
   <a href="{{ url_for('register_tutor') }}">Register as a Tutor</a>
@@ -26,3 +22,4 @@
 <div id="formFooter">
   <a href="{{ url_for('register_student') }}">Create Account?</a>
 </div>
+{% endblock %}

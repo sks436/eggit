@@ -6,7 +6,6 @@ from flask import (
     flash,
     render_template,
     send_from_directory,
-    session,
 )
 from app import app
 from models import *

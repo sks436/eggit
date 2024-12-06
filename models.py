@@ -35,7 +35,9 @@ class Student(db.Model):
 
     # Relationships
     user = db.relationship("User", back_populates="student")
-    requests = db.relationship("Request", back_populates="student", cascade="all, delete-orphan")
+    requests = db.relationship(
+        "Request", back_populates="student", cascade="all, delete-orphan"
+    )
     reviews = db.relationship("Review", back_populates="student")
 
 
@@ -53,7 +55,9 @@ class Tutor(db.Model):
 
     # Relationships
     user = db.relationship("User", back_populates="tutor")
-    slots = db.relationship("Slot", back_populates="tutor", cascade="all, delete-orphan")
+    slots = db.relationship(
+        "Slot", back_populates="tutor", cascade="all, delete-orphan"
+    )
 
 
 # Slots Table
@@ -76,8 +80,12 @@ class Slot(db.Model):
 
     # Relationships
     tutor = db.relationship("Tutor", back_populates="slots")
-    requests = db.relationship("Request", back_populates="slot", cascade="all, delete-orphan")
-    reviews = db.relationship("Review", back_populates="slot", cascade="all, delete-orphan")
+    requests = db.relationship(
+        "Request", back_populates="slot", cascade="all, delete-orphan"
+    )
+    reviews = db.relationship(
+        "Review", back_populates="slot", cascade="all, delete-orphan"
+    )
 
 
 # Requests Table
