@@ -1,0 +1,24 @@
+<nav>
+  <h2>Eggit</h2>
+  <div>
+    <ul>
+      {% if 'user_id' in session %}
+      <li>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      </li>
+      <li>
+        <a href="{{ url_for('profile') }}">Profile</a>
+      </li>
+
+      <li>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </li>
+      {% else %}
+      <li>
+        <a href="{{ url_for('home') }}">Login</a>
+      </li>
+
+      {% endif %}
+    </ul>
+  </div>
+</nav>

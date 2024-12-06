@@ -1,3 +1,14 @@
+{% extends "base.html" %} {% block title %}Admin Dashboard{% endblock %} {%
+block content %}
+
+<div>
+  <h1 style="color: rgb(61, 19, 230); font-family: 'Montserrat', sans-serif">
+    Eggit
+  </h1>
+  <h3>Welcome</h3>
+  <p>A peer-to-peer learning web-platform</p>
+  <a href="{{ url_for('home') }}"> <button>Login</button></a>
+</div>
 {% extends "base.html" %}
 
 {% block title %}Student Registration{% endblock %}
@@ -73,5 +84,5 @@
       </div>
     </div>
   </div>
-</div>
-{% endblock %}
+  <input type="submit" value="Register" />
+</form>
