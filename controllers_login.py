@@ -97,7 +97,7 @@ def register_tutor():
         db.session.commit()
 
         flash("Registered successfully")
-        flash("Your Login Id is Registration Number_tutor")
+        flash(f"Your Login Id is {registration_number}_tutor")
         return redirect(url_for("home"))
 
     else:
@@ -162,7 +162,7 @@ def register_student():
         db.session.commit()
 
         flash("Registered successfully")
-        flash("Your Login Id is Registration Number")
+        flash(f"Your Login Id is {registration_number}")
         return redirect(url_for("home"))
 
     else:
