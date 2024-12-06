@@ -1,10 +1,9 @@
 {% extends "base.html" %} {% block title %}Tutor Dashboard{% endblock %} {%
 block content %}
-<h2>Created Slots</h2>
 
 <!-- Upcoming Slots -->
-{% if upcoming_slots %}
 <h3>Upcoming Slots</h3>
+{% if upcoming_slots %}
 <table>
   <thead>
     <tr>
@@ -41,8 +40,8 @@ block content %}
 {% endif %}
 
 <!-- Ongoing Slots -->
-{% if ongoing_slots %}
 <h3>Ongoing Slots</h3>
+{% if ongoing_slots %}
 <table>
   <thead>
     <tr>
@@ -79,8 +78,8 @@ block content %}
 {% endif %}
 
 <!-- Completed Slots -->
-{% if completed_slots %}
 <h3>Completed Slots</h3>
+{% if completed_slots %}
 <table>
   <thead>
     <tr>

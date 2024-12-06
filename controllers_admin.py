@@ -48,7 +48,7 @@ def delete_tutor(registration_number):
         flash("Tutor not found")
         return redirect(url_for("dashboard"))
 
-    # Delete associated slots and requests
+    # Delete associated slots,requests and reviews
     slots = Slot.query.filter_by(tutor_registration_number=registration_number).all()
     for slot in slots:
         reviews = Review.query.filter_by(slot_id=slot.id).all()
@@ -58,8 +58,6 @@ def delete_tutor(registration_number):
         for req in requests:
             db.session.delete(req)
         db.session.delete(slot)
-
-
 
     # Delete grade history file if exists
     if tutor.grade_history:
@@ -88,6 +86,7 @@ def delete_student(registration_number):
     requests = Request.query.filter_by(
         student_registration_number=registration_number
     ).all()
+
     for req in requests:
         db.session.delete(req)
 
@@ -113,8 +112,9 @@ def delete_slot(slot_id):
     """Deletes a slot and its associated requests."""
     slot = Slot.query.filter_by(id=slot_id).first()
     tutor = Tutor.query.filter_by(
-            registration_number=slot.tutor_registration_number
-        ).first()
+        registration_number=slot.tutor_registration_number
+    ).first()
+
     if slot:
         # Delete associated requests
         for req in slot.requests:
@@ -136,6 +136,7 @@ def delete_slot(slot_id):
             tutor.rating = round(
                 average_rating, 2
             )  # Update tutor's rating (rounded to 2 decimals)
+
             db.session.commit()
 
         flash("Slot deleted successfully")
@@ -184,9 +185,11 @@ def show_slots():
     upcoming_slots = (
         Slot.query.join(Tutor).join(User).filter(Slot.slot_status == "upcoming").all()
     )
+
     ongoing_slots = (
         Slot.query.join(Tutor).join(User).filter(Slot.slot_status == "ongoing").all()
     )
+
     completed_slots = (
         Slot.query.join(Tutor).join(User).filter(Slot.slot_status == "completed").all()
     )

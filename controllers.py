@@ -39,8 +39,6 @@ def dashboard():
             tutor_registration_number=tutor.registration_number, slot_status="upcoming"
         ).all()
 
-        
-
         # Get ongoing slots for the tutor
         ongoing = Slot.query.filter_by(
             tutor_registration_number=tutor.registration_number, slot_status="ongoing"
@@ -132,17 +130,19 @@ def dashboard():
         )
 
         pending = (
-    Request.query.join(Slot)
-    .join(User, Slot.tutor_registration_number == User.registration_number)  # Join Slot with Tutor
-    .filter(
-        Request.student_registration_number == user.registration_number,
-        Request.status == "pending",
-    )
-    .with_entities(
-        Request, Slot, User.name.label("tutor_name")  # Include tutor name
-    )
-    .all()
-)
+            Request.query.join(Slot)
+            .join(
+                User, Slot.tutor_registration_number == User.registration_number
+            )  # Join Slot with Tutor
+            .filter(
+                Request.student_registration_number == user.registration_number,
+                Request.status == "pending",
+            )
+            .with_entities(
+                Request, Slot, User.name.label("tutor_name")  # Include tutor name
+            )
+            .all()
+        )
         if "delete" in request.args:
             request_id = request.args.get("request_id")
             requests = Request.query.filter_by(id=request_id).first()
@@ -186,21 +186,19 @@ def dashboard():
 @auth_required
 def slots_history():
     user = User.query.get(session["user_id"])
-    tutor = Tutor.query.filter_by(
-            registration_number=user.registration_number
-        ).first()
+    tutor = Tutor.query.filter_by(registration_number=user.registration_number).first()
     # Fetch completed slots with average ratings for the tutor
     slots_completed = (
-            db.session.query(Slot, func.avg(Review.rating).label("average_rating"))
-            .outerjoin(Review, Review.slot_id == Slot.id)
-            .filter(
-                Slot.tutor_registration_number == tutor.registration_number,
-                Slot.slot_status == "completed",
-            )
-            .group_by(Slot.id)
-            .all()
+        db.session.query(Slot, func.avg(Review.rating).label("average_rating"))
+        .outerjoin(Review, Review.slot_id == Slot.id)
+        .filter(
+            Slot.tutor_registration_number == tutor.registration_number,
+            Slot.slot_status == "completed",
         )
-    
+        .group_by(Slot.id)
+        .all()
+    )
+
     # Handle delete request for slot
     if "delete" in request.args:
         slot_id = request.args.get("slot_id")
@@ -214,7 +212,6 @@ def slots_history():
         db.session.delete(slot)
         db.session.commit()
 
-        
         # Calculate the average rating from all reviews for this tutor
         average_rating = (
             db.session.query(func.avg(Review.rating))
