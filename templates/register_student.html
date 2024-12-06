@@ -1,66 +1,77 @@
-<section>
-  {% with messages = get_flashed_messages() %} {% if messages %} {% for message
-  in messages %}
-  <div class="alert alert-danger" role="alert">{{ message }}</div>
-  {% endfor %} {% endif %} {% endwith %}
-</section>
+{% extends "base.html" %}
 
-<div>
-  <h1 style="color:rgb(61, 19, 230); font-family: 'Montserrat', sans-serif">
-    Eggit
-  </h1>
-  <h3>Welcome</h3>
-  <p>A peer-to-peer learning web-platform</p>
-  <a href="{{ url_for('home') }}"> <button>Login</button></a>
+{% block title %}Student Registration{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow-lg border-0 rounded-lg mt-4">
+      <div class="card-body p-4">
+        <!-- Logo and Tagline -->
+        <div class="text-center mb-4">
+          <h1 class="text-primary mb-2">Eggit</h1>
+          <h4 class="text-muted">Register as a Student</h4>
+          <p class="text-muted">Join our peer-to-peer learning platform</p>
+        </div>
+
+        <!-- Registration Form -->
+        <form action="" method="post" enctype="multipart/form-data">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Registration Number</label>
+              <input type="text" class="form-control" name="registration_number" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control" name="name" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-control" name="email" required>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-control" name="password" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" name="confirm_password" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Current Year</label>
+            <select name="current_year" class="form-control" required>
+              <option selected disabled>Please select your year</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Attach ID Card</label>
+            <input type="file" class="form-control" name="id_card" accept=".jpg,.jpeg,.png,.pdf" required>
+          </div>
+
+          <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Register as Student</button>
+            <a href="{{ url_for('home') }}" class="btn btn-outline-secondary">Back to Login</a>
+          </div>
+        </form>
+
+        <!-- Switch to Tutor Registration -->
+        <div class="text-center mt-4">
+          <p class="mb-0">Want to teach instead?</p>
+          <a href="{{ url_for('register_tutor') }}" class="text-decoration-none">Register as a Tutor</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-
-<a href="#home">Student</a>
-<a href="{{ url_for('register_tutor') }}">Tutor</a>
-
-<h3>Register as a Student</h3>
-
-<form action="" method="post" enctype="multipart/form-data">
-  <input
-    type="text"
-    name="registration_number"
-    placeholder="Registration Number *"
-    value=""
-    required
-  />
-  <input type="text" name="name" placeholder="Full Name *" value="" required />
-  <input
-    type="email"
-    name="email"
-    placeholder="Your Email *"
-    value=""
-    required
-  />
-  <input
-    type="password"
-    name="password"
-    placeholder="Password *"
-    value=""
-    required
-  />
-  <input
-    type="password"
-    name="confirm_password"
-    placeholder="Confirm Password *"
-    value=""
-    required
-  />
-  <div>
-    <select name="current_year" required>
-      <option selected disabled>Please select your year</option>
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-    </select>
-  </div>
-  <div>
-    <label>Attach ID Card</label>
-    <input type="file" name="id_card" accept=".jpg,.jpeg,.png,.pdf" required />
-  </div>
-  <input type="submit" value="Register" />
-</form>
+{% endblock %}
