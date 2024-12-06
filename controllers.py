@@ -55,12 +55,12 @@ def dashboard():
         if "delete" in request.args:
             slot_id = request.args.get("slot_id")
             slot = Slot.query.filter_by(id=slot_id).first()
-            requests = Request.query.filter_by(slot_id=slot_id).all()
-            reviews = Review.query.filter_by(slot_id=slot_id).all()
-            for r in requests:
-                db.session.delete(r)
-            for review in reviews:
-                db.session.delete(review)
+            # requests = Request.query.filter_by(slot_id=slot_id).all()
+            # reviews = Review.query.filter_by(slot_id=slot_id).all()
+            # for r in requests:
+            #     db.session.delete(r)
+            # for review in reviews:
+            #     db.session.delete(review)
             db.session.delete(slot)
             db.session.commit()
             return redirect(url_for("dashboard"))
@@ -189,44 +189,45 @@ def slots_history():
     tutor = Tutor.query.filter_by(registration_number=user.registration_number).first()
     # Fetch completed slots with average ratings for the tutor
     slots_completed = (
-        db.session.query(Slot, func.avg(Review.rating).label("average_rating"))
-        .outerjoin(Review, Review.slot_id == Slot.id)
-        .filter(
-            Slot.tutor_registration_number == tutor.registration_number,
-            Slot.slot_status == "completed",
+            db.session.query(Slot, func.avg(Review.rating).label("average_rating"))
+            .outerjoin(Review, Review.slot_id == Slot.id)
+            .filter(
+                Slot.tutor_registration_number == tutor.registration_number,
+                Slot.slot_status == "completed",
+            )
+            .group_by(Slot.id)
+            .all()
         )
-        .group_by(Slot.id)
-        .all()
-    )
+    
+    # # Handle delete request for slot
+    # if "delete" in request.args:
+    #     slot_id = request.args.get("slot_id")
+    #     slot = Slot.query.filter_by(id=slot_id).first()
+    #     requests = Request.query.filter_by(slot_id=slot_id).all()
+    #     reviews = Review.query.filter_by(slot_id=slot_id).all()
+    #     for r in requests:
+    #         db.session.delete(r)
+    #     for review in reviews:
+    #         db.session.delete(review)
+    #     db.session.delete(slot)
+    #     db.session.commit()
 
-    # Handle delete request for slot
-    if "delete" in request.args:
-        slot_id = request.args.get("slot_id")
-        slot = Slot.query.filter_by(id=slot_id).first()
-        requests = Request.query.filter_by(slot_id=slot_id).all()
-        reviews = Review.query.filter_by(slot_id=slot_id).all()
-        for r in requests:
-            db.session.delete(r)
-        for review in reviews:
-            db.session.delete(review)
-        db.session.delete(slot)
-        db.session.commit()
+        
+    #     # Calculate the average rating from all reviews for this tutor
+    #     average_rating = (
+    #         db.session.query(func.avg(Review.rating))
+    #         .join(Slot, Review.slot_id == Slot.id)
+    #         .filter(Slot.tutor_registration_number == tutor.registration_number)
+    #         .scalar()
+    #     )
 
-        # Calculate the average rating from all reviews for this tutor
-        average_rating = (
-            db.session.query(func.avg(Review.rating))
-            .join(Slot, Review.slot_id == Slot.id)
-            .filter(Slot.tutor_registration_number == tutor.registration_number)
-            .scalar()
-        )
+    #     if average_rating is not None:
+    #         tutor.rating = round(
+    #             average_rating, 2
+    #         )  # Update tutor's rating (rounded to 2 decimals)
+    #         db.session.commit()
 
-        if average_rating is not None:
-            tutor.rating = round(
-                average_rating, 2
-            )  # Update tutor's rating (rounded to 2 decimals)
-            db.session.commit()
-
-        return redirect(url_for("slots_history"))
+    #     return redirect(url_for("slots_history"))
 
     return render_template("slots_history.html", slots_completed=slots_completed)
 

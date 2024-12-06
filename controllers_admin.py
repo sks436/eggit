@@ -49,15 +49,15 @@ def delete_tutor(registration_number):
         return redirect(url_for("dashboard"))
 
     # Delete associated slots,requests and reviews
-    slots = Slot.query.filter_by(tutor_registration_number=registration_number).all()
-    for slot in slots:
-        reviews = Review.query.filter_by(slot_id=slot.id).all()
-        for review in reviews:
-            db.session.delete(review)
-        requests = Request.query.filter_by(slot_id=slot.id).all()
-        for req in requests:
-            db.session.delete(req)
-        db.session.delete(slot)
+    # slots = Slot.query.filter_by(tutor_registration_number=registration_number).all()
+    # for slot in slots:
+    #     reviews = Review.query.filter_by(slot_id=slot.id).all()
+    #     for review in reviews:
+    #         db.session.delete(review)
+    #     requests = Request.query.filter_by(slot_id=slot.id).all()
+    #     for req in requests:
+    #         db.session.delete(req)
+    #     db.session.delete(slot)
 
     # Delete grade history file if exists
     if tutor.grade_history:
@@ -86,7 +86,6 @@ def delete_student(registration_number):
     requests = Request.query.filter_by(
         student_registration_number=registration_number
     ).all()
-
     for req in requests:
         db.session.delete(req)
 
