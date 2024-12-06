@@ -26,7 +26,7 @@
 <section>
     <h2>Your Details</h2>
     <ul>
-        <li>Registration Number: {{ user.registration_number }}</li>
+        <li>Registration Number: {{ user.registration_number.split('_')[0] }}</li>
         <li>Subject Expertise: {{ tutor.subject }}</li>
         <li>Grade: {{ tutor.grade }}</li>
         <li>Description: {{ tutor.description }}</li>

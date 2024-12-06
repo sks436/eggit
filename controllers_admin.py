@@ -210,6 +210,15 @@ def show_slots():
     )
 
 
+@app.route("/admin/show_reviews/<string:slot_id>", methods=["POST"])
+@auth_required
+def show_reviews(slot_id):
+    """Displays reviews for a specific slot."""
+    slot = Slot.query.get(slot_id)
+    reviews = Review.query.filter(Review.slot_id == slot_id).join(User, User.registration_number == Review.student_registration_number).add_columns(User.name).all()
+    return render_template("show_reviews.html", reviews=reviews)
+
+
 @app.route("/admin/uploads/<string:filename>")
 def uploaded_file(filename):
     """Serves uploaded files."""
