@@ -1,9 +1,5 @@
-<section>
-  {% with messages = get_flashed_messages() %} {% if messages %} {% for message
-  in messages %}
-  <div class="alert alert-danger" role="alert">{{ message }}</div>
-  {% endfor %} {% endif %} {% endwith %}
-</section>
+{% extends "base.html" %} {% block title %}Admin Dashboard{% endblock %} {%
+block content %}
 
 <div>
   <h1 style="color: rgb(61, 19, 230); font-family: 'Montserrat', sans-serif">
@@ -75,3 +71,4 @@
   </div>
   <input type="submit" value="Register" />
 </form>
+{% endblock %}
