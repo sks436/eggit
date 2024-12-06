@@ -57,12 +57,12 @@ def dashboard():
         if "delete" in request.args:
             slot_id = request.args.get("slot_id")
             slot = Slot.query.filter_by(id=slot_id).first()
-            requests = Request.query.filter_by(slot_id=slot_id).all()
-            reviews = Review.query.filter_by(slot_id=slot_id).all()
-            for r in requests:
-                db.session.delete(r)
-            for review in reviews:
-                db.session.delete(review)
+            # requests = Request.query.filter_by(slot_id=slot_id).all()
+            # reviews = Review.query.filter_by(slot_id=slot_id).all()
+            # for r in requests:
+            #     db.session.delete(r)
+            # for review in reviews:
+            #     db.session.delete(review)
             db.session.delete(slot)
             db.session.commit()
             return redirect(url_for("dashboard"))
