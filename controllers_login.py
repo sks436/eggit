@@ -35,7 +35,6 @@ def home():
     else:
         if "user_id" in session:
             session.pop("user_id")
-            flash("Logged out successfully")
 
         return render_template("login.html")
 
@@ -104,7 +103,6 @@ def register_tutor():
     else:
         if "user_id" in session:
             session.pop("user_id")
-            flash("Logged out successfully")
         return render_template("register_tutor.html")
 
 
@@ -170,7 +168,6 @@ def register_student():
     else:
         if "user_id" in session:
             session.pop("user_id")
-            flash("Logged out successfully")
         return render_template("register_student.html")
 
 
