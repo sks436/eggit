@@ -9,6 +9,59 @@ block content %}
   <p>A peer-to-peer learning web-platform</p>
   <a href="{{ url_for('home') }}"> <button>Login</button></a>
 </div>
+
+<a href="#home">Student</a>
+<a href="{{ url_for('register_tutor') }}">Tutor</a>
+
+<h3>Register as a Student</h3>
+
+<form action="" method="post" enctype="multipart/form-data">
+  <input
+    type="text"
+    name="registration_number"
+    placeholder="Registration Number *"
+    value=""
+    required
+  />
+  <input type="text" name="name" placeholder="Full Name *" value="" required />
+  <input
+    type="email"
+    name="email"
+    placeholder="Your Email *"
+    value=""
+    required
+  />
+  <input
+    type="password"
+    name="password"
+    placeholder="Password *"
+    value=""
+    required
+  />
+  <input
+    type="password"
+    name="confirm_password"
+    placeholder="Confirm Password *"
+    value=""
+    required
+  />
+  <div>
+    <select name="current_year" required>
+      <option selected disabled>Please select your year</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+    </select>
+  </div>
+  <div>
+    <label>Attach ID Card</label>
+    <input type="file" name="id_card" accept=".jpg,.jpeg,.png,.pdf" required />
+  </div>
+  <input type="submit" value="Register" />
+</form>
+
+{% endblock %}
 {% extends "base.html" %}
 
 {% block title %}Student Registration{% endblock %}
@@ -84,5 +137,5 @@ block content %}
       </div>
     </div>
   </div>
-  <input type="submit" value="Register" />
-</form>
+</div>
+{% endblock %}
