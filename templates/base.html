@@ -21,21 +21,33 @@
         font-weight: bold;
         color: #0d6efd !important;
       }
+      .alert {
+        margin: 1rem 0;
+      }
     </style>
   </head>
   <body>
+    <!-- Navigation Bar -->
     {% include 'navbar.html' with context %}
+
+    <!-- Flash Messages Section -->
     <section>
-      {% with messages = get_flashed_messages() %} {% if messages %} {% for
-      message in messages %}
-      <div class="alert alert-danger" role="alert">{{ message }}</div>
-      {% endfor %} {% endif %} {% endwith %}
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <div class="container">
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
     </section>
 
-
-    <main>
-      {% block content %} Role-specific content will be inserted here {%
-      endblock %}
+    <!-- Main Content Area -->
+    <main class="container my-4">
+      {% block content %} 
+      <p>Role-specific content will be inserted here.</p>
+      {% endblock %}
     </main>
 
     <!-- Footer -->
