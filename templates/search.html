@@ -1,178 +1,384 @@
 {% extends 'base.html' %}
 
-{% block title %}
-    Search Tutors, Slots, and Students
-{% endblock %}
+{% block title %}Search Tutors, Slots, and Students{% endblock %}
 
 {% block content %}
-<h2>Search Tutors, Slots, and Students</h2>
+<div class="container py-4">
+    <!-- Search Header -->
+    <div class="text-center mb-5">
+        <h2 class="display-6 mb-3">
+            <i class="bi bi-search text-primary me-2"></i>
+            Search Eggit
+        </h2>
+        <p class="text-muted">Find tutors, explore subjects, or connect with students</p>
+    </div>
 
-<!-- Search Form -->
-<form action="{{ url_for('search') }}" method="GET">
-  <div class="form-group">
-    <label for="category">Select Category</label>
-    <select class="form-control" id="category" name="category">
-      <option value="">Select Category</option>
-      <option value="tutors" {% if category == 'tutors' %} selected {% endif %}>Tutors</option>
-      <option value="subjects" {% if category == 'subjects' %} selected {% endif %}>Subjects</option>
-      <option value="students" {% if category == 'students' %} selected {% endif %}>Students</option>
-    </select>
-  </div>
+    <!-- Search Form -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form action="{{ url_for('search') }}" method="GET" class="needs-validation" novalidate>
+                        <!-- Category Selection -->
+                        <div class="mb-4">
+                            <label for="category" class="form-label">
+                                <i class="bi bi-filter-circle me-2"></i>
+                                Select Category
+                            </label>
+                            <select class="form-select form-select-lg" id="category" name="category" required>
+                                <option value="" {% if not category %}selected{% endif %}>Choose what to search...</option>
+                                <option value="tutors" {% if category == 'tutors' %}selected{% endif %}>
+                                    <i class="bi bi-person-video3"></i> Tutors
+                                </option>
+                                <option value="subjects" {% if category == 'subjects' %}selected{% endif %}>
+                                    <i class="bi bi-book"></i> Subjects & Slots
+                                </option>
+                                <option value="students" {% if category == 'students' %}selected{% endif %}>
+                                    <i class="bi bi-people"></i> Students
+                                </option>
+                            </select>
+                        </div>
 
-  <!-- Dynamic Input for Search -->
-  <div class="form-group">
-    <label for="query">Search</label>
-    <input
-      type="text"
-      class="form-control"
-      id="query"
-      name="query"
-      placeholder="Search for...."
-      value="{{ query }}"
-    />
-  </div>
+                        <!-- Search Query -->
+                        <div class="mb-4">
+                            <label for="query" class="form-label">
+                                <i class="bi bi-search me-2"></i>
+                                Search Query
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-search text-primary"></i>
+                                </span>
+                                <input type="text"
+                                       class="form-control border-start-0"
+                                       id="query"
+                                       name="query"
+                                       placeholder="Type to search..."
+                                       value="{{ query }}"
+                                       required>
+                            </div>
+                        </div>
 
-  <!-- Calendar for Slots (hidden initially) -->
-  <!-- <div id="calendarSection" class="form-group" style="display:none;">
-    <label for="slotDate">Select Date and Time for Slot</label>
-    <input
-      type="datetime-local"
-      class="form-control"
-      id="slotDate"
-      name="slotDate"
-      value="{{ slotDate }}"
-    />
-  </div> -->
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-search me-2"></i>
+                                Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <!-- Submit Button -->
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+    <!-- Search Results Section -->
+    {% if category %}
+    <div class="search-results">
+        <!-- Results Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">
+                <i class="bi bi-list-ul text-primary me-2"></i>
+                Search Results
+            </h3>
+            <span class="badge bg-primary rounded-pill">
+                Category: {{ category|title }}
+            </span>
+        </div>
 
-<!-- Search Results Section -->
-{% if category %}
-  <hr>
-  <h3>Results for "{{ category }}"</h3>
-
-  {% if category == 'students' %}
-    {% if students %}
-      <div class="students-list">
-        {% for student in students %}
-          <div class="student-card">
-            <h4>{{ student.user.name }}</h4>
-            <p><strong>Registration Number:</strong> {{ student.registration_number }}</p>
-            <p><strong>Email:</strong> {{ student.user.email }}</p>
-            <p><strong>Current Year:</strong> {{ student.current_year }}</p>
-          </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p>No students found matching your query.</p>
-    {% endif %}
-
-    {% elif category == 'tutors' %}
-    {% if tutors %}
-      <div class="tutors-list">
-        {% for tutor in tutors %}
-          <div class="tutor-card">
-            <h4>{{ tutor.user.name }}</h4>
-            <p><strong>Subject Expertise:</strong> {{ tutor.subject }}</p>
-            <p><strong>Grade:</strong> {{ tutor.grade }}</p>
-            <p><strong>Email:</strong> {{ tutor.user.email }}</p>
-            <p><strong>Rating:</strong> {{ tutor.rating }}</p>
-   
-            <!-- Display Slots for the Tutor -->
-            {% if tutor.slots %}
-              <h3>Slots:</h3>
-              <ul>
-                {% for slot in tutor.slots %}
-                  <li>
-                    <p><strong>Subject:</strong> {{ slot.subject }}</p>
-                    <p><strong>Date:</strong> {{ slot.date }}</p>
-                    <p><strong>Time:</strong> {{ slot.time }}</p>
-                    <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
-                  </li>
+        <!-- Students Results -->
+        {% if category == 'students' %}
+            {% if students %}
+            <div class="row g-4">
+                {% for student in students %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm hover-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="avatar-circle bg-primary text-white me-3">
+                                    {{ student.user.name[0]|upper }}
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">{{ student.user.name }}</h5>
+                                    <p class="text-muted small mb-0">Year {{ student.current_year }}</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="bi bi-person-badge me-2 text-primary"></i>
+                                    {{ student.registration_number }}
+                                </li>
+                                <li>
+                                    <i class="bi bi-envelope me-2 text-primary"></i>
+                                    {{ student.user.email }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
-              </ul>
+            </div>
             {% else %}
-              <p>No slots available for this tutor.</p>
+            <div class="text-center py-5">
+                <div class="empty-state-icon mb-4">
+                    <i class="bi bi-people text-muted"></i>
+                </div>
+                <h5>No Students Found</h5>
+                <p class="text-muted">Try adjusting your search criteria</p>
+            </div>
             {% endif %}
-          </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p>No tutors found matching your query.</p>
-    {% endif %}
-   
 
-    {% elif category == 'subjects' %}
-    {% if slots %}
-      <div class="slots-list">
-        {% for slot in slots %}
-          <div class="slot-card">
-            <h4>{{ slot.subject }}</h4>
-            <p><strong>Date:</strong> {{ slot.date }}</p>
-            <p><strong>Time:</strong> {{ slot.time }}</p>
-            <p><strong>Tutor:</strong> {{ slot.tutor.user.name }}</p>
-            <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
-          </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p>No slots found matching your query.</p>
-    {% endif %}
-  {% endif %}
-  
-{% endif %}
+        <!-- Tutors Results -->
+        {% elif category == 'tutors' %}
+            {% if tutors %}
+            <div class="row g-4">
+                {% for tutor in tutors %}
+                <div class="col-12 col-lg-6">
+                    <div class="card h-100 shadow-sm hover-card">
+                        <div class="card-header bg-light py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-primary text-white me-3">
+                                        {{ tutor.user.name[0]|upper }}
+                                    </div>
+                                    <div>
+                                        <h5 class="card-title mb-1">{{ tutor.user.name }}</h5>
+                                        <p class="text-muted small mb-0">{{ tutor.subject }}</p>
+                                    </div>
+                                </div>
+                                <div class="rating">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span class="ms-1">{{ "%.1f"|format(tutor.rating|float) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="mb-3">
+                                <i class="bi bi-info-circle me-2 text-primary"></i>
+                                Tutor Information
+                            </h6>
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2">
+                                    <i class="bi bi-book me-2 text-primary"></i>
+                                    Subject: {{ tutor.subject }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-award me-2 text-primary"></i>
+                                    Grade: {{ tutor.grade }}
+                                </li>
+                                <li>
+                                    <i class="bi bi-envelope me-2 text-primary"></i>
+                                    {{ tutor.user.email }}
+                                </li>
+                            </ul>
 
+                            {% if tutor.slots %}
+                            <h6 class="mb-3">
+                                <i class="bi bi-calendar-check me-2 text-primary"></i>
+                                Available Slots
+                            </h6>
+                            <div class="slots-container">
+                                {% for slot in tutor.slots %}
+                                <div class="slot-item mb-2 p-2 bg-light rounded">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="bi bi-clock me-2 text-primary"></i>
+                                            {{ slot.time }}
+                                        </div>
+                                        <div>
+                                            <i class="bi bi-calendar me-2 text-primary"></i>
+                                            {{ slot.date }}
+                                        </div>
+                                        <span class="badge bg-primary">
+                                            {{ slot.duration }} mins
+                                        </span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center text-muted">
+                                <i class="bi bi-calendar-x display-6 mb-2"></i>
+                                <p>No slots available</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="empty-state-icon mb-4">
+                    <i class="bi bi-person-video3 text-muted"></i>
+                </div>
+                <h5>No Tutors Found</h5>
+                <p class="text-muted">Try adjusting your search criteria</p>
+            </div>
+            {% endif %}
+
+        <!-- Subjects/Slots Results -->
+        {% elif category == 'subjects' %}
+            {% if slots %}
+            <div class="row g-4">
+                {% for slot in slots %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm hover-card">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-book me-2 text-primary"></i>
+                                {{ slot.subject }}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-3">
+                                    <i class="bi bi-person-video3 me-2 text-primary"></i>
+                                    <strong>Tutor:</strong> {{ slot.tutor.user.name }}
+                                </li>
+                                <li class="mb-3">
+                                    <i class="bi bi-calendar me-2 text-primary"></i>
+                                    <strong>Date:</strong> {{ slot.date }}
+                                </li>
+                                <li class="mb-3">
+                                    <i class="bi bi-clock me-2 text-primary"></i>
+                                    <strong>Time:</strong> {{ slot.time }}
+                                </li>
+                                <li>
+                                    <i class="bi bi-hourglass-split me-2 text-primary"></i>
+                                    <strong>Duration:</strong> {{ slot.duration }} mins
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="empty-state-icon mb-4">
+                    <i class="bi bi-calendar2-x text-muted"></i>
+                </div>
+                <h5>No Slots Found</h5>
+                <p class="text-muted">Try adjusting your search criteria</p>
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+{% block extra_css %}
+<style>
+    /* Avatar Circle */
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    /* Card Hover Effect */
+    .hover-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Empty State Icon */
+    .empty-state-icon {
+        font-size: 4rem;
+        opacity: 0.5;
+    }
+
+    /* Search Input Styling */
+    .input-group-text {
+        border-right: none;
+    }
+    .form-control {
+        border-left: none;
+    }
+    .form-control:focus {
+        border-color: #dee2e6;
+        box-shadow: none;
+    }
+    .input-group:focus-within {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Slots Container */
+    .slots-container {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .slot-item {
+        transition: background-color 0.2s ease-in-out;
+    }
+    .slot-item:hover {
+        background-color: #e9ecef !important;
+    }
+
+    /* Button Animation */
+    .btn {
+        transition: all 0.2s ease-in-out;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Rating Stars */
+    .rating {
+        font-size: 0.9rem;
+    }
+    .rating .bi-star-fill {
+        color: #ffc107;
+    }
+</style>
 {% endblock %}
 
-{% block style %}
-<!-- <style>
-  /* Styles for the result cards */
-  .students-list, .tutors-list, .subjects-list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .student-card, .tutor-card, .slot-card {
-    background: #f8f9fa;
-    padding: 20px;
-    margin: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    text-align: center;
-  }
+{% block extra_js %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
 
-  .student-card h4, .tutor-card h4, .slot-card h4 {
-    color: #007bff;
-  }
+    // Animate cards on scroll
+    const cards = document.querySelectorAll('.hover-card')
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1'
+                    entry.target.style.transform = 'translateY(0)'
+                }
+            })
+        },
+        { threshold: 0.1 }
+    )
 
-  .student-card p, .tutor-card p, .slot-card p {
-    margin: 5px 0;
-  }
-
-</style> -->
+    cards.forEach(card => {
+        card.style.opacity = '0'
+        card.style.transform = 'translateY(20px)'
+        card.style.transition = 'all 0.5s ease-out'
+        observer.observe(card)
+    })
+</script>
 {% endblock %}
-
-{% block script %}
-<!-- <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const categorySelect = document.getElementById('category');
-    const calendarSection = document.getElementById('calendarSection');
-
-    // Event listener for category selection
-    categorySelect.addEventListener('change', function () {
-      const selectedCategory = categorySelect.value;
-
-      // Show or hide the calendar section based on category selection
-      if (selectedCategory === 'subjects') {
-        calendarSection.style.display = 'block'; // Show the calendar for subjects
-      } else {
-        calendarSection.style.display = 'none';  // Hide it for tutors and students
-      }
-    });
-  });
-</script> -->
 {% endblock %}

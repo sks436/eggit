@@ -1,209 +1,297 @@
 {% extends "base.html" %}
-
 {% block title %}Student Dashboard{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col">
-        <h1 class="display-5 fw-bold text-primary mb-4">Welcome, {{ user.name }}</h1>
+<div class="container-fluid py-4">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 text-primary mb-0">Welcome, {{ user.name }}</h1>
+        </div>
     </div>
-</div>
 
-{% if user.role != 'admin' %}
-<div class="row mb-4">
-    <div class="col">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0"><i class="bi bi-bell"></i> Notices</h5>
-            </div>
-            <div class="card-body">
-                {% if notices %}
-                    {% for notice in notices %}
+    <!-- Student Info & Ongoing Classes -->
+    <div class="row mb-4">
+        <!-- Student Details -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-person-badge me-2"></i>Student Details
+                    </h5>
+                </div>
+                <div class="card-body">
                     <div class="mb-3">
+                        <label class="text-muted small">Registration Number</label>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person-vcard text-primary me-2"></i>
+                            <h5 class="mb-0">{{ user.registration_number }}</h5>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-muted small">Current Year</label>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-mortarboard text-primary me-2"></i>
+                            <h5 class="mb-0">Year {{ student.current_year }}</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ongoing Classes -->
+        <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-camera-video me-2"></i>Ongoing Classes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if ongoing and ongoing|length > 0 %}
+                    <div class="list-group">
+                        {% for request, slot, name in ongoing %}
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h5 class="mb-1">{{ slot.subject }} with {{ name }}</h5>
+                                    <p class="mb-0 text-muted">
+                                        <i class="bi bi-calendar me-1"></i>{{ slot.date.strftime("%B %d, %Y") }}
+                                        <i class="bi bi-clock ms-3 me-1"></i>{{ slot.time.strftime("%I:%M %p") }}
+                                        <i class="bi bi-hourglass ms-3 me-1"></i>{{ slot.duration }} minutes
+                                    </p>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="{{ slot.gmeet_link }}" class="btn btn-success" target="_blank">
+                                        <i class="bi bi-camera-video me-2"></i>Join Class
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No ongoing classes at the moment.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notices Section -->
+    {% if user.role != 'admin' %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-bell me-2"></i>Important Notices
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if notices %}
+                    {% for notice in notices %}
+                    <div class="mb-4 {% if not loop.last %}border-bottom pb-3{% endif %}">
                         <h5 class="text-primary">{{ notice.title }}</h5>
                         <p class="mb-1">{{ notice.content }}</p>
-                        <small class="text-muted"><i class="bi bi-clock"></i> {{ notice.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
-                    </div>
-                    {% if not loop.last %}<hr>{% endif %}
-                    {% endfor %}
-                {% else %}
-                    <p class="mb-0">No notices available.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-header bg-info text-white">
-                <h5 class="card-title mb-0"><i class="bi bi-person-badge"></i> Your Details</h5>
-            </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-person-vcard"></i> Registration Number</span>
-                        <span class="badge bg-primary rounded-pill">{{ user.registration_number }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-mortarboard"></i> Current Year</span>
-                        <span class="badge bg-info rounded-pill">{{ student.current_year }}</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-8">
-        <div class="card h-100">
-            <div class="card-header bg-success text-white">
-                <h5 class="card-title mb-0"><i class="bi bi-camera-video"></i> Ongoing Classes</h5>
-            </div>
-            <div class="card-body">
-                {% if ongoing and ongoing|length > 0 %}
-                <div class="list-group">
-                    {% for request, slot, name in ongoing %}
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{ slot.subject }} with {{ name }}</h5>
-                            <a href="{{ slot.gmeet_link }}" class="btn btn-success btn-sm" target="_blank">
-                                <i class="bi bi-camera-video"></i> Join Class
-                            </a>
-                        </div>
-                        <p class="mb-1">
-                            <i class="bi bi-calendar-event"></i> {{ slot.date.strftime("%Y-%m-%d") }} at {{ slot.time.strftime("%H:%M") }}
-                            <span class="ms-3"><i class="bi bi-clock"></i> {{ slot.duration }} minutes</span>
-                        </p>
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i>{{ notice.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                        </small>
                     </div>
                     {% endfor %}
+                    {% else %}
+                    <p class="text-muted mb-0">No notices available.</p>
+                    {% endif %}
                 </div>
-                {% else %}
-                <p class="text-muted mb-0">No ongoing classes.</p>
-                {% endif %}
             </div>
         </div>
     </div>
-</div>
+    {% endif %}
 
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-header bg-warning">
-                <h5 class="card-title mb-0"><i class="bi bi-calendar-check"></i> Upcoming Classes</h5>
-            </div>
-            <div class="card-body">
-                {% if upcoming and upcoming|length > 0 %}
-                <div class="list-group">
-                    {% for request, slot, name in upcoming %}
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{ slot.subject }} with {{ name }}</h5>
-                            {% if slot.gmeet_link %}
-                            <a href="{{ slot.gmeet_link }}" class="btn btn-success btn-sm" target="_blank">
-                                <i class="bi bi-link-45deg"></i> Meet Link
-                            </a>
-                            {% endif %}
-                        </div>
-                        <p class="mb-1">
-                            <i class="bi bi-calendar-event"></i> {{ slot.date.strftime("%Y-%m-%d") }} at {{ slot.time.strftime("%H:%M") }}
-                            <span class="ms-3"><i class="bi bi-clock"></i> {{ slot.duration }} minutes</span>
-                        </p>
-                    </div>
-                    {% endfor %}
+    <!-- Upcoming & Pending Section -->
+    <div class="row mb-4">
+        <!-- Upcoming Classes -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-calendar-check me-2"></i>Upcoming Classes
+                    </h5>
                 </div>
-                {% else %}
-                <p class="text-muted mb-0">No upcoming classes scheduled.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-header bg-info">
-                <h5 class="card-title mb-0"><i class="bi bi-hourglass-split"></i> Pending Requests</h5>
-            </div>
-            <div class="card-body">
-                {% if pending and pending|length > 0 %}
-                <div class="list-group">
-                    {% for request, slot, tutor_name in pending %}
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between align-items-start">
-                            <div>
-                                <h5 class="mb-1">{{ slot.subject }} with {{ tutor_name }}</h5>
-                                <p class="mb-1">
-                                    <i class="bi bi-calendar-event"></i> {{ slot.date.strftime("%Y-%m-%d") }} at {{ slot.time.strftime("%H:%M") }}
-                                    <span class="ms-3"><i class="bi bi-clock"></i> {{ slot.duration }} minutes</span>
-                                </p>
-                                <small class="text-muted">Request ID: {{ request.id }}</small>
+                <div class="card-body">
+                    {% if upcoming and upcoming|length > 0 %}
+                    <div class="list-group">
+                        {% for request, slot, name in upcoming %}
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h5 class="mb-1">{{ slot.subject }} with {{ name }}</h5>
+                                    <p class="mb-0 text-muted">
+                                        <i class="bi bi-calendar me-1"></i>{{ slot.date.strftime("%B %d, %Y") }}
+                                        <i class="bi bi-clock ms-3 me-1"></i>{{ slot.time.strftime("%I:%M %p") }}
+                                        <i class="bi bi-hourglass ms-3 me-1"></i>{{ slot.duration }} minutes
+                                    </p>
+                                </div>
+                                {% if slot.gmeet_link %}
+                                <div class="col-auto">
+                                    <a href="{{ slot.gmeet_link }}" class="btn btn-outline-warning" target="_blank">
+                                        <i class="bi bi-link-45deg me-2"></i>Meet Link
+                                    </a>
+                                </div>
+                                {% endif %}
                             </div>
-                            <a href="?delete=true&request_id={{ request.id }}" class="btn btn-danger btn-sm">
-                                <i class="bi bi-trash"></i> Cancel
-                            </a>
                         </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted mb-0">No upcoming classes scheduled.</p>
+                    {% endif %}
                 </div>
-                {% else %}
-                <p class="text-muted mb-0">No pending requests.</p>
-                {% endif %}
+            </div>
+        </div>
+
+        <!-- Pending Requests -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-hourglass me-2"></i>Pending Requests
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if pending and pending|length > 0 %}
+                    <div class="list-group">
+                        {% for request, slot, tutor_name in pending %}
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h5 class="mb-1">{{ slot.subject }} with {{ tutor_name }}</h5>
+                                    <p class="mb-1 text-muted">
+                                        <i class="bi bi-calendar me-1"></i>{{ slot.date.strftime("%B %d, %Y") }}
+                                        <i class="bi bi-clock ms-3 me-1"></i>{{ slot.time.strftime("%I:%M %p") }}
+                                        <i class="bi bi-hourglass ms-3 me-1"></i>{{ slot.duration }} minutes
+                                    </p>
+                                    <small class="text-muted">Request ID: {{ request.id }}</small>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="?delete=true&request_id={{ request.id }}" 
+                                       class="btn btn-outline-danger"
+                                       onclick="return confirm('Are you sure you want to cancel this request?')">
+                                        <i class="bi bi-trash me-2"></i>Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No pending requests.</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0"><i class="bi bi-people"></i> Available Tutors and Slots</h5>
-            </div>
-            <div class="card-body">
-                {% if slots and slots|length > 0 %}
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Tutor</th>
-                                <th>Subject</th>
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th>Duration</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for slot in slots %}
-                            <tr>
-                                <td>{{ slot.tutor_name }}</td>
-                                <td>{{ slot.subject }}</td>
-                                <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
-                                <td>{{ slot.time.strftime('%H:%M') }}</td>
-                                <td>{{ slot.duration }} min</td>
-                                <td>
-                                    <form action="/request_slot/{{ slot.id }}" method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="bi bi-check-circle"></i> Request
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+    <!-- Available Slots -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-people me-2"></i>Available Tutors and Slots
+                    </h5>
                 </div>
-                {% else %}
-                <p class="text-muted mb-0">No available slots at the moment.</p>
-                {% endif %}
+                <div class="card-body">
+                    {% if slots and slots|length > 0 %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tutor</th>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Duration</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for slot in slots %}
+                                <tr>
+                                    <td>
+                                        <i class="bi bi-person-circle text-primary me-2"></i>
+                                        {{ slot.tutor_name }}
+                                    </td>
+                                    <td>{{ slot.subject }}</td>
+                                    <td>{{ slot.date.strftime('%B %d, %Y') }}</td>
+                                    <td>{{ slot.time.strftime('%I:%M %p') }}</td>
+                                    <td>{{ slot.duration }} min</td>
+                                    <td>
+                                        <form action="/request_slot/{{ slot.id }}" method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-check-circle me-2"></i>Request
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No available slots at the moment.</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Completed Slots Link -->
+    <div class="row mt-4">
+        <div class="col-12 text-end">
+            <form action="/student/completed_slots" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-clock-history me-2"></i>View Completed Classes
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
+{% endblock %}
 
-<form action="/student/completed_slots" method="POST">
-    <a href="#" onclick="this.closest('form').submit()">Show completed slots</a>
-</form>
-
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        margin-bottom: 1rem;
+    }
+    .card-header {
+        padding: 1rem;
+        border-bottom: none;
+    }
+    .list-group-item {
+        border-left: none;
+        border-right: none;
+        padding: 1rem;
+    }
+    .list-group-item:first-child {
+        border-top: none;
+    }
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+    .table th {
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+    .btn {
+        font-weight: 500;
+    }
+    .btn-sm {
+        padding: 0.25rem 0.75rem;
+    }
+    .shadow-sm {
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
+    }
+</style>
 {% endblock %}
