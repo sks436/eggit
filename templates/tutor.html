@@ -3,124 +3,176 @@
 {% block title %}Tutor Dashboard{% endblock %}
 
 {% block content %}
-<h1>Welcome, {{ user.name }} (Tutor)</h1>
-
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-5 fw-bold text-primary mb-4">Welcome, {{ user.name }}</h1>
+    </div>
+</div>
 
 {% if user.role != 'admin' %}
-<div>
-  <h2>Notices</h2>
-  {% if notices %} {% for notice in notices %}
-  <h3>{{ notice.title }}</h3>
-  <p>{{ notice.content }}</p>
-  <small
-    >Posted on: {{ notice.created_at.strftime('%Y-%m-%d %H:%M') }}</small
-  >
-  <hr />
-  {% endfor %} {% else %}
-  <p>No notice available.</p>
-  {% endif %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="bi bi-bell"></i> Notices</h5>
+            </div>
+            <div class="card-body">
+                {% if notices %}
+                    {% for notice in notices %}
+                    <div class="mb-3">
+                        <h5 class="text-primary">{{ notice.title }}</h5>
+                        <p class="mb-1">{{ notice.content }}</p>
+                        <small class="text-muted"><i class="bi bi-clock"></i> {{ notice.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </div>
+                    {% if not loop.last %}<hr>{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="mb-0">No notices available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
 {% endif %}
 
-
-<section>
-    <h2>Your Details</h2>
-    <ul>
-        <li>Registration Number: {{ user.registration_number.split('_')[0] }}</li>
-        <li>Subject Expertise: {{ tutor.subject }}</li>
-        <li>Grade: {{ tutor.grade }}</li>
-        <li>Description: {{ tutor.description }}</li>
-        <li>Rating: {{ tutor.rating }}</li>
-    </ul>
-</section>
-<div class="text-center my-4">
-    <a href="{{ url_for('create_slot') }}" class="btn btn-primary">
-        Create Slot
-    </a>
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0"><i class="bi bi-person-badge"></i> Your Details</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-person-vcard"></i> Registration Number</span>
+                        <span class="badge bg-primary rounded-pill">{{ user.registration_number.split('_')[0] }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-book"></i> Subject Expertise</span>
+                        <span class="badge bg-info rounded-pill">{{ tutor.subject }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-mortarboard"></i> Grade</span>
+                        <span class="badge bg-success rounded-pill">{{ tutor.grade }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <span><i class="bi bi-chat-quote"></i> Description</span>
+                        <p class="mb-0 mt-2">{{ tutor.description }}</p>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-star"></i> Rating</span>
+                        <span class="badge bg-warning text-dark rounded-pill">{{ tutor.rating }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0"><i class="bi bi-calendar-check"></i> Ongoing Slots</h5>
+            </div>
+            <div class="card-body">
+                {% if ongoing %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Duration</th>
+                                <th>Meet Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for slot in ongoing %}
+                            <tr>
+                                <td>{{ slot.subject }}</td>
+                                <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ slot.time.strftime('%H:%M') }}</td>
+                                <td>{{ slot.duration }} min</td>
+                                <td>
+                                    <a href="{{ slot.gmeet_link }}" class="btn btn-sm btn-success" target="_blank">
+                                        <i class="bi bi-camera-video"></i> Join
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">No ongoing classes.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
 
-<section>
-    <h2>Ongoing Slots</h2>
+<div class="row mb-4">
+    <div class="col text-center">
+        <a href="{{ url_for('create_slot') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-circle"></i> Create New Slot
+        </a>
+    </div>
+</div>
 
-    {% if ongoing %}
-    <table>
-        <thead>
-            <tr>
-                <th>Subject</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Duration</th>
-                <th>Created At</th>
-                <th>Gmeet_link</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for slot in ongoing %}
-            <tr>
-                <td>{{ slot.subject }}
-                </td>
-                <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
-                <td>{{ slot.time.strftime('%H:%M') }}</td>
-                <td>{{ slot.duration }} minutes</td>
-                <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td>
-            </tr>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>No ongoing class.</p>
-    {% endif %}
-</section>
-
-
-<section>
-    <h2>Your Created Slots</h2>
-
-    {% if slots %}
-    <table>
-        <thead>
-            <tr>
-                <th>Subject</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Duration</th>
-                <th>Created At</th>
-                <th>Gmeet_link</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for slot in slots %}
-            <tr>
-                <td>
-                    <form action="/slot_request/{{ slot.id }}" method="POST">
-                        <a href="#" onclick="this.closest('form').submit()">{{ slot.subject }}</a>
-                    </form>
-                </td>
-                <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
-                <td>{{ slot.time.strftime('%H:%M') }}</td>
-                <td>{{ slot.duration }} minutes </td>
-                <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td>
-            </tr>
-            <td><a href="?delete=true&slot_id={{ slot.id }}">
-                    <button>Delete slot</button>
-                </a>
-            </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>No slots created yet.</p>
-    {% endif %}
-</section>
-
-
-
-<form action="/tutor/slots_history" method="POST">
-    <a href="#" onclick="this.closest('form').submit()">Show completed slots</a>
-  </form>
-
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0"><i class="bi bi-calendar2-week"></i> Your Created Slots</h5>
+            </div>
+            <div class="card-body">
+                {% if slots %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Duration</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for slot in slots %}
+                            <tr>
+                                <td>
+                                    <form action="/slot_request/{{ slot.id }}" method="POST" class="d-inline">
+                                        <a href="#" onclick="this.closest('form').submit()" class="text-decoration-none">
+                                            {{ slot.subject }}
+                                        </a>
+                                    </form>
+                                </td>
+                                <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ slot.time.strftime('%H:%M') }}</td>
+                                <td>{{ slot.duration }} min</td>
+                                <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    <a href="?delete=true&slot_id={{ slot.id }}" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                    {% if slot.gmeet_link %}
+                                    <a href="{{ slot.gmeet_link }}" class="btn btn-sm btn-success" target="_blank">
+                                        <i class="bi bi-camera-video"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">No slots created yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
