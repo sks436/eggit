@@ -1,3 +1,4 @@
+import re
 from flask import render_template, request, url_for, redirect, flash, session
 from app import app
 from models import *
@@ -6,6 +7,7 @@ from werkzeug.utils import secure_filename
 import os
 from utils import auth_required
 from controllers_admin import *
+
 
 # Login page
 @app.route("/", methods=["GET", "POST"])
@@ -186,34 +188,33 @@ def logout():
 def profile():
     user = User.query.get(session["user_id"])
     if request.method == "POST":
-        name = request.form.get('name')
-        current_password = request.form.get('current_password')
-        new_password = request.form.get('new_password')
-        confirm_password = request.form.get('confirm_password')
-        email = request.form.get('email')
+        name = request.form.get("name")
+        current_password = request.form.get("current_password")
+        new_password = request.form.get("new_password")
+        confirm_password = request.form.get("confirm_password")
+        email = request.form.get("email")
 
         if not current_password or not new_password or not confirm_password:
-            flash('Please fill out all the required fields')
-            return redirect(url_for('profile'))
-        
-        if not check_password_hash(user.password_hash, current_password):
-            flash('Incorrect password')
-            return redirect(url_for('profile'))
-        
-        if new_password != confirm_password:
-                flash("Passwords do not match")
-                return redirect(url_for("profile"))
+            flash("Please fill out all the required fields")
+            return redirect(url_for("profile"))
 
-        
+        if not check_password_hash(user.password_hash, current_password):
+            flash("Incorrect password")
+            return redirect(url_for("profile"))
+
+        if new_password != confirm_password:
+            flash("Passwords do not match")
+            return redirect(url_for("profile"))
+
         new_password_hash = generate_password_hash(new_password)
         user.name = name
         user.password_hash = new_password_hash
         user.email = email
         db.session.commit()
-        flash('Profile updated successfully')
-        return redirect(url_for('profile'))
+        flash("Profile updated successfully")
+        return redirect(url_for("profile"))
 
-    return render_template('profile.html', user=user)
+    return render_template("profile.html", user=user)
 
 
 import smtplib
@@ -225,72 +226,124 @@ from email.mime.text import MIMEText
 def send_otp(email, otp):
     EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
     EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
-    SMTP_SERVER = os.getenv("SMTP_SERVER") 
+    SMTP_SERVER = os.getenv("SMTP_SERVER")
     SMTP_PORT = os.getenv("SMTP_PORT")
 
     message = MIMEText(f"Your OTP for password reset is: {otp}/n Valid for 10 minutes.")
-    message['Subject'] = 'Eggit: Password Reset OTP'
-    message['From'] = EMAIL_ADDRESS
-    message['To'] = email
+    message["Subject"] = "Eggit: Password Reset OTP"
+    message["From"] = EMAIL_ADDRESS
+    message["To"] = email
 
     with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
         server.starttls()
         server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         server.send_message(message)
 
-@app.route('/forgot_password', methods=['GET', 'POST'])
+
+@app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
     if "user_id" in session:
-            session.pop("user_id")
-    if request.method == 'POST':
-        email = request.form.get('email')
+        session.pop("user_id")
+    if request.method == "POST":
+        email = request.form.get("email")
         user = User.query.filter_by(email=email).first()
         if user:
             otp = secrets.token_hex(3)  # Generate a 6-character OTP
             user.otp = otp
-            user.otp_expiration = datetime.datetime.now() + datetime.timedelta(minutes=10)
+            user.otp_expiration = datetime.datetime.now() + datetime.timedelta(
+                minutes=10
+            )
             db.session.commit()
             send_otp(email, otp)
             flash("An OTP has been sent to your email.")
-            return redirect(url_for('verify_otp', email=email))
+            return redirect(url_for("verify_otp", email=email))
         else:
             flash("Email not found.")
-    return render_template('forgot_password.html')
+    return render_template("forgot_password.html")
 
 
-@app.route('/verify_otp', methods=['GET', 'POST'])
+@app.route("/verify_otp", methods=["GET", "POST"])
 def verify_otp():
     global otp_global
-    email = request.args.get('email')
+    email = request.args.get("email")
     user = User.query.filter_by(email=email).first()
-    if request.method == 'POST':
-        otp = request.form.get('otp')
+    if request.method == "POST":
+        otp = request.form.get("otp")
         if user and user.otp == otp and datetime.datetime.now() < user.otp_expiration:
-            otp_global=otp
-            return redirect(url_for('reset_password', email=email, otp=otp))
+            otp_global = otp
+            return redirect(url_for("reset_password", email=email, otp=otp))
         else:
             flash("Invalid or expired OTP.")
-    return render_template('verify_otp.html', email=email)
+    return render_template("verify_otp.html", email=email)
 
-@app.route('/reset_password', methods=['GET', 'POST'])
+
+@app.route("/reset_password", methods=["GET", "POST"])
 def reset_password():
-    email = request.args.get('email')
-    otp=request.args.get('otp')
-    if otp_global!=otp:
+    email = request.args.get("email")
+    otp = request.args.get("otp")
+    if otp_global != otp:
         flash("Not allowed")
-        return redirect(url_for('home'))
+        return redirect(url_for("home"))
     user = User.query.filter_by(email=email).first()
-    if request.method == 'POST':
-        new_password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
-        if new_password!=confirm_password:
+    if request.method == "POST":
+        new_password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+        if new_password != confirm_password:
             flash("Passwords do not match.")
-            return redirect(url_for('reset_password'))
-        user.password_hash = generate_password_hash(new_password)  # Hash the password in production
+            return redirect(url_for("reset_password"))
+        user.password_hash = generate_password_hash(
+            new_password
+        )  # Hash the password in production
         user.otp = None  # Clear OTP after verification
         user.otp_expiration = None
         db.session.commit()
         flash("Your password has been reset successfully.")
-        return redirect(url_for('home'))
-    return render_template('reset_password.html', email=email)
+        return redirect(url_for("home"))
+    return render_template("reset_password.html", email=email)
 
+
+@app.route("/search", methods=["GET"])
+@auth_required
+def search():
+    category = request.args.get("category")
+    query = request.args.get("query")
+
+    students = []
+    tutors = []
+    slots = []
+
+    if category == "students" and query:
+        students = (
+            db.session.query(Student)
+            .join(User)
+            .filter(
+                User.name.ilike(f"%{query}%")
+                | Student.registration_number.ilike(f"%{query}%")
+            )
+            .all()
+        )
+
+    elif category == "tutors" and query:
+        tutors = (
+            db.session.query(Tutor)
+            .join(User)
+            .filter(User.name.ilike(f"%{query}%") | Tutor.subject.ilike(f"%{query}%"))
+            .all()
+        )
+
+    elif category == "subjects" and query:
+        slots = (
+            db.session.query(Slot)
+            .join(Tutor)
+            .filter(Slot.subject.ilike(f"%{query}%"))
+            .all()
+        )
+
+    return render_template(
+        "search.html",
+        category=category,
+        query=query,
+        students=students,
+        tutors=tutors,
+        slots=slots,
+    )

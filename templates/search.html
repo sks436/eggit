@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Search Tutors, Slots, and Students
+{% endblock %}
+
+{% block content %}
+<h2>Search Tutors, Slots, and Students</h2>
+
+<!-- Search Form -->
+<form action="{{ url_for('search') }}" method="GET">
+  <div class="form-group">
+    <label for="category">Select Category</label>
+    <select class="form-control" id="category" name="category">
+      <option value="">Select Category</option>
+      <option value="tutors" {% if category == 'tutors' %} selected {% endif %}>Tutors</option>
+      <option value="subjects" {% if category == 'subjects' %} selected {% endif %}>Subjects</option>
+      <option value="students" {% if category == 'students' %} selected {% endif %}>Students</option>
+    </select>
+  </div>
+
+  <!-- Dynamic Input for Search -->
+  <div class="form-group">
+    <label for="query">Search</label>
+    <input
+      type="text"
+      class="form-control"
+      id="query"
+      name="query"
+      placeholder="Search for...."
+      value="{{ query }}"
+    />
+  </div>
+
+  <!-- Calendar for Slots (hidden initially) -->
+  <!-- <div id="calendarSection" class="form-group" style="display:none;">
+    <label for="slotDate">Select Date and Time for Slot</label>
+    <input
+      type="datetime-local"
+      class="form-control"
+      id="slotDate"
+      name="slotDate"
+      value="{{ slotDate }}"
+    />
+  </div> -->
+
+  <!-- Submit Button -->
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<!-- Search Results Section -->
+{% if category %}
+  <hr>
+  <h3>Results for "{{ category }}"</h3>
+
+  {% if category == 'students' %}
+    {% if students %}
+      <div class="students-list">
+        {% for student in students %}
+          <div class="student-card">
+            <h4>{{ student.user.name }}</h4>
+            <p><strong>Registration Number:</strong> {{ student.registration_number }}</p>
+            <p><strong>Email:</strong> {{ student.user.email }}</p>
+            <p><strong>Current Year:</strong> {{ student.current_year }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No students found matching your query.</p>
+    {% endif %}
+
+    {% elif category == 'tutors' %}
+    {% if tutors %}
+      <div class="tutors-list">
+        {% for tutor in tutors %}
+          <div class="tutor-card">
+            <h4>{{ tutor.user.name }}</h4>
+            <p><strong>Subject Expertise:</strong> {{ tutor.subject }}</p>
+            <p><strong>Grade:</strong> {{ tutor.grade }}</p>
+            <p><strong>Email:</strong> {{ tutor.user.email }}</p>
+            <p><strong>Rating:</strong> {{ tutor.rating }}</p>
+   
+            <!-- Display Slots for the Tutor -->
+            {% if tutor.slots %}
+              <h3>Slots:</h3>
+              <ul>
+                {% for slot in tutor.slots %}
+                  <li>
+                    <p><strong>Subject:</strong> {{ slot.subject }}</p>
+                    <p><strong>Date:</strong> {{ slot.date }}</p>
+                    <p><strong>Time:</strong> {{ slot.time }}</p>
+                    <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p>No slots available for this tutor.</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No tutors found matching your query.</p>
+    {% endif %}
+   
+
+    {% elif category == 'subjects' %}
+    {% if slots %}
+      <div class="slots-list">
+        {% for slot in slots %}
+          <div class="slot-card">
+            <h4>{{ slot.subject }}</h4>
+            <p><strong>Date:</strong> {{ slot.date }}</p>
+            <p><strong>Time:</strong> {{ slot.time }}</p>
+            <p><strong>Tutor:</strong> {{ slot.tutor.user.name }}</p>
+            <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No slots found matching your query.</p>
+    {% endif %}
+  {% endif %}
+  
+{% endif %}
+
+{% endblock %}
+
+{% block style %}
+<!-- <style>
+  /* Styles for the result cards */
+  .students-list, .tutors-list, .subjects-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .student-card, .tutor-card, .slot-card {
+    background: #f8f9fa;
+    padding: 20px;
+    margin: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+  }
+
+  .student-card h4, .tutor-card h4, .slot-card h4 {
+    color: #007bff;
+  }
+
+  .student-card p, .tutor-card p, .slot-card p {
+    margin: 5px 0;
+  }
+
+</style> -->
+{% endblock %}
+
+{% block script %}
+<!-- <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const categorySelect = document.getElementById('category');
+    const calendarSection = document.getElementById('calendarSection');
+
+    // Event listener for category selection
+    categorySelect.addEventListener('change', function () {
+      const selectedCategory = categorySelect.value;
+
+      // Show or hide the calendar section based on category selection
+      if (selectedCategory === 'subjects') {
+        calendarSection.style.display = 'block'; // Show the calendar for subjects
+      } else {
+        calendarSection.style.display = 'none';  // Hide it for tutors and students
+      }
+    });
+  });
+</script> -->
+{% endblock %}
