@@ -7,6 +7,11 @@ from werkzeug.utils import secure_filename
 import os
 from utils import auth_required
 from controllers_admin import *
+import smtplib
+import secrets
+import datetime
+from email.mime.text import MIMEText
+
 
 
 # Login page
@@ -217,11 +222,6 @@ def profile():
     return render_template("profile.html", user=user)
 
 
-import smtplib
-import secrets
-import datetime
-from email.mime.text import MIMEText
-
 
 def send_otp(email, otp):
     EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
@@ -327,7 +327,7 @@ def search():
         tutors = (
             db.session.query(Tutor)
             .join(User)
-            .filter(User.name.ilike(f"%{query}%") | Tutor.subject.ilike(f"%{query}%"))
+            .filter(User.name.ilike(f"%{query}%") | Tutor.subject.ilike(f"%{query}%") | Tutor.registration_number.ilike(f"%{query}%") )
             .all()
         )
 
