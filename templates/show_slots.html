@@ -30,6 +30,7 @@ block content %}
         <form action="/admin/delete_slot/{{ slot.id }}" method="post">
           <button type="submit">Delete</button>
         </form>
+        
       </td>
     </tr>
     {% endfor %}
@@ -107,6 +108,9 @@ block content %}
       <td>
         <form action="/admin/delete_slot/{{ slot.id }}" method="post">
           <button type="submit">Delete</button>
+        </form>
+        <form action="/admin/show_reviews/{{ slot.id }}" method="post">
+          <button type="submit">Show Reviews</button>
         </form>
       </td>
     </tr>

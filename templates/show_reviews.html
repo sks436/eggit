@@ -1,0 +1,44 @@
+{% extends "base.html" %} {% block title %}View Reviews{% endblock %} {%
+    block content %}
+
+    <h3>Reviews</h3>
+    {% if reviews %}
+    <table>
+      <thead>
+        <tr>
+        <th>Student Name</th>
+          <th>Rating</th>
+          <th>Comment</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for review, name in reviews %}
+        <tr>
+            <td>{{ name }}</td>
+          <td>{{ review.rating }}</td>
+          <td>{{ review.comment }}</td>
+          
+          
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>No reviews.</p>
+    {% endif %}
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {%endblock%}
