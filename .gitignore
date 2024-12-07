@@ -16,3 +16,7 @@ static/IMAGES/
 instance/
 
 # SQLite databases
+# <<<<<<< main
+# # *.sqlite3
+# =======
+# >>>>>>> main
