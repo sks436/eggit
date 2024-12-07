@@ -1,123 +1,210 @@
-{% extends "base.html" %} {% block title %}Slot Details{% endblock %} {%
-block content %}
+{% extends "base.html" %}
+{% block title %}Slot Details{% endblock %}
 
-<!-- Upcoming Slots -->
-<h3>Upcoming Slots</h3>
-{% if upcoming_slots %}
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Subject</th>
-      <th>Date</th>
-      <th>Time</th>
-      <th>Duration</th>
-      <th>Created At</th>
-      <th>Gmeet Link</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for slot in upcoming_slots %}
-    <tr>
-      <td>{{ slot.tutor.user.name }}</td>
-      <td>{{ slot.subject }}</td>
-      <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
-      <td>{{ slot.time.strftime('%H:%M') }}</td>
-      <td>{{ slot.duration }} minutes</td>
-      <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-      <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td>
-      <td>
-        <form action="/admin/delete_slot/{{ slot.id }}" method="post">
-          <button type="submit">Delete</button>
-        </form>
-        
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p>No upcoming slots available.</p>
-{% endif %}
+{% block content %}
+<div class="container py-4">
+  <!-- Upcoming Slots -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white d-flex align-items-center">
+      <i class="bi bi-calendar-event me-2"></i>
+      <h5 class="mb-0">Upcoming Slots</h5>
+    </div>
+    <div class="card-body">
+      {% if upcoming_slots %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Duration</th>
+                <th>Created At</th>
+                <th>Meet Link</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for slot in upcoming_slots %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-person-circle me-2"></i>
+                      {{ slot.tutor.user.name }}
+                    </div>
+                  </td>
+                  <td><span class="badge bg-info">{{ slot.subject }}</span></td>
+                  <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
+                  <td><i class="bi bi-clock me-1"></i>{{ slot.time.strftime('%H:%M') }}</td>
+                  <td>{{ slot.duration }} mins</td>
+                  <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                  <td>
+                    <a href="{{ slot.gmeet_link }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                      <i class="bi bi-camera-video me-1"></i>Join
+                    </a>
+                  </td>
+                  <td>
+                    <form action="/admin/delete_slot/{{ slot.id }}" method="post" class="d-inline">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center text-muted py-4">
+          <i class="bi bi-calendar-x display-4"></i>
+          <p class="mt-2">No upcoming slots available.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
 
-<!-- Ongoing Slots -->
-<h3>Ongoing Slots</h3>
-{% if ongoing_slots %}
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Subject</th>
-      <th>Date</th>
-      <th>Time</th>
-      <th>Duration</th>
-      <th>Created At</th>
-      <th>Gmeet Link</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for slot in ongoing_slots %}
-    <tr>
-      <td>{{ slot.tutor.user.name }}</td>
-      <td>{{ slot.subject }}</td>
-      <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
-      <td>{{ slot.time.strftime('%H:%M') }}</td>
-      <td>{{ slot.duration }} minutes</td>
-      <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-      <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td>
-      <td>
-        <form action="/admin/delete_slot/{{ slot.id }}" method="post">
-          <button type="submit">Delete</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p>No ongoing slots available.</p>
-{% endif %}
+  <!-- Ongoing Slots -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-success text-white d-flex align-items-center">
+      <i class="bi bi-play-circle me-2"></i>
+      <h5 class="mb-0">Ongoing Slots</h5>
+    </div>
+    <div class="card-body">
+      {% if ongoing_slots %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Duration</th>
+                <th>Created At</th>
+                <th>Meet Link</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for slot in ongoing_slots %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-person-circle me-2"></i>
+                      {{ slot.tutor.user.name }}
+                    </div>
+                  </td>
+                  <td><span class="badge bg-info">{{ slot.subject }}</span></td>
+                  <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
+                  <td><i class="bi bi-clock me-1"></i>{{ slot.time.strftime('%H:%M') }}</td>
+                  <td>{{ slot.duration }} mins</td>
+                  <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                  <td>
+                    <a href="{{ slot.gmeet_link }}" class="btn btn-sm btn-success" target="_blank">
+                      <i class="bi bi-camera-video me-1"></i>Join Now
+                    </a>
+                  </td>
+                  <td>
+                    <form action="/admin/delete_slot/{{ slot.id }}" method="post" class="d-inline">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center text-muted py-4">
+          <i class="bi bi-camera-video-off display-4"></i>
+          <p class="mt-2">No ongoing slots available.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
 
-<!-- Completed Slots -->
-<h3>Completed Slots</h3>
-{% if completed_slots %}
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Subject</th>
-      <th>Date</th>
-      <th>Time</th>
-      <th>Duration</th>
-      <th>Created At</th>
-      <th>Gmeet Link</th>
-      <th>Average Rating</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for slot, average_rating in slots_completed %}
-    <tr>
-      <td>{{ slot.tutor.user.name }}</td>
-      <td>{{ slot.subject }}</td>
-      <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
-      <td>{{ slot.time.strftime('%H:%M') }}</td>
-      <td>{{ slot.duration }} minutes</td>
-      <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-      <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td>
-      <td>{{ average_rating if average_rating else "No ratings yet" }}</td>
-      <td>
-        <form action="/admin/delete_slot/{{ slot.id }}" method="post">
-          <button type="submit">Delete</button>
-        </form>
-        <form action="/admin/show_reviews/{{ slot.id }}" method="post">
-          <button type="submit">Show Reviews</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-{% else %}
-<p>No completed slots available.</p>
-{% endif %} {% endblock %}
+  <!-- Completed Slots -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white d-flex align-items-center">
+      <i class="bi bi-check-circle me-2"></i>
+      <h5 class="mb-0">Completed Slots</h5>
+    </div>
+    <div class="card-body">
+      {% if completed_slots %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Duration</th>
+                <th>Created At</th>
+                <th>Meet Link</th>
+                <th>Rating</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for slot, average_rating in slots_completed %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-person-circle me-2"></i>
+                      {{ slot.tutor.user.name }}
+                    </div>
+                  </td>
+                  <td><span class="badge bg-info">{{ slot.subject }}</span></td>
+                  <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
+                  <td><i class="bi bi-clock me-1"></i>{{ slot.time.strftime('%H:%M') }}</td>
+                  <td>{{ slot.duration }} mins</td>
+                  <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                  <td>
+                    <a href="{{ slot.gmeet_link }}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                      <i class="bi bi-camera-video me-1"></i>View
+                    </a>
+                  </td>
+                  <td>
+                    {% if average_rating %}
+                      <div class="d-flex align-items-center">
+                        <span class="me-2">{{ "%.1f"|format(average_rating) }}</span>
+                        <i class="bi bi-star-fill text-warning"></i>
+                      </div>
+                    {% else %}
+                      <span class="text-muted">No ratings</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="btn-group">
+                      <form action="/admin/delete_slot/{{ slot.id }}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger me-1">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </form>
+                      <form action="/admin/show_reviews/{{ slot.id }}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-info">
+                          <i class="bi bi-star me-1"></i>Reviews
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center text-muted py-4">
+          <i class="bi bi-clock-history display-4"></i>
+          <p class="mt-2">No completed slots available.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

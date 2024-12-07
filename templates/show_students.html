@@ -1,35 +1,80 @@
-{% extends "base.html" %} {% block title %}Student Details{% endblock %} {%
-block content %}
+{% extends "base.html" %}
+{% block title %}Student Details{% endblock %}
 
-<section>
-  <h2>Students</h2>
-  {% if students and students|length > 0 %}
-  <ul>
-    {% for student in students %}
-    <li>
-      <strong>Name:</strong> {{student.user.name}}
-      <br />
-      <strong>Registration Number:</strong> {{ student.registration_number }}
-      <br />
-      <a
-        href="{{ url_for('uploaded_file', filename=student.id_card.split('\\')[-1]) }}"
-        target="_blank"
-      >
-        <button class="btn btn-info">ID Card</button>
-      </a>
-      <form
-        action="/admin/delete_student/{{student.registration_number}}"
-        method="post"
-      >
-        <button type="submit" value="">Delete</button>
-      </form>
-    </li>
-    <hr />
-    {% endfor %}
-  </ul>
-  {% else %}
-  <p>No Students.</p>
-  {% endif %}
-</section>
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white d-flex align-items-center">
+      <i class="bi bi-mortarboard-fill me-2"></i>
+      <h5 class="mb-0">Students</h5>
+    </div>
+    <div class="card-body">
+      {% if students and students|length > 0 %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          {% for student in students %}
+            <div class="col">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle bg-light p-2 me-3">
+                      <i class="bi bi-person-circle fs-3 text-primary"></i>
+                    </div>
+                    <div>
+                      <h6 class="card-title mb-1">{{student.user.name}}</h6>
+                      <p class="card-subtitle text-muted small mb-0">
+                        <i class="bi bi-hash me-1"></i>{{ student.registration_number }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between mt-3">
+                    <a href="{{ url_for('uploaded_file', filename=student.id_card.split('\\')[-1]) }}"
+                       target="_blank"
+                       class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-card-image me-1"></i>View ID Card
+                    </a>
+                    <form action="/admin/delete_student/{{student.registration_number}}"
+                          method="post"
+                          class="d-inline"
+                          onsubmit="return confirm('Are you sure you want to delete this student?');">
+                      <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-trash me-1"></i>Delete
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-5">
+          <i class="bi bi-people display-1 text-muted mb-3"></i>
+          <h5 class="text-muted">No Students Found</h5>
+          <p class="text-muted mb-0">There are currently no registered students in the system.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
 
+<!-- Custom CSS for animations and hover effects -->
+{% block extra_css %}
+<style>
+  .card {
+    transition: transform 0.2s ease-in-out;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  .btn {
+    transition: all 0.2s ease-in-out;
+  }
+  .rounded-circle {
+    transition: background-color 0.2s ease-in-out;
+  }
+  .card:hover .rounded-circle {
+    background-color: #e9ecef !important;
+  }
+</style>
+{% endblock %}
 {% endblock %}

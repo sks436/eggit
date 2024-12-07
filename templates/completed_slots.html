@@ -2,45 +2,172 @@
 {% block title %}Completed Slots{% endblock %}
 
 {% block content %}
+<div class="container py-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-success text-white d-flex align-items-center">
+      <i class="bi bi-check-circle-fill me-2"></i>
+      <h5 class="mb-0">Completed Classes</h5>
+    </div>
+    <div class="card-body">
+      {% if slots_completed and slots_completed|length > 0 %}
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+          {% for request, slot, name, review in slots_completed %}
+            <div class="col">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                  <!-- Class Header -->
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle bg-light p-2 me-3">
+                      <i class="bi bi-person-video3 fs-3 text-success"></i>
+                    </div>
+                    <div>
+                      <h6 class="card-title mb-1">{{ name }}</h6>
+                      <span class="badge bg-info">{{ slot.subject }}</span>
+                    </div>
+                  </div>
 
-<section>
-    <h2>Completed Classes</h2>
-    {% if slots_completed and slots_completed|length > 0 %}
-    <ul>
-        {% for request, slot, name, review in slots_completed %}
-        <li>
-            <strong>Name:</strong> {{ name }} <br />
-            <strong>Subject:</strong> {{ slot.subject }} <br />
-            <strong>Date:</strong> {{ slot.date }} <br />
-            <strong>Time:</strong> {{ slot.time }} <br />
-            <strong>Google Meet:</strong>
-            <a href="{{ slot.gmeet_link }}" target="_blank">Join</a>
+                  <!-- Class Details -->
+                  <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="bi bi-calendar-event text-primary me-2"></i>
+                      <span>{{ slot.date.strftime('%B %d, %Y') }}</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="bi bi-clock text-primary me-2"></i>
+                      <span>{{ slot.time.strftime('%I:%M %p') }}</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-camera-video text-primary me-2"></i>
+                      <a href="{{ slot.gmeet_link }}" 
+                         target="_blank" 
+                         class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>View Recording
+                      </a>
+                    </div>
+                  </div>
 
-            {% if review %}
-            <p><strong>Your Rating:</strong> {{ review.rating }}/5</p>
-            <p><strong>Your Comment:</strong> {{ review.comment }}</p>
-            {% else %}
-            <form action="{{ url_for('submit_review', slot_id=slot.id) }}" method="POST">
-                <div class="form-group">
-                    <label for="rating">Rating (1 to 5):</label>
-                    <input type="number" name="rating" min="1" max="5" class="form-control" required>
+                  <!-- Review Section -->
+                  {% if review %}
+                    <div class="card bg-light border-0">
+                      <div class="card-body">
+                        <h6 class="card-subtitle mb-2">
+                          <i class="bi bi-star-fill text-warning me-2"></i>Your Review
+                        </h6>
+                        <div class="mb-2">
+                          <div class="d-flex align-items-center">
+                            {% for i in range(5) %}
+                              <i class="bi bi-star{{ '-fill' if i < review.rating else '' }} {{ 'text-warning' if i < review.rating else 'text-muted' }}"></i>
+                            {% endfor %}
+                            <span class="ms-2 text-muted">({{ review.rating }}/5)</span>
+                          </div>
+                        </div>
+                        {% if review.comment %}
+                          <p class="card-text small mb-0">
+                            <i class="bi bi-chat-quote text-muted me-2"></i>
+                            {{ review.comment }}
+                          </p>
+                        {% endif %}
+                      </div>
+                    </div>
+                  {% else %}
+                    <div class="card bg-light border-0">
+                      <div class="card-body">
+                        <h6 class="card-subtitle mb-3">
+                          <i class="bi bi-star text-warning me-2"></i>Submit Your Review
+                        </h6>
+                        <form action="{{ url_for('submit_review', slot_id=slot.id) }}" method="POST">
+                          <!-- Rating Input -->
+                          <div class="mb-3">
+                            <label class="form-label small">Rating</label>
+                            <div class="rating-input d-flex align-items-center">
+                              {% for i in range(5) %}
+                                <input type="radio" 
+                                       class="btn-check" 
+                                       name="rating" 
+                                       value="{{ i + 1 }}" 
+                                       id="rating{{ slot.id }}{{ i + 1 }}" 
+                                       required>
+                                <label class="btn btn-outline-warning btn-sm me-1" 
+                                       for="rating{{ slot.id }}{{ i + 1 }}">
+                                  <i class="bi bi-star-fill"></i>
+                                </label>
+                              {% endfor %}
+                            </div>
+                          </div>
+
+                          <!-- Comment Input -->
+                          <div class="mb-3">
+                            <label class="form-label small">Comment (optional)</label>
+                            <textarea name="comment" 
+                                      class="form-control form-control-sm" 
+                                      rows="2" 
+                                      placeholder="Share your experience..."></textarea>
+                          </div>
+
+                          <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="bi bi-send me-1"></i>Submit Review
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  {% endif %}
                 </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-5">
+          <i class="bi bi-calendar-check display-1 text-muted mb-3"></i>
+          <h5 class="text-muted">No Completed Classes</h5>
+          <p class="text-muted mb-0">You haven't completed any classes yet.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
 
-                <div class="form-group">
-                    <label for="comment">Comment (optional):</label>
-                    <textarea name="comment" class="form-control" rows="4"></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Submit Review</button>
-            </form>
-            {% endif %}
-        </li>
-        <hr />
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>No completed classes.</p>
-    {% endif %}
-</section>
-
+<!-- Custom CSS for animations and hover effects -->
+{% block extra_css %}
+<style>
+  .card {
+    transition: transform 0.2s ease-in-out;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  .btn {
+    transition: all 0.2s ease-in-out;
+  }
+  .rounded-circle {
+    transition: background-color 0.2s ease-in-out;
+  }
+  .card:hover .rounded-circle {
+    background-color: #e9ecef !important;
+  }
+  .rating-input label {
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    margin: 0;
+    transition: all 0.2s ease-in-out;
+  }
+  .rating-input label:hover {
+    transform: scale(1.1);
+  }
+  .btn-check:checked + .btn-outline-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+  }
+  .bi-star-fill {
+    font-size: 1rem;
+  }
+  textarea {
+    resize: none;
+  }
+  .bg-light {
+    transition: background-color 0.2s ease-in-out;
+  }
+</style>
+{% endblock %}
 {% endblock %}

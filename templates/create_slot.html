@@ -1,74 +1,247 @@
 {% extends "base.html" %}
 {% block title %}Create Slot{% endblock %}
+
 {% block content %}
-<div class="container">
-  <h1 class="text-center my-4">Create a Slot</h1>
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <!-- Card Header -->
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+          <i class="bi bi-calendar-plus-fill me-2"></i>
+          <h5 class="mb-0">Create a Teaching Slot</h5>
+        </div>
 
-  <!-- Form for Slot Creation -->
-  <form action="{{ url_for('create_slot') }}" method="POST" class="needs-validation" novalidate>
-    
-    <!-- Subject -->
-    <div class="mb-3">
-      <label for="subject" class="form-label">Subject</label>
-      <input
-        type="text"
-        class="form-control"
-        id="subject"
-        name="subject"
-        placeholder="Enter subject"
-        required
-      />
-      <div class="invalid-feedback">Please provide a subject.</div>
-    </div>
+        <!-- Card Body -->
+        <div class="card-body p-4">
+          <form action="{{ url_for('create_slot') }}" method="POST" class="needs-validation" novalidate>
+            
+            <!-- Subject -->
+            <div class="mb-4">
+              <label for="subject" class="form-label">
+                <i class="bi bi-book me-2"></i>Subject
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light">
+                  <i class="bi bi-pencil-square text-primary"></i>
+                </span>
+                <input type="text"
+                       class="form-control"
+                       id="subject"
+                       name="subject"
+                       placeholder="e.g., Mathematics, Physics"
+                       required />
+              </div>
+              <div class="invalid-feedback">
+                <i class="bi bi-exclamation-circle me-1"></i>
+                Please provide a subject.
+              </div>
+            </div>
 
-    <!-- Date -->
-    <div class="mb-3">
-      <label for="date" class="form-label">Date</label>
-      <input type="date" class="form-control" id="date" name="date" required />
-      <div class="invalid-feedback">Please select a valid date.</div>
-    </div>
+            <!-- Date and Time Row -->
+            <div class="row mb-4">
+              <!-- Date -->
+              <div class="col-md-6 mb-3 mb-md-0">
+                <label for="date" class="form-label">
+                  <i class="bi bi-calendar-event me-2"></i>Date
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light">
+                    <i class="bi bi-calendar text-primary"></i>
+                  </span>
+                  <input type="date"
+                         class="form-control"
+                         id="date"
+                         name="date"
+                         required
+                         min="{{ today }}" />
+                </div>
+                <div class="invalid-feedback">
+                  <i class="bi bi-exclamation-circle me-1"></i>
+                  Please select a valid date.
+                </div>
+              </div>
 
-    <!-- Time -->
-    <div class="mb-3">
-      <label for="time" class="form-label">Time</label>
-      <input type="time" class="form-control" id="time" name="time" required />
-      <div class="invalid-feedback">Please select a valid time.</div>
-    </div>
+              <!-- Time -->
+              <div class="col-md-6">
+                <label for="time" class="form-label">
+                  <i class="bi bi-clock me-2"></i>Time
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light">
+                    <i class="bi bi-clock text-primary"></i>
+                  </span>
+                  <input type="time"
+                         class="form-control"
+                         id="time"
+                         name="time"
+                         required />
+                </div>
+                <div class="invalid-feedback">
+                  <i class="bi bi-exclamation-circle me-1"></i>
+                  Please select a valid time.
+                </div>
+              </div>
+            </div>
 
-    <!-- Duration -->
-    <div class="mb-3">
-      <label for="duration" class="form-label">Duration (in minutes)</label>
-      <input
-        type="number"
-        class="form-control"
-        id="duration"
-        name="duration"
-        placeholder="Enter duration"
-        min="1"
-        required
-      />
-      <div class="invalid-feedback">Please provide a valid duration.</div>
-    </div>
+            <!-- Duration -->
+            <div class="mb-4">
+              <label for="duration" class="form-label">
+                <i class="bi bi-hourglass-split me-2"></i>Duration
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light">
+                  <i class="bi bi-stopwatch text-primary"></i>
+                </span>
+                <input type="number"
+                       class="form-control"
+                       id="duration"
+                       name="duration"
+                       placeholder="Duration in minutes"
+                       min="15"
+                       max="180"
+                       step="15"
+                       required />
+                <span class="input-group-text bg-light">minutes</span>
+              </div>
+              <div class="form-text text-muted">
+                <i class="bi bi-info-circle me-1"></i>
+                Choose between 15 to 180 minutes
+              </div>
+              <div class="invalid-feedback">
+                <i class="bi bi-exclamation-circle me-1"></i>
+                Please provide a valid duration.
+              </div>
+            </div>
 
-    <!-- Google Meet Link -->
-    <div class="mb-3">
-      <label for="gmeet_link" class="form-label">Google Meet Link</label>
-      <input
-        type="url"
-        class="form-control"
-        id="gmeet_link"
-        name="gmeet_link"
-        placeholder="Enter Google Meet link"
-        required
-      />
-      <div class="invalid-feedback">Please provide a valid link.</div>
-    </div>
+            <!-- Google Meet Link -->
+            <div class="mb-4">
+              <label for="gmeet_link" class="form-label">
+                <i class="bi bi-camera-video me-2"></i>Google Meet Link
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light">
+                  <i class="bi bi-link-45deg text-primary"></i>
+                </span>
+                <input type="url"
+                       class="form-control"
+                       id="gmeet_link"
+                       name="gmeet_link"
+                       placeholder="https://meet.google.com/..."
+                       pattern="https://meet\.google\.com/.*"
+                       required />
+              </div>
+              <div class="form-text text-muted">
+                <i class="bi bi-info-circle me-1"></i>
+                Must be a valid Google Meet link
+              </div>
+              <div class="invalid-feedback">
+                <i class="bi bi-exclamation-circle me-1"></i>
+                Please provide a valid Google Meet link.
+              </div>
+            </div>
 
-    <!-- Submit Button -->
-    <div class="text-center">
-      <button type="submit" class="btn btn-primary">Create Slot</button>
+            <!-- Submit Button -->
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary px-4 py-2">
+                <i class="bi bi-check-circle me-2"></i>Create Slot
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Help Card -->
+      <div class="card mt-4 shadow-sm border-info">
+        <div class="card-body">
+          <h6 class="card-title d-flex align-items-center text-info mb-3">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            Tips for Creating a Slot
+          </h6>
+          <ul class="list-unstyled mb-0 small">
+            <li class="mb-2">
+              <i class="bi bi-check2 text-success me-2"></i>
+              Choose a clear and specific subject name
+            </li>
+            <li class="mb-2">
+              <i class="bi bi-check2 text-success me-2"></i>
+              Schedule at least 24 hours in advance
+            </li>
+            <li class="mb-2">
+              <i class="bi bi-check2 text-success me-2"></i>
+              Create your Google Meet link before submitting
+            </li>
+            <li>
+              <i class="bi bi-check2 text-success me-2"></i>
+              Keep duration between 15 to 180 minutes
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
-  </form>
+  </div>
 </div>
 
+{% block extra_css %}
+<style>
+  .input-group-text {
+    border-right: none;
+  }
+  .form-control {
+    border-left: none;
+  }
+  .form-control:focus {
+    border-color: #dee2e6;
+    box-shadow: none;
+  }
+  .form-control:focus + .input-group-text {
+    border-color: #dee2e6;
+  }
+  .input-group:focus-within {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+  .card {
+    transition: transform 0.2s ease-in-out;
+  }
+  .btn {
+    transition: all 0.2s ease-in-out;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Form validation
+  (function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+  })()
+
+  // Set min date to today
+  document.getElementById('date').min = new Date().toISOString().split('T')[0]
+
+  // Duration step buttons
+  const durationInput = document.getElementById('duration')
+  durationInput.addEventListener('input', function() {
+    let value = parseInt(this.value)
+    if (value < 15) this.value = 15
+    if (value > 180) this.value = 180
+    if (value % 15 !== 0) {
+      this.value = Math.round(value / 15) * 15
+    }
+  })
+</script>
+{% endblock %}
 {% endblock %}
