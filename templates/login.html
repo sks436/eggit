@@ -12,38 +12,37 @@ block content %}
   </h4>
 </div>
 
-        <!-- Login Form -->
-        <form action="" method="post">
-          <div class="mb-3">
-            <input type="text" class="form-control" name="login_id" placeholder="Login Id" required>
-          </div>
-          <div class="mb-3">
-            <input type="password" class="form-control" name="password" placeholder="Password" required>
-          </div>
-          <div class="d-grid">
-            <button type="submit" class="btn btn-primary btn-lg">Log In</button>
-          </div>
-        </form>
+<!-- Login Form -->
+<form action="" method="post">
+  <div class="mb-3">
+    <input type="text" class="form-control" name="login_id" placeholder="Login Id" required>
+  </div>
+  <div class="mb-3">
+    <input type="password" class="form-control" name="password" placeholder="Password" required>
+  </div>
+  <div class="d-grid">
+    <button type="submit" class="btn btn-primary btn-lg">Log In</button>
+  </div>
+</form>
 
-<!-- <<<<<<< main -->
-        <!-- Links -->
-<!--         <div class="text-center mt-4"> -->
-<!--           <div class="mb-2"> -->
-<!--             <a href="{{ url_for('register_student') }}" class="text-decoration-none">Create Student Account</a> -->
-<!--           </div> -->
-<!--           <div> -->
-<!--             <a href="{{ url_for('register_tutor') }}" class="btn btn-outline-secondary">Register as a Tutor</a> -->
-<!--           </div> -->
-<!--         </div> -->
-<!--       </div> -->
-<!--     </div> -->
-<!--   </div> -->
+<!-- Links -->
+<div class="text-center mt-4">
+  <div class="mb-2">
+    <a href="{{ url_for('register_student') }}" class="text-decoration-none">Create Student Account</a>
+  </div>
+  <div>
+    <a href="{{ url_for('register_tutor') }}" class="btn btn-outline-secondary">Register as a Tutor</a>
+  </div>
+</div>
+</div>
+</div>
+</div>
 <!-- ======= -->
-<!-- <div id="formFooter"> -->
-<!--   <a href="{{ url_for('register_student') }}">Create Account?</a> -->
-<!-- </div><br> -->
-<!-- <div id="formFooter"> -->
-<!--   <a href="{{ url_for('forgot_password') }}">Forgot Password?</a> -->
-<!-- >>>>>>> main -->
+<div id="formFooter">
+  <a href="{{ url_for('register_student') }}">Create Account?</a>
+</div><br>
+<div id="formFooter">
+  <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
+
 </div>
 {% endblock %}

@@ -1,72 +1,8 @@
 {% extends "base.html" %} {% block title %}Register Student{% endblock %} {%
 block content %}
 
-<div>
-  <h1 style="color: rgb(61, 19, 230); font-family: 'Montserrat', sans-serif">
-    Eggit
-  </h1>
-  <h3>Welcome</h3>
-  <p>A peer-to-peer learning web-platform</p>
-  <a href="{{ url_for('home') }}"> <button>Login</button></a>
-</div>
 
-<a href="#home">Student</a>
-<a href="{{ url_for('register_tutor') }}">Tutor</a>
 
-<h3>Register as a Student</h3>
-
-<form action="" method="post" enctype="multipart/form-data">
-  <input
-    type="text"
-    name="registration_number"
-    placeholder="Registration Number *"
-    value=""
-    required
-  />
-  <input type="text" name="name" placeholder="Full Name *" value="" required />
-  <input
-    type="email"
-    name="email"
-    placeholder="Your Email *"
-    value=""
-    required
-  />
-  <input
-    type="password"
-    name="password"
-    placeholder="Password *"
-    value=""
-    required
-  />
-  <input
-    type="password"
-    name="confirm_password"
-    placeholder="Confirm Password *"
-    value=""
-    required
-  />
-  <div>
-    <select name="current_year" required>
-      <option selected disabled>Please select your year</option>
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-    </select>
-  </div>
-  <div>
-    <label>Attach ID Card</label>
-    <input type="file" name="id_card" accept=".jpg,.jpeg,.png,.pdf" required />
-  </div>
-  <input type="submit" value="Register" />
-</form>
-
-{% endblock %}
-{% extends "base.html" %}
-
-{% block title %}Student Registration{% endblock %}
-
-{% block content %}
 <div class="row justify-content-center">
   <div class="col-md-8 col-lg-6">
     <div class="card shadow-lg border-0 rounded-lg mt-4">
