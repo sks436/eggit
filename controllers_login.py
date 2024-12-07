@@ -214,3 +214,83 @@ def profile():
         return redirect(url_for('profile'))
 
     return render_template('profile.html', user=user)
+
+
+import smtplib
+import secrets
+import datetime
+from email.mime.text import MIMEText
+
+
+def send_otp(email, otp):
+    EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
+    EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+    SMTP_SERVER = os.getenv("SMTP_SERVER") 
+    SMTP_PORT = os.getenv("SMTP_PORT")
+
+    message = MIMEText(f"Your OTP for password reset is: {otp}/n Valid for 10 minutes.")
+    message['Subject'] = 'Eggit: Password Reset OTP'
+    message['From'] = EMAIL_ADDRESS
+    message['To'] = email
+
+    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+        server.starttls()
+        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        server.send_message(message)
+
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if "user_id" in session:
+            session.pop("user_id")
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            otp = secrets.token_hex(3)  # Generate a 6-character OTP
+            user.otp = otp
+            user.otp_expiration = datetime.datetime.now() + datetime.timedelta(minutes=10)
+            db.session.commit()
+            send_otp(email, otp)
+            flash("An OTP has been sent to your email.")
+            return redirect(url_for('verify_otp', email=email))
+        else:
+            flash("Email not found.")
+    return render_template('forgot_password.html')
+
+
+@app.route('/verify_otp', methods=['GET', 'POST'])
+def verify_otp():
+    global otp_global
+    email = request.args.get('email')
+    user = User.query.filter_by(email=email).first()
+    if request.method == 'POST':
+        otp = request.form.get('otp')
+        if user and user.otp == otp and datetime.datetime.now() < user.otp_expiration:
+            otp_global=otp
+            return redirect(url_for('reset_password', email=email, otp=otp))
+        else:
+            flash("Invalid or expired OTP.")
+    return render_template('verify_otp.html', email=email)
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    email = request.args.get('email')
+    otp=request.args.get('otp')
+    if otp_global!=otp:
+        flash("Not allowed")
+        return redirect(url_for('home'))
+    user = User.query.filter_by(email=email).first()
+    if request.method == 'POST':
+        new_password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        if new_password!=confirm_password:
+            flash("Passwords do not match.")
+            return redirect(url_for('reset_password'))
+        user.password_hash = generate_password_hash(new_password)  # Hash the password in production
+        user.otp = None  # Clear OTP after verification
+        user.otp_expiration = None
+        db.session.commit()
+        flash("Your password has been reset successfully.")
+        return redirect(url_for('home'))
+    return render_template('reset_password.html', email=email)
+
