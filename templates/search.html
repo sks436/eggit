@@ -47,12 +47,9 @@ Search
     <label for="query">Search</label>
     <input type="text" class="form-control" id="query" name="query" placeholder="Search for...." value="" />
   </div>
-
-
   <!-- Submit Button -->
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
-
 
 
 <!-- Search Results Section -->
@@ -82,8 +79,8 @@ Search
 <p>No students found matching your query.</p>
 {% endif %}
 
-{% elif category == 'tutors' %}
 
+{% elif category == 'tutors' %}
 
 {% if user.role=="student" %}
 {% if tutors %}
@@ -176,10 +173,7 @@ Search
 {% else %}
 <p>No tutors found matching your query.</p>
 {% endif %}
-
 {% endif %}
-
-
 
 
 {% elif category == 'subjects' %}
@@ -208,7 +202,6 @@ Search
 <p>No slots found matching your query.</p>
 {% endif %}
 
-
 {% elif user.role=="student" %}
 
 {% if slots %}
@@ -230,7 +223,6 @@ Search
 <p>No slots found matching your query.</p>
 {% endif %}
 
-
 {% elif user.role=="tutor" %}
 
 {% if slots %}
@@ -251,19 +243,11 @@ Search
 {% else %}
 <p>No slots found matching your query.</p>
 {% endif %}
-
-
 {% endif %}
 
 
 {% endif %}
-
-
-
 {% endif %}
-
 {% endblock %}
-
 {% block style %}
-
 {% endblock %}

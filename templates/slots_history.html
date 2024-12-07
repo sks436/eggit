@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Class History{% endblock %}
+{% block title %}Completed Slots{% endblock %}
 
 {% block content %}
 
@@ -29,10 +29,6 @@
                     <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                     <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td>
                     <td>{{ average_rating if average_rating else "No ratings yet" }}</td>
-                    <!-- <td><a href="?delete=true&slot_id={{ slot.id }}">
-                        <button>Delete slot</button>
-                    </a>
-                </td> -->
                 </tr>
                 {% endfor %}
             </tbody>
