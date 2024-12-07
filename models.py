@@ -38,7 +38,9 @@ class Student(db.Model):
     requests = db.relationship(
         "Request", back_populates="student", cascade="all, delete-orphan"
     )
-    reviews = db.relationship("Review", back_populates="student", cascade="all, delete-orphan")
+    reviews = db.relationship(
+        "Review", back_populates="student", cascade="all, delete-orphan"
+    )
 
 
 # Tutors Table

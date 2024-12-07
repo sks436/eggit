@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="../static/style.css" />
   </head>
   <body>
     {% include 'navbar.html' with context %}
@@ -13,7 +14,6 @@
       <div class="alert alert-danger" role="alert">{{ message }}</div>
       {% endfor %} {% endif %} {% endwith %}
     </section>
-
 
     <main>
       {% block content %} Role-specific content will be inserted here {%

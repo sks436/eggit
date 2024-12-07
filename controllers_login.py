@@ -1,3 +1,4 @@
+import re
 from flask import render_template, request, url_for, redirect, flash, session
 from app import app
 from models import *
@@ -6,6 +7,7 @@ from werkzeug.utils import secure_filename
 import os
 from utils import auth_required
 from controllers_admin import *
+
 
 # Login page
 @app.route("/", methods=["GET", "POST"])
@@ -186,31 +188,77 @@ def logout():
 def profile():
     user = User.query.get(session["user_id"])
     if request.method == "POST":
-        name = request.form.get('name')
-        current_password = request.form.get('current_password')
-        new_password = request.form.get('new_password')
-        confirm_password = request.form.get('confirm_password')
-        email = request.form.get('email')
+        name = request.form.get("name")
+        current_password = request.form.get("current_password")
+        new_password = request.form.get("new_password")
+        confirm_password = request.form.get("confirm_password")
+        email = request.form.get("email")
 
         if not current_password or not new_password or not confirm_password:
-            flash('Please fill out all the required fields')
-            return redirect(url_for('profile'))
-        
-        if not check_password_hash(user.password_hash, current_password):
-            flash('Incorrect password')
-            return redirect(url_for('profile'))
-        
-        if new_password != confirm_password:
-                flash("Passwords do not match")
-                return redirect(url_for("profile"))
+            flash("Please fill out all the required fields")
+            return redirect(url_for("profile"))
 
-        
+        if not check_password_hash(user.password_hash, current_password):
+            flash("Incorrect password")
+            return redirect(url_for("profile"))
+
+        if new_password != confirm_password:
+            flash("Passwords do not match")
+            return redirect(url_for("profile"))
+
         new_password_hash = generate_password_hash(new_password)
         user.name = name
         user.password_hash = new_password_hash
         user.email = email
         db.session.commit()
-        flash('Profile updated successfully')
-        return redirect(url_for('profile'))
+        flash("Profile updated successfully")
+        return redirect(url_for("profile"))
 
-    return render_template('profile.html', user=user)
+    return render_template("profile.html", user=user)
+
+
+@app.route("/search", methods=["GET"])
+@auth_required
+def search():
+    category = request.args.get("category")
+    query = request.args.get("query")
+
+    students = []
+    tutors = []
+    slots = []
+
+    if category == "students" and query:
+        students = (
+            db.session.query(Student)
+            .join(User)
+            .filter(
+                User.name.ilike(f"%{query}%")
+                | Student.registration_number.ilike(f"%{query}%")
+            )
+            .all()
+        )
+
+    elif category == "tutors" and query:
+        tutors = (
+            db.session.query(Tutor)
+            .join(User)
+            .filter(User.name.ilike(f"%{query}%") | Tutor.subject.ilike(f"%{query}%"))
+            .all()
+        )
+
+    elif category == "subjects" and query:
+        slots = (
+            db.session.query(Slot)
+            .join(Tutor)
+            .filter(Slot.subject.ilike(f"%{query}%"))
+            .all()
+        )
+
+    return render_template(
+        "search.html",
+        category=category,
+        query=query,
+        students=students,
+        tutors=tutors,
+        slots=slots,
+    )
