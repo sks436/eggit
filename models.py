@@ -18,6 +18,8 @@ class User(db.Model):
         db.Enum("student", "tutor", "admin", name="user_roles"), nullable=False
     )
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    otp = db.Column(db.String(6), nullable=True)  # Store OTP temporarily
+    otp_expiration = db.Column(db.DateTime, nullable=True)  # OTP expiration
 
     # Relationships
     student = db.relationship("Student", back_populates="user", uselist=False)
@@ -38,7 +40,7 @@ class Student(db.Model):
     requests = db.relationship(
         "Request", back_populates="student", cascade="all, delete-orphan"
     )
-    reviews = db.relationship("Review", back_populates="student")
+    reviews = db.relationship("Review", back_populates="student", cascade="all, delete-orphan")
 
 
 # Tutors Table
@@ -147,3 +149,4 @@ with app.app_context():
         )
         db.session.add(admin)
         db.session.commit()
+

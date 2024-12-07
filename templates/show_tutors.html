@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block title %}Admin Dashboard{% endblock %} {%
+{% extends "base.html" %} {% block title %}Tutor Details{% endblock %} {%
 block content %}
 
 <section>
@@ -17,7 +17,8 @@ block content %}
         >
       </form>
       <br />
-      <strong>Registration Number:</strong> {{ tutor.registration_number }}
+      <strong>Registration Number:</strong> {{ tutor.registration_number.split('_')[0] }}
+
       <br />
       <a
         href="{{ url_for('uploaded_file', filename=tutor.grade_history.split('\\')[-1]) }}"
