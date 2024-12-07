@@ -6,8 +6,10 @@ app = Flask(__name__)
 
 import config
 import models
+import api
 import controllers
 import controllers_login
+import controllers_admin
 
 
 if __name__ == "__main__":

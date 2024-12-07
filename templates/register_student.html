@@ -1,12 +1,8 @@
-<section>
-  {% with messages = get_flashed_messages() %} {% if messages %} {% for message
-  in messages %}
-  <div class="alert alert-danger" role="alert">{{ message }}</div>
-  {% endfor %} {% endif %} {% endwith %}
-</section>
+{% extends "base.html" %} {% block title %}Register Student{% endblock %} {%
+block content %}
 
 <div>
-  <h1 style="color: rgb(255, 255, 255); font-family: 'Montserrat', sans-serif">
+  <h1 style="color: rgb(61, 19, 230); font-family: 'Montserrat', sans-serif">
     Eggit
   </h1>
   <h3>Welcome</h3>
@@ -64,3 +60,5 @@
   </div>
   <input type="submit" value="Register" />
 </form>
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Completed Slots{% endblock %}
+
+{% block content %}
+
+<section>
+    <h2>Completed Classes</h2>
+    {% if slots_completed and slots_completed|length > 0 %}
+    <ul>
+        {% for request, slot, name, review in slots_completed %}
+        <li>
+            <strong>Name:</strong> {{ name }} <br />
+            <strong>Subject:</strong> {{ slot.subject }} <br />
+            <strong>Date:</strong> {{ slot.date }} <br />
+            <strong>Time:</strong> {{ slot.time }} <br />
+            <strong>Google Meet:</strong>
+            <a href="{{ slot.gmeet_link }}" target="_blank">Join</a>
+
+            {% if review %}
+            <p><strong>Your Rating:</strong> {{ review.rating }}/5</p>
+            <p><strong>Your Comment:</strong> {{ review.comment }}</p>
+            {% else %}
+            <form action="{{ url_for('submit_review', slot_id=slot.id) }}" method="POST">
+                <div class="form-group">
+                    <label for="rating">Rating (1 to 5):</label>
+                    <input type="number" name="rating" min="1" max="5" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="comment">Comment (optional):</label>
+                    <textarea name="comment" class="form-control" rows="4"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+            </form>
+            {% endif %}
+        </li>
+        <hr />
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No completed classes.</p>
+    {% endif %}
+</section>
+
+{% endblock %}

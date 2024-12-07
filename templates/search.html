@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Search
+{% endblock %}
+
+{% block content %}
+
+
+<!-- Search Form -->
+<form action="{{ url_for('search') }}" method="GET">
+
+  {% if user.role=="student" %}
+  <h2>Search Tutors, Slots</h2>
+  <div class="form-group">
+    <label for="category">Select Category</label>
+    <select class="form-control" id="category" name="category">
+      <option value="">Select Category</option>
+      <option value="tutors" {% if category=='tutors' %} selected {% endif %}>Tutors</option>
+      <option value="subjects" {% if category=='subjects' %} selected {% endif %}>Subjects</option>
+    </select>
+  </div>
+  {% elif user.role=="tutor" %}
+  <h2>Search Slots</h2>
+  <div class="form-group">
+    <label for="category">Select Category</label>
+    <select class="form-control" id="category" name="category">
+      <option value="">Select Category</option>
+      <option value="subjects" {% if category=='subjects' %} selected {% endif %}>Subjects</option>
+    </select>
+  </div>
+
+  {% else %}
+  <h2>Search Tutors, Slots, and Students</h2>
+  <div class="form-group">
+    <label for="category">Select Category</label>
+    <select class="form-control" id="category" name="category">
+      <option value="">Select Category</option>
+      <option value="tutors" {% if category=='tutors' %} selected {% endif %}>Tutors</option>
+      <option value="subjects" {% if category=='subjects' %} selected {% endif %}>Subjects</option>
+      <option value="students" {% if category=='students' %} selected {% endif %}>Students</option>
+    </select>
+  </div>
+  {% endif %}
+  <!-- Dynamic Input for Search -->
+  <div class="form-group">
+    <label for="query">Search</label>
+    <input type="text" class="form-control" id="query" name="query" placeholder="Search for...." value="" />
+  </div>
+  <!-- Submit Button -->
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+<!-- Search Results Section -->
+{% if category %}
+<hr>
+<h3>Results for "{{ category }}"</h3>
+
+{% if category == 'students' %}
+{% if students %}
+<div class="students-list">
+  {% for student in students %}
+  <div class="student-card">
+    <h4>{{ student.user.name }}</h4>
+    <p><strong>Registration Number:</strong> {{ student.registration_number }}</p>
+    <p><strong>Email:</strong> {{ student.user.email }}</p>
+    <p><strong>Current Year:</strong> {{ student.current_year }}</p>
+    <a href="{{ url_for('uploaded_file', filename=student.id_card.split('\\')[-1]) }}" target="_blank">
+      <button class="btn btn-info">ID Card</button>
+    </a>
+    <form action="/admin/delete_student/{{student.registration_number}}" method="post">
+      <button type="submit" value="">Delete</button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No students found matching your query.</p>
+{% endif %}
+
+
+{% elif category == 'tutors' %}
+
+{% if user.role=="student" %}
+{% if tutors %}
+<div class="tutors-list">
+  {% for tutor in tutors %}
+  <div class="tutor-card">
+    <form action="/tutor_profile/{{ tutor.registration_number }}" method="POST">
+      <a href="#" onclick="this.closest('form').submit()">
+        <h4>{{ tutor.user.name }}</h4>
+      </a>
+    </form>
+    <p><strong>Subject Expertise:</strong> {{ tutor.subject }}</p>
+    <p><strong>Grade:</strong> {{ tutor.grade }}</p>
+    <p><strong>Email:</strong> {{ tutor.user.email }}</p>
+    <p><strong>Rating:</strong> {{ tutor.rating }}</p>
+
+    <!-- Display Slots for the Tutor -->
+    {% if tutor.slots %}
+    <h3>Slots:</h3>
+    <ul>
+      {% for slot in tutor.slots %}
+      <li>
+        <p><strong>Subject:</strong> {{ slot.subject }}</p>
+        <p><strong>Date:</strong> {{ slot.date }}</p>
+        <p><strong>Time:</strong> {{ slot.time }}</p>
+        <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
+        <form action="/request_slot/{{ slot.id }}" method="POST">
+          <button type="submit">Request</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No slots available for this tutor.</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No tutors found matching your query.</p>
+{% endif %}
+
+{% elif user.role=="admin" %}
+{% if tutors %}
+<div class="tutors-list">
+  {% for tutor in tutors %}
+  <div class="tutor-card">
+    <form action="/tutor_profile/{{ tutor.registration_number }}" method="POST">
+      <a href="#" onclick="this.closest('form').submit()">
+        <h4>{{ tutor.user.name }}</h4>
+      </a>
+    </form>
+    <p><strong>Subject Expertise:</strong> {{ tutor.subject }}</p>
+    <p><strong>Grade:</strong> {{ tutor.grade }}</p>
+    <p><strong>Email:</strong> {{ tutor.user.email }}</p>
+    <p><strong>Rating:</strong> {{ tutor.rating }}</p>
+    <a href="{{ url_for('uploaded_file', filename=tutor.grade_history.split('\\')[-1]) }}" target="_blank">
+      <button class="btn btn-info">Grade History</button>
+    </a>
+    <form action="/admin/delete_tutor/{{tutor.registration_number}}" method="post">
+      <button type="submit" value="">Delete</button>
+    </form>
+
+    <!-- Display Slots for the Tutor -->
+    {% if tutor.slots %}
+    <h3>Slots:</h3>
+    <ul>
+      {% for slot in tutor.slots %}
+      <li>
+        <p><strong>Subject:</strong> {{ slot.subject }}</p>
+        <p><strong>Date:</strong> {{ slot.date }}</p>
+        <p><strong>Time:</strong> {{ slot.time }}</p>
+        <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
+        <p><strong>Status:</strong> {{ slot.slot_status }}</p>
+        <form action="/admin/delete_slot/{{ slot.id }}" method="post">
+          <button type="submit">Delete</button>
+        </form>
+        <form action="/admin/show_reviews/{{ slot.id }}" method="post">
+          <button type="submit">Show Reviews</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No slots available for this tutor.</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No tutors found matching your query.</p>
+{% endif %}
+{% endif %}
+
+
+{% elif category == 'subjects' %}
+
+{% if user.role=="admin" %}
+{% if slots %}
+<div class="slots-list">
+  {% for slot in slots %}
+  <div class="slot-card">
+    <h4>{{ slot.subject }}</h4>
+    <p><strong>Date:</strong> {{ slot.date }}</p>
+    <p><strong>Time:</strong> {{ slot.time }}</p>
+    <p><strong>Tutor:</strong> {{ slot.tutor.user.name }}</p>
+    <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
+    <p><strong>Status:</strong> {{ slot.slot_status }}</p>
+    <form action="/admin/delete_slot/{{ slot.id }}" method="post">
+      <button type="submit">Delete</button>
+    </form>
+    <form action="/admin/show_reviews/{{ slot.id }}" method="post">
+      <button type="submit">Show Reviews</button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No slots found matching your query.</p>
+{% endif %}
+
+{% elif user.role=="student" %}
+
+{% if slots %}
+<div class="slots-list">
+  {% for slot in slots %}
+  <div class="slot-card">
+    <h4>{{ slot.subject }}</h4>
+    <p><strong>Date:</strong> {{ slot.date }}</p>
+    <p><strong>Time:</strong> {{ slot.time }}</p>
+    <p><strong>Tutor:</strong> {{ slot.tutor.user.name }}</p>
+    <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
+    <form action="/request_slot/{{ slot.id }}" method="POST">
+      <button type="submit">Request</button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No slots found matching your query.</p>
+{% endif %}
+
+{% elif user.role=="tutor" %}
+
+{% if slots %}
+<div class="slots-list">
+  {% for slot in slots %}
+  <div class="slot-card">
+    <form action="/slot_request/{{ slot.id }}" method="POST">
+      <a href="#" onclick="this.closest('form').submit()"><h4>{{ slot.subject }}</h4></a>
+  </form>
+    <p><strong>Date:</strong> {{ slot.date }}</p>
+    <p><strong>Time:</strong> {{ slot.time }}</p>
+    <p><strong>Tutor:</strong> {{ slot.tutor.user.name }}</p>
+    <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
+    
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No slots found matching your query.</p>
+{% endif %}
+{% endif %}
+
+
+{% endif %}
+{% endif %}
+{% endblock %}
+{% block style %}
+{% endblock %}

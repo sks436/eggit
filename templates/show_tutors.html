@@ -1,0 +1,44 @@
+{% extends "base.html" %} {% block title %}Tutor Details{% endblock %} {%
+block content %}
+
+<section>
+  <h2>Tutors</h2>
+  {% if tutors and tutors|length > 0 %}
+  <ul>
+    {% for tutor in tutors %}
+    <li>
+      <strong>Name:</strong>
+      <form
+        action="/tutor_profile/{{ tutor.registration_number }}"
+        method="POST"
+      >
+        <a href="#" onclick="this.closest('form').submit()"
+          >{{ tutor.user.name}}</a
+        >
+      </form>
+      <br />
+      <strong>Registration Number:</strong> {{ tutor.registration_number.split('_')[0] }}
+
+      <br />
+      <a
+        href="{{ url_for('uploaded_file', filename=tutor.grade_history.split('\\')[-1]) }}"
+        target="_blank"
+      >
+        <button class="btn btn-info">Grade History</button>
+      </a>
+      <form
+        action="/admin/delete_tutor/{{tutor.registration_number}}"
+        method="post"
+      >
+        <button type="submit" value="">Delete</button>
+      </form>
+    </li>
+    <hr />
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No Tutors.</p>
+  {% endif %}
+</section>
+
+{% endblock %}

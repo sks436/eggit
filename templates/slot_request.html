@@ -1,11 +1,11 @@
-{% extends "base.html" %} {% block title %}Tutor Dashboard{% endblock %} {%
+{% extends "base.html" %} {% block title %}Slot Requests{% endblock %} {%
 block content %}
 <h1>Welcome, {{ user.name }} (Tutor)</h1>
 
-<a href="?delete=true">
+<a href="?download=true">
   <button>Download Emails as CSV</button>
 </a>
-
+<div><strong>Students enrolled:</strong> {{ requests_count }} <br /></div>
 <section>
   <h2>Slot Requests</h2>
   {% if requests and requests|length > 0 %}
