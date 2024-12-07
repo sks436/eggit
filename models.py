@@ -151,4 +151,3 @@ with app.app_context():
         )
         db.session.add(admin)
         db.session.commit()
-

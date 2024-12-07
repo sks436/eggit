@@ -215,7 +215,12 @@ def show_slots():
 def show_reviews(slot_id):
     """Displays reviews for a specific slot."""
     slot = Slot.query.get(slot_id)
-    reviews = Review.query.filter(Review.slot_id == slot_id).join(User, User.registration_number == Review.student_registration_number).add_columns(User.name).all()
+    reviews = (
+        Review.query.filter(Review.slot_id == slot_id)
+        .join(User, User.registration_number == Review.student_registration_number)
+        .add_columns(User.name)
+        .all()
+    )
     return render_template("show_reviews.html", reviews=reviews)
 
 
