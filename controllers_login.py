@@ -307,7 +307,7 @@ def reset_password():
 def search():
     category = request.args.get("category")
     query = request.args.get("query")
-
+    user = User.query.get(session["user_id"])
     students = []
     tutors = []
     slots = []
@@ -327,7 +327,7 @@ def search():
         tutors = (
             db.session.query(Tutor)
             .join(User)
-            .filter(User.name.ilike(f"%{query}%") | Tutor.subject.ilike(f"%{query}%"))
+            .filter(User.name.ilike(f"%{query}%") | Tutor.subject.ilike(f"%{query}%") | Tutor.registration_number.ilike(f"%{query}%"))
             .all()
         )
 
@@ -339,11 +339,44 @@ def search():
             .all()
         )
 
-    return render_template(
+    if user.role=="tutor":
+        slots_tutor=(
+            db.session.query(Slot)
+            .filter(Slot.tutor_registration_number==user.registration_number, Slot.slot_status=="upcoming", Slot.subject.ilike(f"%{query}%"))
+            .all()
+        )
+    elif user.role=="student":
+        slots_students = (
+            db.session.query(Slot)
+            .join(Tutor)
+            .filter(Slot.slot_status=="upcoming", Slot.subject.ilike(f"%{query}%"))
+            .all()
+        )
+
+    if user.role=="student":
+        return render_template(
+        "search.html",
+        category=category,
+        query=query,
+        tutors=tutors,
+        slots=slots_students,
+        user=user,
+    )
+    elif user.role=="tutor":
+        return render_template(
+        "search.html",
+        category=category,
+        query=query,
+        slots=slots_tutor,
+        user=user,
+    )
+    else:
+        return render_template(
         "search.html",
         category=category,
         query=query,
         students=students,
         tutors=tutors,
         slots=slots,
+        user=user,
     )
