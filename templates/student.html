@@ -100,7 +100,7 @@ block content %}
   <h2>Available Tutors and Slots</h2>
   {% if slots and slots|length > 0 %}
   <ul>
-    {% for slot in slots %}
+    {% for slot in slots|sort(attribute='date') %}
     <li>
       <strong>Tutor:</strong>
       <form action="/tutor_profile/{{ slot.tutor_registration_number }}" method="POST">
@@ -111,9 +111,13 @@ block content %}
       <strong>Date:</strong> {{ slot.date }} <br />
       <strong>Time:</strong> {{ slot.time }} <br />
       <strong>Duration:</strong> {{ slot.duration }} minutes <br />
-      {% set is_requested = False %} {% for request in pending %} {% if
-      request.slot_id == slot.id %} {% set is_requested = True %} {% endif %} {%
-      endfor %} {% if is_requested %}
+      {% set is_requested = False %}
+      {% for request in pending %}
+        {% if request.slot_id == slot.id %}
+          {% set is_requested = True %}
+        {% endif %}
+      {% endfor %}
+      {% if is_requested %}
       <p><em>Request Pending</em></p>
       {% else %}
       <form action="/request_slot/{{ slot.id }}" method="POST">
@@ -128,6 +132,7 @@ block content %}
   <p>No tutors or slots available at the moment. Please check back later!</p>
   {% endif %}
 </section>
+
 
 <form action="/student/completed_slots" method="POST">
   <a href="#" onclick="this.closest('form').submit()">Show completed slots</a>

@@ -77,7 +77,7 @@
 <section>
     <h2>Your Created Slots</h2>
 
-    {% if slots %}
+    {% if slots and slots|length > 0 %}
     <table>
         <thead>
             <tr>
@@ -86,11 +86,11 @@
                 <th>Time</th>
                 <th>Duration</th>
                 <th>Created At</th>
-                <th>Gmeet_link</th>
+                <th>Gmeet Link</th>
             </tr>
         </thead>
         <tbody>
-            {% for slot in slots %}
+            {% for slot in slots|sort(attribute='date') %}
             <tr>
                 <td>
                     <form action="/slot_request/{{ slot.id }}" method="POST">
@@ -99,14 +99,16 @@
                 </td>
                 <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
                 <td>{{ slot.time.strftime('%H:%M') }}</td>
-                <td>{{ slot.duration }} minutes </td>
+                <td>{{ slot.duration }} minutes</td>
                 <td>{{ slot.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                 <td><a href="{{ slot.gmeet_link }}">{{ slot.gmeet_link }}</a></td>
             </tr>
-            <td><a href="?delete=true&slot_id={{ slot.id }}">
-                    <button>Delete slot</button>
-                </a>
-            </td>
+            <tr>
+                <td colspan="6">
+                    <a href="?delete=true&slot_id={{ slot.id }}">
+                        <button>Delete slot</button>
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -115,6 +117,7 @@
     <p>No slots created yet.</p>
     {% endif %}
 </section>
+
 
 <form action="/tutor/slots_history" method="POST">
     <a href="#" onclick="this.closest('form').submit()">Show completed slots</a>
