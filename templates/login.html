@@ -1,109 +1,119 @@
-{% extends "base.html" %}
-{% block title %}Login - Eggit{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Login - Eggit{% endblock %} {% block
+content %}
 <div class="container">
-    <div class="row justify-content-center align-items-center min-vh-100">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-lg border-0">
-                <div class="card-body p-5">
-                    <!-- Logo and Tagline -->
-                    <div class="text-center mb-4">
-                        <h1 class="display-4 text-primary fw-bold mb-2">Eggit</h1>
-                        <p class="text-muted h5 mb-4">Hatch the Habit of Learning</p>
-                    </div>
+  <div class="row justify-content-center align-items-center min-vh-100">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-5">
+          <!-- Logo and Tagline -->
+          <div class="text-center mb-4">
+            <h1 class="display-4 text-primary fw-bold mb-2">Eggit</h1>
+            <p class="text-muted h5 mb-4">Hatch the Habit of Learning</p>
+          </div>
 
-                    <!-- Login Form -->
-                    <form action="" method="post">
-                        <div class="mb-4">
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-person text-muted"></i>
-                                </span>
-                                <input type="text" 
-                                       class="form-control border-start-0 ps-0" 
-                                       name="login_id" 
-                                       placeholder="Login ID"
-                                       required>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-lock text-muted"></i>
-                                </span>
-                                <input type="password" 
-                                       class="form-control border-start-0 ps-0" 
-                                       name="password" 
-                                       placeholder="Password"
-                                       required>
-                            </div>
-                        </div>
-                        <div class="d-grid mb-4">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-box-arrow-in-right me-2"></i>Log In
-                            </button>
-                        </div>
-                    </form>
-
-                    <!-- Links -->
-                    <div class="text-center">
-                        <div class="mb-3">
-                            <span class="text-muted">New to Eggit?</span>
-                            <div class="mt-2">
-                                <a href="{{ url_for('register_student') }}" class="btn btn-outline-primary me-2">
-                                    <i class="bi bi-mortarboard me-1"></i>Join as Student
-                                </a>
-                                <a href="{{ url_for('register_tutor') }}" class="btn btn-outline-success">
-                                    <i class="bi bi-person-workspace me-1"></i>Join as Tutor
-                                </a>
-                            </div>
-                        </div>
-                        <div>
-                            <a href="{{ url_for('forgot_password') }}" class="text-muted text-decoration-none">
-                                <i class="bi bi-question-circle me-1"></i>Forgot Password?
-                            </a>
-                        </div>
-                    </div>
-                </div>
+          <!-- Login Form -->
+          <form action="" method="post">
+            <div class="mb-4">
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <i class="bi bi-person text-muted"></i>
+                </span>
+                <input
+                  type="text"
+                  class="form-control border-start-0 ps-0"
+                  name="login_id"
+                  placeholder="Login ID"
+                  required
+                />
+              </div>
             </div>
-
-            <!-- Additional Info -->
-            <div class="text-center mt-4">
-                <p class="text-muted small">
-                    <i class="bi bi-shield-check me-1"></i>
-                    Secure login • 256-bit encryption
-                </p>
+            <div class="mb-4">
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <i class="bi bi-lock text-muted"></i>
+                </span>
+                <input
+                  type="password"
+                  class="form-control border-start-0 ps-0"
+                  name="password"
+                  placeholder="Password"
+                  required
+                />
+              </div>
             </div>
+            <div class="d-grid mb-4">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Log In
+              </button>
+            </div>
+          </form>
+
+          <!-- Links -->
+          <div class="text-center">
+            <div class="mb-3">
+              <span class="text-muted">New to Eggit?</span>
+              <div class="mt-2">
+                <a
+                  href="{{ url_for('register_student') }}"
+                  class="btn btn-outline-primary me-2"
+                >
+                  <i class="bi bi-mortarboard me-1"></i>Join as Student
+                </a>
+                <a
+                  href="{{ url_for('register_tutor') }}"
+                  class="btn btn-outline-success"
+                >
+                  <i class="bi bi-person-workspace me-1"></i>Join as Tutor
+                </a>
+              </div>
+            </div>
+            <div>
+              <a
+                href="{{ url_for('forgot_password') }}"
+                class="text-muted text-decoration-none"
+              >
+                <i class="bi bi-question-circle me-1"></i>Forgot Password?
+              </a>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Additional Info -->
+      <div class="text-center mt-4">
+        <p class="text-muted small">
+          <i class="bi bi-shield-check me-1"></i>
+          Secure login • 256-bit encryption
+        </p>
+      </div>
     </div>
+  </div>
 </div>
 
 {% block extra_css %}
 <style>
-    .input-group-text {
-        background-color: #f8f9fa;
-        border-right: none;
-    }
-    .form-control {
-        border-left: none;
-        box-shadow: none !important;
-    }
-    .form-control:focus {
-        border-color: #dee2e6;
-    }
-    .form-control:focus + .input-group-text {
-        border-color: #dee2e6;
-    }
-    .btn-lg {
-        padding: 0.75rem 1.5rem;
-    }
-    .card {
-        border-radius: 1rem;
-    }
-    .card-body {
-        border-radius: 1rem;
-    }
+  .input-group-text {
+    background-color: #f8f9fa;
+    border-right: none;
+  }
+  .form-control {
+    border-left: none;
+    box-shadow: none !important;
+  }
+  .form-control:focus {
+    border-color: #dee2e6;
+  }
+  .form-control:focus + .input-group-text {
+    border-color: #dee2e6;
+  }
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+  }
+  .card {
+    border-radius: 1rem;
+  }
+  .card-body {
+    border-radius: 1rem;
+  }
 </style>
-{% endblock %}
-{% endblock %}
+{% endblock %} {% endblock %}
