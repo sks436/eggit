@@ -1,3 +1,75 @@
 /* .calendar-section { */
 /* display: none; Hidden by default */
 /* } */
+
+.container {
+  background-color: #f8f9fa; /* Light background color */
+}
+
+.card {
+  background-image: url('path-to-image.jpg');
+  background-size: cover;
+}
+
+.btn-primary {
+  background: linear-gradient(to right, #007bff, #00bfff);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(to right, #00bfff, #007bff);
+}
+/* Student card hover effect */
+.student-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer; /* Make it clear it's interactive */
+}
+
+/* Hover effect for student card */
+.student-card:hover {
+  transform: translateY(-5px); /* Lift the card slightly */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+/* Hover effects for action buttons */
+.student-card .btn:hover {
+  transform: translateY(-2px); /* Subtle hover effect on buttons */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Header */
+.card-header {
+  background-color: #007bff; /* Primary blue */
+  color: white;
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.card-footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+}
+
+.card-footer .btn {
+  font-size: 0.9rem;
+  padding: 0.4rem 0.8rem;
+}
+
+/* Responsive Layout: 1 column on small screens */
+@media (max-width: 768px) {
+  .student-card {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-header {
+    font-size: 1rem;
+  }
+  .card-body p {
+    font-size: 0.8rem;
+  }
+}
