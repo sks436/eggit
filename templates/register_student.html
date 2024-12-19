@@ -1,6 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Register Student{% endblock %}
-{% block content %}
+{% extends "base.html" %} {% block title %}Register Student{% endblock %} {%
+block content %}
 
 <div class="container py-5">
   <div class="row justify-content-center">
@@ -15,45 +14,93 @@
           </div>
 
           <!-- Registration Form -->
-          <form action="" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+          <form
+            action=""
+            method="post"
+            enctype="multipart/form-data"
+            class="needs-validation"
+            novalidate
+          >
             <div class="row g-3">
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="registration_number" name="registration_number" placeholder="Registration Number" required>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="registration_number"
+                    name="registration_number"
+                    placeholder="Registration Number"
+                    required
+                  />
                   <label for="registration_number">Registration Number</label>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="name" name="name" placeholder="Full Name" required>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    name="name"
+                    placeholder="Full Name"
+                    required
+                  />
                   <label for="name">Full Name</label>
                 </div>
               </div>
             </div>
 
             <div class="form-floating mb-3">
-              <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="name@example.com"
+                required
+              />
               <label for="email">Email Address</label>
             </div>
 
             <div class="row g-3">
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                    required
+                  />
                   <label for="password">Password</label>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="confirm_password"
+                    name="confirm_password"
+                    placeholder="Confirm Password"
+                    required
+                  />
                   <label for="confirm_password">Confirm Password</label>
                 </div>
               </div>
             </div>
 
             <div class="form-floating mb-3">
-              <select name="current_year" class="form-select" id="current_year" required>
-                <option value="" selected disabled>Please select your year</option>
+              <select
+                name="current_year"
+                class="form-select"
+                id="current_year"
+                required
+              >
+                <option value="" selected disabled>
+                  Please select your year
+                </option>
                 <option value="1">First Year</option>
                 <option value="2">Second Year</option>
                 <option value="3">Third Year</option>
@@ -64,7 +111,13 @@
 
             <div class="mb-4">
               <label class="form-label text-muted mb-2">Attach ID Card</label>
-              <input type="file" class="form-control form-control-lg" name="id_card" accept=".jpg,.jpeg,.png,.pdf" required>
+              <input
+                type="file"
+                class="form-control form-control-lg"
+                name="id_card"
+                accept=".jpg,.jpeg,.png,.pdf"
+                required
+              />
               <div class="form-text">Accepted formats: JPG, JPEG, PNG, PDF</div>
             </div>
 
@@ -81,7 +134,10 @@
           <!-- Switch to Tutor Registration -->
           <div class="text-center mt-4 pt-3 border-top">
             <p class="text-muted mb-2">Want to teach instead?</p>
-            <a href="{{ url_for('register_tutor') }}" class="btn btn-link text-decoration-none">
+            <a
+              href="{{ url_for('register_tutor') }}"
+              class="btn btn-link text-decoration-none"
+            >
               <i class="bi bi-mortarboard me-1"></i>Register as a Tutor
             </a>
           </div>
@@ -97,26 +153,26 @@
     height: calc(3.5rem + 2px);
     line-height: 1.25;
   }
-  
+
   .form-floating > label {
     padding: 1rem 0.75rem;
   }
-  
+
   .card {
     transition: transform 0.2s ease;
   }
-  
+
   .btn-primary {
     background: linear-gradient(45deg, #2937f0, #9f1ae2);
     border: none;
     transition: all 0.3s ease;
   }
-  
+
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   }
-  
+
   .form-control:focus,
   .form-select:focus {
     border-color: #9f1ae2;
@@ -125,29 +181,34 @@
 </style>
 
 <script>
-// Form validation
-(function () {
-  'use strict'
-  var forms = document.querySelectorAll('.needs-validation')
-  Array.prototype.slice.call(forms)
-    .forEach(function (form) {
-      form.addEventListener('submit', function (event) {
-        if (!form.checkValidity()) {
-          event.preventDefault()
-          event.stopPropagation()
-        }
-        form.classList.add('was-validated')
-      }, false)
-    })
-})()
+  // Form validation
+  (function () {
+    'use strict';
+    var forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function (form) {
+      form.addEventListener(
+        'submit',
+        function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        },
+        false
+      );
+    });
+  })();
 
-// Password match validation
-document.getElementById('confirm_password').addEventListener('input', function() {
-  if (this.value !== document.getElementById('password').value) {
-    this.setCustomValidity('Passwords do not match');
-  } else {
-    this.setCustomValidity('');
-  }
-});
+  // Password match validation
+  document
+    .getElementById('confirm_password')
+    .addEventListener('input', function () {
+      if (this.value !== document.getElementById('password').value) {
+        this.setCustomValidity('Passwords do not match');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
 </script>
 {% endblock %}
