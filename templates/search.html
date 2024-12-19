@@ -1,638 +1,350 @@
-{% extends 'base.html' %}
-
-{% block title %}Search Tutors, Slots, and Students{% endblock %}
-
-{% block content %}
-<div class="container py-4">
-    <!-- Search Header -->
-    <div class="text-center mb-5">
-        <h2 class="display-6 mb-3">
-            <i class="bi bi-search text-primary me-2"></i>
-            Search Eggit
-        </h2>
-        <p class="text-muted">Find tutors, explore subjects, or connect with students</p>
-    </div>
-
-    <!-- Search Form -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <form action="{{ url_for('search') }}" method="GET" class="needs-validation" novalidate>
-                        <!-- Category Selection -->
-                        <div class="mb-4">
-                            <label for="category" class="form-label">
-                                <i class="bi bi-filter-circle me-2"></i>
-                                Select Category
-                            </label>
-                            <select class="form-select form-select-lg" id="category" name="category" required>
-                                <option value="" {% if not category %}selected{% endif %}>Choose what to search...</option>
-                                <option value="tutors" {% if category == 'tutors' %}selected{% endif %}>
-                                    <i class="bi bi-person-video3"></i> Tutors
-                                </option>
-                                <option value="subjects" {% if category == 'subjects' %}selected{% endif %}>
-                                    <i class="bi bi-book"></i> Subjects & Slots
-                                </option>
-                                <option value="students" {% if category == 'students' %}selected{% endif %}>
-                                    <i class="bi bi-people"></i> Students
-                                </option>
-                            </select>
-                        </div>
-
-                        <!-- Search Query -->
-                        <div class="mb-4">
-                            <label for="query" class="form-label">
-                                <i class="bi bi-search me-2"></i>
-                                Search Query
-                            </label>
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-search text-primary"></i>
-                                </span>
-                                <input type="text"
-                                       class="form-control border-start-0"
-                                       id="query"
-                                       name="query"
-                                       placeholder="Type to search..."
-                                       value="{{ query }}"
-                                       required>
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
-                                <i class="bi bi-search me-2"></i>
-                                Search
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Search Results Section -->
-    {% if category %}
-    <div class="search-results">
-        <!-- Results Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="mb-0">
-                <i class="bi bi-list-ul text-primary me-2"></i>
-                Search Results
-            </h3>
-            <span class="badge bg-primary rounded-pill">
-                Category: {{ category|title }}
-            </span>
-        </div>
-
-        <!-- Students Results -->
-        {% if category == 'students' %}
-            {% if students %}
-            <div class="row g-4">
-                {% for student in students %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm hover-card">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="avatar-circle bg-primary text-white me-3">
-                                    {{ student.user.name[0]|upper }}
-                                </div>
-                                <div>
-                                    <h5 class="card-title mb-1">{{ student.user.name }}</h5>
-                                    <p class="text-muted small mb-0">Year {{ student.current_year }}</p>
-                                </div>
-                            </div>
-                            <hr>
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-2">
-                                    <i class="bi bi-person-badge me-2 text-primary"></i>
-                                    {{ student.registration_number }}
-                                </li>
-                                <li>
-                                    <i class="bi bi-envelope me-2 text-primary"></i>
-                                    {{ student.user.email }}
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="text-center py-5">
-                <div class="empty-state-icon mb-4">
-                    <i class="bi bi-people text-muted"></i>
-                </div>
-                <h5>No Students Found</h5>
-                <p class="text-muted">Try adjusting your search criteria</p>
-            </div>
-            {% endif %}
-
-        <!-- Tutors Results -->
-        {% elif category == 'tutors' %}
-            {% if tutors %}
-            <div class="row g-4">
-                {% for tutor in tutors %}
-                <div class="col-12 col-lg-6">
-                    <div class="card h-100 shadow-sm hover-card">
-                        <div class="card-header bg-light py-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-circle bg-primary text-white me-3">
-                                        {{ tutor.user.name[0]|upper }}
-                                    </div>
-                                    <div>
-                                        <h5 class="card-title mb-1">{{ tutor.user.name }}</h5>
-                                        <p class="text-muted small mb-0">{{ tutor.subject }}</p>
-                                    </div>
-                                </div>
-                                <div class="rating">
-                                    <i class="bi bi-star-fill text-warning"></i>
-                                    <span class="ms-1">{{ "%.1f"|format(tutor.rating|float) }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <h6 class="mb-3">
-                                <i class="bi bi-info-circle me-2 text-primary"></i>
-                                Tutor Information
-                            </h6>
-                            <ul class="list-unstyled mb-4">
-                                <li class="mb-2">
-                                    <i class="bi bi-book me-2 text-primary"></i>
-                                    Subject: {{ tutor.subject }}
-                                </li>
-                                <li class="mb-2">
-                                    <i class="bi bi-award me-2 text-primary"></i>
-                                    Grade: {{ tutor.grade }}
-                                </li>
-                                <li>
-                                    <i class="bi bi-envelope me-2 text-primary"></i>
-                                    {{ tutor.user.email }}
-                                </li>
-                            </ul>
-
-                            {% if tutor.slots %}
-                            <h6 class="mb-3">
-                                <i class="bi bi-calendar-check me-2 text-primary"></i>
-                                Available Slots
-                            </h6>
-                            <div class="slots-container">
-                                {% for slot in tutor.slots %}
-                                <div class="slot-item mb-2 p-2 bg-light rounded">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <i class="bi bi-clock me-2 text-primary"></i>
-                                            {{ slot.time }}
-                                        </div>
-                                        <div>
-                                            <i class="bi bi-calendar me-2 text-primary"></i>
-                                            {{ slot.date }}
-                                        </div>
-                                        <span class="badge bg-primary">
-                                            {{ slot.duration }} mins
-                                        </span>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% else %}
-                            <div class="text-center text-muted">
-                                <i class="bi bi-calendar-x display-6 mb-2"></i>
-                                <p>No slots available</p>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="text-center py-5">
-                <div class="empty-state-icon mb-4">
-                    <i class="bi bi-person-video3 text-muted"></i>
-                </div>
-                <h5>No Tutors Found</h5>
-                <p class="text-muted">Try adjusting your search criteria</p>
-            </div>
-            {% endif %}
-
-        <!-- Subjects/Slots Results -->
-        {% elif category == 'subjects' %}
-            {% if slots %}
-            <div class="row g-4">
-                {% for slot in slots %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm hover-card">
-                        <div class="card-header bg-light">
-                            <h5 class="card-title mb-0">
-                                <i class="bi bi-book me-2 text-primary"></i>
-                                {{ slot.subject }}
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-3">
-                                    <i class="bi bi-person-video3 me-2 text-primary"></i>
-                                    <strong>Tutor:</strong> {{ slot.tutor.user.name }}
-                                </li>
-                                <li class="mb-3">
-                                    <i class="bi bi-calendar me-2 text-primary"></i>
-                                    <strong>Date:</strong> {{ slot.date }}
-                                </li>
-                                <li class="mb-3">
-                                    <i class="bi bi-clock me-2 text-primary"></i>
-                                    <strong>Time:</strong> {{ slot.time }}
-                                </li>
-                                <li>
-                                    <i class="bi bi-hourglass-split me-2 text-primary"></i>
-                                    <strong>Duration:</strong> {{ slot.duration }} mins
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="text-center py-5">
-                <div class="empty-state-icon mb-4">
-                    <i class="bi bi-calendar2-x text-muted"></i>
-                </div>
-                <h5>No Slots Found</h5>
-                <p class="text-muted">Try adjusting your search criteria</p>
-            </div>
-            {% endif %}
-        {% endif %}
-    </div>
-    {% endif %}
-</div>
-
-{% block extra_css %}
-<style>
-    /* Avatar Circle */
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-    }
-
-    /* Card Hover Effect */
-    .hover-card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-    .hover-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    }
-
-    /* Empty State Icon */
-    .empty-state-icon {
-        font-size: 4rem;
-        opacity: 0.5;
-    }
-
-    /* Search Input Styling */
-    .input-group-text {
-        border-right: none;
-    }
-    .form-control {
-        border-left: none;
-    }
-    .form-control:focus {
-        border-color: #dee2e6;
-        box-shadow: none;
-    }
-    .input-group:focus-within {
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-
-    /* Slots Container */
-    .slots-container {
-        max-height: 200px;
-        overflow-y: auto;
-    }
-    .slot-item {
-        transition: background-color 0.2s ease-in-out;
-    }
-    .slot-item:hover {
-        background-color: #e9ecef !important;
-    }
-
-    /* Button Animation */
-    .btn {
-        transition: all 0.2s ease-in-out;
-    }
-    .btn:hover {
-        transform: translateY(-2px);
-    }
-
-    /* Rating Stars */
-    .rating {
-        font-size: 0.9rem;
-    }
-    .rating .bi-star-fill {
-        color: #ffc107;
-    }
-</style>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Form validation
-    (function () {
-        'use strict'
-        var forms = document.querySelectorAll('.needs-validation')
-        Array.prototype.slice.call(forms).forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                }
-                form.classList.add('was-validated')
-            }, false)
-        })
-    })()
-
-    // Animate cards on scroll
-    const cards = document.querySelectorAll('.hover-card')
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1'
-                    entry.target.style.transform = 'translateY(0)'
-                }
-            })
-        },
-        { threshold: 0.1 }
-    )
-
-    cards.forEach(card => {
-        card.style.opacity = '0'
-        card.style.transform = 'translateY(20px)'
-        card.style.transition = 'all 0.5s ease-out'
-        observer.observe(card)
-    })
-</script>
-{% endblock %}
-{% endblock %}
-
-<!-- {% extends 'base.html' %}
-
-{% block title %}
-Search
-{% endblock %}
-
-{% block content %} -->
-
-
+{% extends 'base.html' %} {% block title %}Search Tutors, Slots, and Students{%
+endblock %} {% block content %}
 <!-- Search Form -->
-<!-- <form action="{{ url_for('search') }}" method="GET">
+<form action="{{ url_for('search') }}" method="GET" class="mb-4 search-form">
+  <!-- Search Form -->
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            {% if user.role == "student" %}
+            <h2 class="text-center mb-4">Search Tutors & Slots</h2>
+            <div class="form-group">
+              <label for="category" class="font-weight-bold"
+                >Select Category</label
+              >
+              <select
+                class="selectpicker form-control"
+                id="category"
+                name="category"
+                data-live-search="true"
+              >
+                <option value="">Select Category</option>
+                <option value="tutors" data-icon="bi-person">Tutors</option>
+                <option value="subjects" data-icon="bi-book">Subjects</option>
+              </select>
+            </div>
 
-  {% if user.role=="student" %}
-  <h2>Search Tutors, Slots</h2>
-  <div class="form-group">
-    <label for="category">Select Category</label>
-    <select class="form-control" id="category" name="category">
-      <option value="">Select Category</option>
-      <option value="tutors" {% if category=='tutors' %} selected {% endif %}>Tutors</option>
-      <option value="subjects" {% if category=='subjects' %} selected {% endif %}>Subjects</option>
-    </select>
-  </div>
-  {% elif user.role=="tutor" %}
-  <h2>Search Slots</h2>
-  <div class="form-group">
-    <label for="category">Select Category</label>
-    <select class="form-control" id="category" name="category">
-      <option value="">Select Category</option>
-      <option value="subjects" {% if category=='subjects' %} selected {% endif %}>Subjects</option>
-    </select>
-  </div>
+            {% elif user.role == "tutor" %}
+            <h2 class="text-center mb-4">Search Available Slots</h2>
+            <div class="form-group">
+              <label for="category" class="font-weight-bold"
+                >Select Category</label
+              >
+              <select
+                class="selectpicker form-control"
+                id="category"
+                name="category"
+                data-live-search="true"
+              >
+                <option value="">Select Category</option>
+                <option value="subjects" data-icon="bi-book">Subjects</option>
+              </select>
+            </div>
 
-  {% else %}
-  <h2>Search Tutors, Slots, and Students</h2>
-  <div class="form-group">
-    <label for="category">Select Category</label>
-    <select class="form-control" id="category" name="category">
-      <option value="">Select Category</option>
-      <option value="tutors" {% if category=='tutors' %} selected {% endif %}>Tutors</option>
-      <option value="subjects" {% if category=='subjects' %} selected {% endif %}>Subjects</option>
-      <option value="students" {% if category=='students' %} selected {% endif %}>Students</option>
-    </select>
-  </div>
-  {% endif %} -->
-  <!-- Dynamic Input for Search -->
-  <!-- <div class="form-group">
-    <label for="query">Search</label>
-    <input type="text" class="form-control" id="query" name="query" placeholder="Search for...." value="" />
-  </div> -->
-  <!-- Submit Button -->
-  <!-- <button type="submit" class="btn btn-primary">Submit</button>
-</form> -->
+            {% else %}
+            <h2 class="text-center mb-4">Search Tutors, Slots & Students</h2>
+            <div class="form-group">
+              <label for="category" class="font-weight-bold"
+                >Select Category</label
+              >
+              <select
+                class="selectpicker form-control"
+                id="category"
+                name="category"
+                data-live-search="true"
+              >
+                <option value="">Select Category</option>
+                <option value="tutors" data-icon="bi-person">Tutors</option>
+                <option value="subjects" data-icon="bi-book">Subjects</option>
+                <option value="students" data-icon="bi-person-circle">
+                  Students
+                </option>
+              </select>
+            </div>
+            {% endif %}
 
+            <!-- Search Input -->
+            <div class="form-group position-relative">
+              <label for="query" class="font-weight-bold">Search</label>
+              <input
+                type="text"
+                class="form-control"
+                id="query"
+                name="query"
+                placeholder="Search for..."
+                required
+              />
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary btn-block py-2 mt-3">
+              <i class="bi bi-search"></i> Search
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
 
 <!-- Search Results Section -->
-<!-- {% if category %}
-<hr>
-<h3>Results for "{{ category }}"</h3>
+{% if category %}
+<hr class="my-4" />
+<h3 class="text-center text-primary mb-4">Results for "{{ category }}"</h3>
 
-{% if category == 'students' %}
-{% if students %}
-<div class="students-list">
+{% if category == 'students' %} {% if students %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
   {% for student in students %}
-  <div class="student-card">
-    <h4>{{ student.user.name }}</h4>
-    <p><strong>Registration Number:</strong> {{ student.registration_number }}</p>
-    <p><strong>Email:</strong> {{ student.user.email }}</p>
-    <p><strong>Current Year:</strong> {{ student.current_year }}</p>
-    <a href="{{ url_for('uploaded_file', filename=student.id_card.split('\\')[-1]) }}" target="_blank">
-      <button class="btn btn-info">ID Card</button>
-    </a>
-    <form action="/admin/delete_student/{{student.registration_number}}" method="post">
-      <button type="submit" value="">Delete</button>
-    </form>
+  <div class="col">
+    <div class="card rounded-3 student-card">
+      <div class="card-header bg-primary text-white text-center p-3">
+        <h5 class="card-title mb-0">{{ student.user.name }}</h5>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">
+          <i class="bi bi-person-badge"></i> <strong>Registration:</strong> {{
+          student.registration_number }}
+        </p>
+        <p class="text-muted">
+          <i class="bi bi-envelope"></i> <strong>Email:</strong> {{
+          student.user.email }}
+        </p>
+        <p class="text-muted">
+          <i class="bi bi-calendar-check"></i> <strong>Current Year:</strong> {{
+          student.current_year }}
+        </p>
+      </div>
+      <div
+        class="card-footer text-muted d-flex justify-content-between align-items-center p-2"
+      >
+        <!-- View ID Card Button -->
+        <a
+          href="{{ url_for('uploaded_file', filename=student.id_card.split('\\')[-1]) }}"
+          target="_blank"
+          class="btn btn-sm btn-outline-primary"
+        >
+          <i class="bi bi-card-text"></i> View ID Card
+        </a>
+
+        <!-- Delete Button (Compact and Discrete) -->
+        <form
+          action="/admin/delete_student/{{student.registration_number}}"
+          method="post"
+        >
+          <button
+            type="submit"
+            class="btn btn-sm btn-outline-danger"
+            title="Delete Student"
+          >
+            <i class="bi bi-trash"></i> Delete
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
   {% endfor %}
 </div>
 {% else %}
-<p>No students found matching your query.</p>
-{% endif %}
-
-
-{% elif category == 'tutors' %}
-
-{% if user.role=="student" %}
-{% if tutors %}
-<div class="tutors-list">
+<p class="text-center text-muted">No students found matching your query.</p>
+{% endif %} {% elif category == 'tutors' %} {% if user.role=="student" %} {% if
+tutors %}
+<div class="row">
   {% for tutor in tutors %}
-  <div class="tutor-card">
-    <form action="/tutor_profile/{{ tutor.registration_number }}" method="POST">
-      <a href="#" onclick="this.closest('form').submit()">
-        <h4>{{ tutor.user.name }}</h4>
-      </a>
-    </form>
-    <p><strong>Subject Expertise:</strong> {{ tutor.subject }}</p>
-    <p><strong>Grade:</strong> {{ tutor.grade }}</p>
-    <p><strong>Email:</strong> {{ tutor.user.email }}</p>
-    <p><strong>Rating:</strong> {{ tutor.rating }}</p> -->
-
-    <!-- Display Slots for the Tutor -->
-    <!-- {% if tutor.slots %}
-    <h3>Slots:</h3>
-    <ul>
-      {% for slot in tutor.slots %}
-      <li>
-        <p><strong>Subject:</strong> {{ slot.subject }}</p>
-        <p><strong>Date:</strong> {{ slot.date }}</p>
-        <p><strong>Time:</strong> {{ slot.time }}</p>
-        <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
-        <form action="/request_slot/{{ slot.id }}" method="POST">
-          <button type="submit">Request</button>
+  <div class="col-md-4 mb-3">
+    <div class="card tutor-card shadow-lg">
+      <div class="card-body">
+        <form
+          action="/tutor_profile/{{ tutor.registration_number }}"
+          method="POST"
+        >
+          <a href="#" onclick="this.closest('form').submit()">
+            <h4 class="card-title">{{ tutor.user.name }}</h4>
+          </a>
         </form>
-      </li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p>No slots available for this tutor.</p>
-    {% endif %}
+        <p><strong>Subject Expertise:</strong> {{ tutor.subject }}</p>
+        <p><strong>Grade:</strong> {{ tutor.grade }}</p>
+        <p><strong>Email:</strong> {{ tutor.user.email }}</p>
+        <p><strong>Rating:</strong> {{ tutor.rating }}</p>
+
+        <!-- Display Slots for the Tutor -->
+        {% if tutor.slots %}
+        <h5>Slots:</h5>
+        <ul class="list-unstyled">
+          {% for slot in tutor.slots %}
+          <li class="mb-2">
+            <p><strong>Subject:</strong> {{ slot.subject }}</p>
+            <p><strong>Date:</strong> {{ slot.date }}</p>
+            <p><strong>Time:</strong> {{ slot.time }}</p>
+            <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
+            <form action="/request_slot/{{ slot.id }}" method="POST">
+              <button type="submit" class="btn btn-success">Request</button>
+            </form>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>No slots available for this tutor.</p>
+        {% endif %}
+      </div>
+    </div>
   </div>
   {% endfor %}
 </div>
 {% else %}
 <p>No tutors found matching your query.</p>
-{% endif %}
-
-{% elif user.role=="admin" %}
-{% if tutors %}
-<div class="tutors-list">
+{% endif %} {% elif user.role=="admin" %} {% if tutors %}
+<div class="row">
   {% for tutor in tutors %}
-  <div class="tutor-card">
-    <form action="/tutor_profile/{{ tutor.registration_number }}" method="POST">
-      <a href="#" onclick="this.closest('form').submit()">
-        <h4>{{ tutor.user.name }}</h4>
-      </a>
-    </form>
-    <p><strong>Subject Expertise:</strong> {{ tutor.subject }}</p>
-    <p><strong>Grade:</strong> {{ tutor.grade }}</p>
-    <p><strong>Email:</strong> {{ tutor.user.email }}</p>
-    <p><strong>Rating:</strong> {{ tutor.rating }}</p>
-    <a href="{{ url_for('uploaded_file', filename=tutor.grade_history.split('\\')[-1]) }}" target="_blank">
-      <button class="btn btn-info">Grade History</button>
-    </a>
-    <form action="/admin/delete_tutor/{{tutor.registration_number}}" method="post">
-      <button type="submit" value="">Delete</button>
-    </form>
+  <div class="col-md-4 mb-3">
+    <div class="card tutor-card shadow-lg">
+      <div class="card-body">
+        <form
+          action="/tutor_profile/{{ tutor.registration_number }}"
+          method="POST"
+        >
+          <a href="#" onclick="this.closest('form').submit()">
+            <h4 class="card-title">{{ tutor.user.name }}</h4>
+          </a>
+        </form>
+        <p><strong>Subject Expertise:</strong> {{ tutor.subject }}</p>
+        <p><strong>Grade:</strong> {{ tutor.grade }}</p>
+        <p><strong>Email:</strong> {{ tutor.user.email }}</p>
+        <p><strong>Rating:</strong> {{ tutor.rating }}</p>
+        <a
+          href="{{ url_for('uploaded_file', filename=tutor.grade_history.split('\\')[-1]) }}"
+          target="_blank"
+        >
+          <button class="btn btn-info">Grade History</button>
+        </a>
+        <form
+          action="/admin/delete_tutor/{{tutor.registration_number}}"
+          method="post"
+          class="mt-2"
+        >
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
 
-    <!-- Display Slots for the Tutor -->
-    {% if tutor.slots %}
-    <h3>Slots:</h3>
-    <ul>
-      {% for slot in tutor.slots %}
-      <li>
-        <p><strong>Subject:</strong> {{ slot.subject }}</p>
+        <!-- Display Slots for the Tutor -->
+        {% if tutor.slots %}
+        <h5>Slots:</h5>
+        <ul class="list-unstyled">
+          {% for slot in tutor.slots %}
+          <li class="mb-2">
+            <p><strong>Subject:</strong> {{ slot.subject }}</p>
+            <p><strong>Date:</strong> {{ slot.date }}</p>
+            <p><strong>Time:</strong> {{ slot.time }}</p>
+            <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
+            <p><strong>Status:</strong> {{ slot.slot_status }}</p>
+            <form
+              action="/admin/delete_slot/{{ slot.id }}"
+              method="post"
+              class="d-inline"
+            >
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+            <form
+              action="/admin/show_reviews/{{ slot.id }}"
+              method="post"
+              class="d-inline"
+            >
+              <button type="submit" class="btn btn-secondary">
+                Show Reviews
+              </button>
+            </form>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>No slots available for this tutor.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No tutors found matching your query.</p>
+{% endif %} {% endif %} {% elif category == 'subjects' %} {% if
+user.role=="admin" %} {% if slots %}
+<div class="row">
+  {% for slot in slots %}
+  <div class="col-md-4 mb-3">
+    <div class="card slot-card shadow-lg">
+      <div class="card-body">
+        <h4 class="card-title">{{ slot.subject }}</h4>
         <p><strong>Date:</strong> {{ slot.date }}</p>
         <p><strong>Time:</strong> {{ slot.time }}</p>
+        <p><strong>Tutor:</strong> {{ slot.tutor.user.name }}</p>
         <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
         <p><strong>Status:</strong> {{ slot.slot_status }}</p>
-        <form action="/admin/delete_slot/{{ slot.id }}" method="post">
-          <button type="submit">Delete</button>
+        <form
+          action="/admin/delete_slot/{{ slot.id }}"
+          method="post"
+          class="d-inline"
+        >
+          <button type="submit" class="btn btn-danger">Delete</button>
         </form>
-        <form action="/admin/show_reviews/{{ slot.id }}" method="post">
-          <button type="submit">Show Reviews</button>
+        <form
+          action="/admin/show_reviews/{{ slot.id }}"
+          method="post"
+          class="d-inline"
+        >
+          <button type="submit" class="btn btn-secondary">Show Reviews</button>
         </form>
-      </li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p>No slots available for this tutor.</p>
-    {% endif %}
-  </div>
-  {% endfor %}
-</div>
-{% else %}
-<p>No tutors found matching your query.</p>
-{% endif %}
-{% endif %}
-
-
-{% elif category == 'subjects' %}
-
-{% if user.role=="admin" %}
-{% if slots %}
-<div class="slots-list">
-  {% for slot in slots %}
-  <div class="slot-card">
-    <h4>{{ slot.subject }}</h4>
-    <p><strong>Date:</strong> {{ slot.date }}</p>
-    <p><strong>Time:</strong> {{ slot.time }}</p>
-    <p><strong>Tutor:</strong> {{ slot.tutor.user.name }}</p>
-    <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
-    <p><strong>Status:</strong> {{ slot.slot_status }}</p>
-    <form action="/admin/delete_slot/{{ slot.id }}" method="post">
-      <button type="submit">Delete</button>
-    </form>
-    <form action="/admin/show_reviews/{{ slot.id }}" method="post">
-      <button type="submit">Show Reviews</button>
-    </form>
+      </div>
+    </div>
   </div>
   {% endfor %}
 </div>
 {% else %}
 <p>No slots found matching your query.</p>
-{% endif %}
-
-{% elif user.role=="student" %}
-
-{% if slots %}
-<div class="slots-list">
+{% endif %} {% elif user.role=="student" %} {% if slots %}
+<div class="row">
   {% for slot in slots %}
-  <div class="slot-card">
-    <h4>{{ slot.subject }}</h4>
-    <p><strong>Date:</strong> {{ slot.date }}</p>
-    <p><strong>Time:</strong> {{ slot.time }}</p>
-    <p><strong>Tutor:</strong> {{ slot.tutor.user.name }}</p>
-    <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
-    <form action="/request_slot/{{ slot.id }}" method="POST">
-      <button type="submit">Request</button>
-    </form>
+  <div class="col-md-4 mb-3">
+    <div class="card slot-card shadow-lg">
+      <div class="card-body">
+        <h4 class="card-title">{{ slot.subject }}</h4>
+        <p><strong>Date:</strong> {{ slot.date }}</p>
+        <p><strong>Time:</strong> {{ slot.time }}</p>
+        <p><strong>Tutor:</strong> {{ slot.tutor.user.name }}</p>
+        <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
+        <form action="/request_slot/{{ slot.id }}" method="POST">
+          <button type="submit" class="btn btn-success">Request</button>
+        </form>
+      </div>
+    </div>
   </div>
   {% endfor %}
 </div>
 {% else %}
 <p>No slots found matching your query.</p>
-{% endif %}
-
-{% elif user.role=="tutor" %}
-
-{% if slots %}
-<div class="slots-list">
+{% endif %} {% elif user.role=="tutor" %} {% if slots %}
+<div class="row">
   {% for slot in slots %}
-  <div class="slot-card">
-    <form action="/slot_request/{{ slot.id }}" method="POST">
-      <a href="#" onclick="this.closest('form').submit()"><h4>{{ slot.subject }}</h4></a>
-  </form>
-    <p><strong>Date:</strong> {{ slot.date }}</p>
-    <p><strong>Time:</strong> {{ slot.time }}</p>
-    <p><strong>Tutor:</strong> {{ slot.tutor.user.name }}</p>
-    <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
-    
+  <div class="col-md-4 mb-3">
+    <div class="card slot-card shadow-lg">
+      <div class="card-body">
+        <form action="/slot_request/{{ slot.id }}" method="POST">
+          <a href="#" onclick="this.closest('form').submit()">
+            <h4 class="card-title">{{ slot.subject }}</h4>
+          </a>
+        </form>
+        <p><strong>Date:</strong> {{ slot.date }}</p>
+        <p><strong>Time:</strong> {{ slot.time }}</p>
+        <p><strong>Tutor:</strong> {{ slot.tutor.user.name }}</p>
+        <p><strong>Duration:</strong> {{ slot.duration }} mins</p>
+      </div>
+    </div>
   </div>
   {% endfor %}
 </div>
 {% else %}
 <p>No slots found matching your query.</p>
-{% endif %}
-{% endif %}
-
-
-{% endif %}
-{% endif %}
+{% endif %} {% endif %} {% endif %} {% endif %} {% endblock %} {% block style %}
+<style></style>
+{% endblock %} {% block script %}
+<script></script>
 {% endblock %}
-{% block style %}
-{% endblock %} -->
